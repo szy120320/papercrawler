@@ -1,0 +1,155 @@
+# papercrawler.toml — PaperCrawler 配置文件示例
+# 复制本文件为 papercrawler.toml 并按需修改
+
+[general]
+output_dir = "./papers"       # 默认输出目录
+max_results = 20              # 默认最大检索结果数
+default_sort = "relevance"    # relevance | date | citations
+
+[download]
+max_concurrent = 5            # 最大并发下载数 (1-20)
+request_delay = 1.0           # 同域名请求间隔（秒）
+connect_timeout = 10          # 连接超时（秒）
+read_timeout = 60             # 读取超时（秒）
+retry_times = 3               # 失败重试次数
+user_agent = "PaperDownloader/1.0 (research tool; mailto:your@email.com)"
+
+[sources]
+# 启用的数据源列表，注释掉某行即可禁用该数据源
+enabled = [
+    "semantic_scholar",
+    "openalex",
+    "crossref",
+    "pubmed",
+    "arxiv",
+    "core",
+    "chemrxiv",       # 化学预印本服务器，官方公开 API，免费无需注册
+]
+
+[api_keys]
+# Semantic Scholar API Key（可选，提升速率限制）
+# 申请地址: https://api.semanticscholar.org
+semantic_scholar = ""
+
+# NCBI/PubMed API Key（可选，提升速率限制）
+# 申请地址: https://www.ncbi.nlm.nih.gov/account/
+pubmed = ""
+
+# CORE API Key（必须注册获取）
+# 申请地址: https://core.ac.uk/api-keys
+core = ""
+
+# Unpaywall 邮箱标识（必填，用于礼貌性 API 访问标识）
+unpaywall_email = "your@email.com"
+
+[markitdown]
+enabled = true                # 是否启用 MarkItDown 格式转换
+save_original = true          # 是否保留原始文件（PDF/HTML）
+include_images = false        # 是否提取图片（暂未实现）
+
+[filters]
+oa_only = false               # 是否仅下载开放获取论文
+min_year = 0                  # 发表年份下限（0 表示不限）
+max_year = 0                  # 发表年份上限（0 表示不限）
+author_match_threshold = 0.0  # 作者匹配分数阈值（0.0=仅标注不过滤，建议值 0.6）
+                              # 取值范围 0.0~1.0：≥0.8 高置信，0.5~0.8 中等，<0.5 低置信
+
+# ---------------------------------------------------------------------------
+# [interest] — 用户兴趣 / 领域感知配置 ✨
+# ---------------------------------------------------------------------------
+# 这一节让 PaperCrawler 能够根据你的研究兴趣对论文打分、分类、过滤。
+# 配合 CLI 选项: --interest / --interest-threshold / --categorize / --csv
+#
+# 打分规则:
+#   score = 0.0
+#     + 0.6  if any must_have 命中
+#     + 0.1  per should_have 命中 (cap at 0.3)
+#     - 0.5  if any exclude 命中
+#     + 0.05 per category 关键词命中 (cap at 0.20)
+#
+# 模糊匹配: keyword 与 text token 字符相似度 >= fuzzy_threshold 即视为命中
+# 默认 0.85,降到 0.7 更宽松,调到 0.95 更严格
+# ---------------------------------------------------------------------------
+
+[interest]
+description = """
+材料基因组与计算材料学,重点关注:
+- 锂离子电池固态电解质(LLZO, LPS, 硫化物)
+- 分子动力学力场开发(ReaxFF, MLIP, MACE)
+- 第一性原理计算(DFT, AIMD)
+- 实验合成与表征
+"""
+
+# 必须出现的关键词(命中即得 0.6 基础分)
+must_have = [
+    "solid electrolyte",
+    "force field",
+    "molecular dynamics",
+    "DFT",
+]
+
+# 加分关键词(每个 +0.1,封顶 0.3)
+should_have = [
+    "Li-ion",
+    "lithium",
+    "ReaxFF",
+    "first-principles",
+    "MD simulation",
+    "AIMD",
+]
+
+# 排除关键词(命中 → -0.5,常用于过滤综述/评述/勘误)
+exclude = [
+    "review",
+    "perspective",
+    "editorial",
+    "retracted",
+]
+
+# 模糊匹配阈值(0.0~1.0):值越大越严格,0.85 是较宽松的折中
+fuzzy_threshold = 0.85
+
+# 自定义分类(每类匹配命中即打标签,一篇可同时属多类)
+# 关键词:必填,匹配 title+abstract+keywords
+# min_hits:至少需要几个关键词命中才入类,默认 1
+
+[[interest.categories]]
+name = "材料实验合成"
+keywords = ["synthesis", "sintering", "XRD", "calcination", "sol-gel", "实验合成", "co-precipitation"]
+min_hits = 1
+
+[[interest.categories]]
+name = "理论计算"
+keywords = ["DFT", "first-principles", "VASP", "ab initio", "CASTEP", "第一性原理"]
+min_hits = 1
+
+[[interest.categories]]
+name = "力场开发"
+keywords = ["ReaxFF", "force field", "MLIP", "MACE", "MACE-OFF", "potential development", "interatomic potential", "GAP"]
+min_hits = 1
+
+[[interest.categories]]
+name = "分子动力学模拟"
+keywords = ["molecular dynamics", "AIMD", "LAMMPS", "MD simulation", "GROMACS", "NVT", "NPT"]
+min_hits = 1
+
+[[interest.categories]]
+name = "电池/储能"
+keywords = ["battery", "Li-ion", "lithium", "solid-state battery", "SEI", "cathode", "anode", "electrolyte"]
+min_hits = 1
+
+# ---------------------------------------------------------------------------
+# [scihub] — Sci-Hub 下载配置（可选，默认关闭）
+#
+# ⚠️  法律提示：Sci-Hub 在美国、欧盟等地区属于版权侵权行为。
+#     在使用前请确认您所在地区的法律状况及机构网络使用政策。
+#     建议优先通过合法渠道（Unpaywall、PubMed Central 等）获取全文。
+#
+# 启用方式：
+#   1. 将 enabled 设为 true
+#   2. 安装 scidownl：pip install papercrawler[scihub]
+#   3. 如需代理，填写 proxy 地址
+# ---------------------------------------------------------------------------
+[scihub]
+enabled = false               # 默认关闭，需显式设为 true 才会启用
+proxy = ""                    # 代理地址，如 "socks5://127.0.0.1:7890" 或 "http://127.0.0.1:1080"

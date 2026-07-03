@@ -1,0 +1,55 @@
+# 测试用配置:锂电 + 力场方向
+[general]
+output_dir = "./papers"
+max_results = 10
+default_sort = "relevance"
+
+[download]
+max_concurrent = 5
+request_delay = 1.0
+connect_timeout = 10
+read_timeout = 60
+retry_times = 3
+
+[sources]
+enabled = ["openalex", "crossref", "arxiv"]  # 简化测试用,只用 3 个无 key 源
+
+[api_keys]
+unpaywall_email = "test@example.com"
+
+[markitdown]
+enabled = true
+
+[filters]
+oa_only = false
+author_match_threshold = 0.0
+
+[interest]
+description = "测试:锂离子电池 + 分子动力学力场"
+must_have = ["solid electrolyte", "force field", "molecular dynamics"]
+should_have = ["Li-ion", "lithium", "ReaxFF", "DFT"]
+exclude = ["review"]
+fuzzy_threshold = 0.85
+
+[[interest.categories]]
+name = "材料实验合成"
+keywords = ["synthesis", "XRD", "sol-gel"]
+min_hits = 1
+
+[[interest.categories]]
+name = "理论计算"
+keywords = ["DFT", "first-principles", "VASP", "ab initio"]
+min_hits = 1
+
+[[interest.categories]]
+name = "力场开发"
+keywords = ["ReaxFF", "force field", "MLIP", "MACE", "potential"]
+min_hits = 1
+
+[[interest.categories]]
+name = "分子动力学"
+keywords = ["molecular dynamics", "AIMD", "LAMMPS", "MD simulation"]
+min_hits = 1
+
+[scihub]
+enabled = false

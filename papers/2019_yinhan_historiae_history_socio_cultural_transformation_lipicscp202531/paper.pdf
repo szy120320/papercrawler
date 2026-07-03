@@ -1,0 +1,2635 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+        <meta name="google" content="notranslate">
+        <meta http-equiv="Content-Language" content="en">
+
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <meta name="csrf-token" content="yds0belVvb8Uk1hviKerpDKwH9DBdpVDkTuYMoRi">
+
+        
+    <link rel="canonical" href="https://drops.dagstuhl.de/entities/document/10.4230/OASIcs.LDK.2021.22">
+
+    
+    <meta name="DC.Publisher" content="Schloss Dagstuhl – Leibniz-Zentrum für Informatik" >
+    <meta name="DC.Title" xml:lang="en" content="Towards Learning Terminological Concept Systems from Multilingual Natural Language Text" >
+    <meta name="DC.Creator.PersonalName" content="Wachowiak, Lennart" >
+    <meta name="DC.Creator.PersonalName" content="Lang, Christian" >
+    <meta name="DC.Creator.PersonalName" content="Heinisch, Barbara" >
+    <meta name="DC.Creator.PersonalName" content="Gromann, Dagmar" >
+    <meta name="DC.Subject" content="Terminologies" >
+    <meta name="DC.Subject" content="Neural Language Models" >
+    <meta name="DC.Subject" content="Multilingual Information Extraction" >
+    <meta name="DC.Date.created" scheme="ISO8601" content="2021-08-30" >
+    <meta name="DC.Date.issued" scheme="ISO8601" content="2021-08-30" >
+    <meta name="DC.Date.modified" scheme="ISO8601" content="2021-08-30" >
+    <meta name="DC.Type" content="InProceedings" >
+    <meta name="DC.Format" scheme="IMT" content="application/pdf" >
+    <meta name="DC.Identifier" scheme="urn:nbn:de" content="urn:nbn:de:0030-drops-145586" >
+    <meta name="DC.Identifier" scheme="DOI" content="10.4230/OASIcs.LDK.2021.22" >
+    <meta name="DC.Identifier" scheme="URL" content="https://drops.dagstuhl.de/entities/document/10.4230/OASIcs.LDK.2021.22" >
+    <meta name="DC.Source" content="3rd Conference on Language, Data and Knowledge (LDK 2021)" >
+    <meta name="DC.Source.URI" content="https://drops.dagstuhl.de/entities/volume/OASIcs-volume-93" >
+    <meta name="DC.Language" scheme="ISO639-1" content="en" >
+    <meta name="DC.Description" xml:lang="en" content="Terminological Concept Systems (TCS) provide a means of organizing, structuring and representing domain-specific multilingual information and are important to ensure terminological consistency in many tasks, such as translation and cross-border communication. While several approaches to (semi-)automatic term extraction exist, learning their interrelations is vastly underexplored. We propose an automated method to extract terms and relations across natural languages and specialized domains. To this end, we adapt pretrained multilingual neural language models, which we evaluate on term extraction standard datasets with best performing results and a combination of relation extraction standard datasets with competitive results. Code and dataset are publicly available." >
+    <meta name="DC.Rights" scheme="DCTERMS.URI" content="https://creativecommons.org/licenses/by/4.0/legalcode" >
+    <meta name="citation_conference_title" content="3rd Conference on Language, Data and Knowledge (LDK 2021)" >
+    <meta name="citation_doi" content="10.4230/OASIcs.LDK.2021.22" >
+    <meta name="citation_firstpage" content="22:1" >
+    <meta name="citation_lastpage" content="22:18" >
+    <meta name="citation_title" content="Towards Learning Terminological Concept Systems from Multilingual Natural Language Text" >
+    <meta name="citation_language" content="en" >
+    <meta name="citation_keyword" content="Terminologies" >
+    <meta name="citation_keyword" content="Neural Language Models" >
+    <meta name="citation_keyword" content="Multilingual Information Extraction" >
+    <meta name="citation_author" content="Wachowiak, Lennart" >
+    <meta name="citation_author_institution" content="Centre for Translation Studies, University of Vienna, Austria" >
+    <meta name="citation_author" content="Lang, Christian" >
+    <meta name="citation_author_institution" content="Centre for Translation Studies, University of Vienna, Austria" >
+    <meta name="citation_author" content="Heinisch, Barbara" >
+    <meta name="citation_author_institution" content="Centre for Translation Studies, University of Vienna, Austria" >
+    <meta name="citation_author" content="Gromann, Dagmar" >
+    <meta name="citation_author_institution" content="Centre for Translation Studies, University of Vienna, Austria" >
+    <meta name="citation_date" content="2021" >
+    <meta name="citation_keyword" xml:lang="en" content="Terminologies" >
+    <meta name="citation_keyword" xml:lang="en" content="Neural Language Models" >
+    <meta name="citation_keyword" xml:lang="en" content="Multilingual Information Extraction" >
+    <meta name="citation_abstract_html_url" content="https://drops.dagstuhl.de/entities/document/10.4230/OASIcs.LDK.2021.22" >
+    <meta name="citation_pdf_url" content="https://drops.dagstuhl.de/storage/01oasics/oasics-vol093-ldk2021/OASIcs.LDK.2021.22/OASIcs.LDK.2021.22.pdf" >
+    <meta name="citation_reference" content="ISO 1087:2019. Terminology work and terminology science - Vocabulary. Standard, International Organization for Standardization, Geneva, CH, 2019." >
+    <meta name="citation_reference" content="ISO 30042:2019. Management of terminology resources - TermBase eXchange (TBX). Standard, International Organization for Standardization, Geneva, CH, 2019." >
+    <meta name="citation_reference" content="ISO 704:2009. Terminology work - Principles and methods. Standard, International Organization for Standardization, Geneva, CH, 2009." >
+    <meta name="citation_reference" content="Nikita Astrakhantsev. ATR4S: toolkit with state-of-the-art automatic terms recognition methods in scala. Language Resources and Evaluation, 52(3):853-872, 2018." >
+    <meta name="citation_reference" content="Nathalie Aussenac-Gilles, Sylvie Despres, and Sylvie Szulman. The terminae method and platform for ontology engineering from texts, 2008." >
+    <meta name="citation_reference" content="Sasan Azimi, Hadi Veisi, and Reyhaneh Amouie. A method for automatic detection of acronyms in texts and building a dataset for acronym disambiguation. In 2019 5th Iranian Conference on Signal Processing and Intelligent Systems (ICSPIS), pages 1-4. IEEE, 2019. URL: https://doi.org/10.1109/ICSPIS48872.2019.9066084." >
+    <meta name="citation_reference" content="Matthias Bay, Daniel Bruneß, Miriam Herold, Christian Schulze, Michael Guckert, and Mirjam Minor. Term extraction from medical documents using word embeddings. In 4th IEEE Conference on Machine Learning and Natural Language Processing (MNLP 2020). IEEE Computer Society, 2020. URL: http://www.wi.cs.uni-frankfurt.de/webdav/publications/TLDIA_Paper_IEEE_CRC.pdf." >
+    <meta name="citation_reference" content="Philipp Cimiano and Johanna Völker. text2onto. In International conference on application of natural language to information systems, pages 227-238. Springer, 2005." >
+    <meta name="citation_reference" content="Alexis Conneau, Kartikay Khandelwal, Naman Goyal, Vishrav Chaudhary, Guillaume Wenzek, Francisco Guzmán, Edouard Grave, Myle Ott, Luke Zettlemoyer, and Veselin Stoyanov. Unsupervised cross-lingual representation learning at scale. In Dan Jurafsky, Joyce Chai, Natalie Schluter, and Joel Tetreault, editors, Proceedings of the 58th Annual Meeting of the Association for Computational Linguistics, pages 8440-8451, Online, July 2020. Association for Computational Linguistics. URL: https://doi.org/10.18653/v1/2020.acl-main.747." >
+    <meta name="citation_reference" content="Jacob Devlin, Ming-Wei Chang, Kenton Lee, and Kristina Toutanova. BERT: Pre-training of deep bidirectional transformers for language understanding. In Jill Burstein, Christy Doran, and Thamar Solorio, editors, Proceedings of the 2019 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies, Volume 1 (Long and Short Papers), pages 4171-4186, Minneapolis, Minnesota, June 2019. Association for Computational Linguistics. URL: https://doi.org/10.18653/v1/N19-1423." >
+    <meta name="citation_reference" content="Maria Pia di Buono, Philipp Cimiano, Mohammad Fazleh Elahi, and Frank Grimm. Terme-à-LLOD: Simplifying the conversion and hosting of terminological resources as linked data. In Maxim Ionov, John P. McCrae, Christian Chiarcos, Thierry Declerck, Julia Bosque-Gil, and Jorge Gracia, editors, Proceedings of the 7th Workshop on Linked Data in Linguistics (LDL-2020), pages 28-35, Marseille, France, May 2020. European Language Resources Association. URL: https://www.aclweb.org/anthology/2020.ldl-1.5." >
+    <meta name="citation_reference" content="Tsu-Jui Fu, Peng-Hsuan Li, and Wei-Yun Ma. GraphRel: Modeling text as relational graphs for joint entity and relation extraction. In Anna Korhonen, David Traum, and Lluís Màrquez, editors, Proceedings of the 57th Annual Meeting of the Association for Computational Linguistics, pages 1409-1418, Florence, Italy, July 2019. Association for Computational Linguistics. URL: https://doi.org/10.18653/v1/P19-1136." >
+    <meta name="citation_reference" content="Emden R. Gansner and Stephen C. North. An open graph visualization system and its applications to software engineering. Software - Practice and Experience, 30(11):1203–1233, 2000." >
+    <meta name="citation_reference" content="Zhiqiang Geng, Yanhui Zhang, and Yongming Han. Joint entity and relation extraction model based on rich semantics. Neurocomputing, 429:132-140, 2021. URL: https://doi.org/10.1016/j.neucom.2020.12.037." >
+    <meta name="citation_reference" content="Roxana Girju, Preslav Nakov, Vivi Nastase, Stan Szpakowicz, Peter Turney, and Deniz Yuret. SemEval-2007 task 04: Classification of semantic relations between nominals. In Eneko Agirre, Lluís Màrquez, and Richard Wicentowski, editors, Proceedings of the Fourth International Workshop on Semantic Evaluations (SemEval-2007), pages 13-18, Prague, Czech Republic, June 2007. Association for Computational Linguistics. URL: https://www.aclweb.org/anthology/S07-1003." >
+    <meta name="citation_reference" content="Dagmar Gromann. A model and method to terminologize existing domain ontologies. In Terminology and Knowledge Engineering 2014, pages 10-p, 2014." >
+    <meta name="citation_reference" content="Zhijiang Guo, Yan Zhang, and Wei Lu. Attention guided graph convolutional networks for relation extraction. In Anna Korhonen, David Traum, and Lluís Màrquez, editors, Proceedings of the 57th Annual Meeting of the Association for Computational Linguistics, pages 241-251, Florence, Italy, July 2019. Association for Computational Linguistics. URL: https://doi.org/10.18653/v1/P19-1024." >
+    <meta name="citation_reference" content="Anna Hätty, Dominik Schlechtweg, Michael Dorna, and Sabine Schulte im Walde. Predicting degrees of technicality in automatic terminology extraction. In Dan Jurafsky, Joyce Chai, Natalie Schluter, and Joel Tetreault, editors, Proceedings of the 58th Annual Meeting of the Association for Computational Linguistics, pages 2883-2889, Online, July 2020. Association for Computational Linguistics. URL: https://doi.org/10.18653/v1/2020.acl-main.258." >
+    <meta name="citation_reference" content="Amir Hazem, Mérieme Bouhandi, Florian Boudin, and Beatrice Daille. TermEval 2020: TALN-LS2N system for automatic term extraction. In Béatrice Daille, Kyo Kageura, and Ayla Rigouts Terryn, editors, Proceedings of the 6th International Workshop on Computational Terminology, pages 95-100, Marseille, France, 2020. European Language Resources Association. URL: https://www.aclweb.org/anthology/2020.computerm-1.13." >
+    <meta name="citation_reference" content="Iris Hendrickx, Su Nam Kim, Zornitsa Kozareva, Preslav Nakov, Diarmuid Ó Séaghdha, Sebastian Padó, Marco Pennacchiotti, Lorenza Romano, and Stan Szpakowicz. SemEval-2010 task 8: Multi-way classification of semantic relations between pairs of nominals. In Katrin Erk and Carlo Strapparava, editors, Proceedings of the 5th International Workshop on Semantic Evaluation, pages 33-38, Uppsala, Sweden, July 2010. Association for Computational Linguistics. URL: https://www.aclweb.org/anthology/S10-1006." >
+    <meta name="citation_reference" content="Matthew Honnibal, Ines Montani, Sofie Van Landeghem, and Adriane Boyd. spaCy: Industrial-strength Natural Language Processing in Python, 2020. URL: https://doi.org/10.5281/zenodo.1212303." >
+    <meta name="citation_reference" content="Bin Ji, Jie Yu, Shasha Li, Jun Ma, Qingbo Wu, Yusong Tan, and Huijun Liu. Span-based joint entity and relation extraction with attention-based span-specific and contextual semantic representations. In Donia Scott, Nuria Bel, and Chengqing Zong, editors, Proceedings of the 28th International Conference on Computational Linguistics, pages 88-99, Barcelona, Spain (Online), December 2020. International Committee on Computational Linguistics. URL: https://doi.org/10.18653/v1/2020.coling-main.8." >
+    <meta name="citation_reference" content="Ahlem Chérifa Khadir, Hassina Aliane, and Ahmed Guessoum. Ontology learning: Grand tour and challenges. Computer Science Review, 39, 2021. URL: https://doi.org/10.1016/j.cosrev.2020.100339." >
+    <meta name="citation_reference" content="Javier Lacasta, Javier Nogueras-Iso, and Francisco Javier Zarazaga Soria. Terminological Ontologies: Design, Management and Practical Applications, volume 9. Springer Science &amp; Business Media, 2010." >
+    <meta name="citation_reference" content="Jiao Li, Yueping Sun, Robin Johnson, Daniela Sciaky, Chih-Hsuan Wei, Robert Leaman, Allan Peter Davis, Carolyn Mattingly, Thomas Wiegers, and Zhiyong lu. Biocreative v cdr task corpus: a resource for chemical disease relation extraction. Database, page baw068, 2016. URL: https://doi.org/10.1093/database/baw068." >
+    <meta name="citation_reference" content="Yinhan Liu, Myle Ott, Naman Goyal, Jingfei Du, Mandar Joshi, Danqi Chen, Omer Levy, Mike Lewis, Luke Zettlemoyer, and Veselin Stoyanov. Roberta: A robustly optimized BERT pretraining approach. CoRR, abs/1907.11692, 2019. URL: http://arxiv.org/abs/1907.11692." >
+    <meta name="citation_reference" content="Louis Martin, Benjamin Muller, Pedro Javier Ortiz Suárez, Yoann Dupont, Laurent Romary, Éric de la Clergerie, Djamé Seddah, and Benoît Sagot. CamemBERT: a tasty French language model. In Dan Jurafsky, Joyce Chai, Natalie Schluter, and Joel Tetreault, editors, Proceedings of the 58th Annual Meeting of the Association for Computational Linguistics, pages 7203-7219, Online, 2020. Association for Computational Linguistics. URL: https://doi.org/10.18653/v1/2020.acl-main.645." >
+    <meta name="citation_reference" content="Roberto Navigli, Paola Velardi, and Juana Maria Ruiz-Martínez. An annotated dataset for extracting definitions and hypernyms from the web. In Nicoletta Calzolari, Khalid Choukri, Bente Maegaard, Joseph Mariani, Jan Odijk, Stelios Piperidis, Mike Rosner, and Daniel Tapias, editors, Proceedings of the Seventh International Conference on Language Resources and Evaluation (LREC&#039;10), Valletta, Malta, May 2010. European Language Resources Association (ELRA). URL: http://www.lrec-conf.org/proceedings/lrec2010/pdf/20_Paper.pdf." >
+    <meta name="citation_reference" content="Tapas Nayak and Hwee Tou Ng. Effective modeling of encoder-decoder architecture for joint entity and relation extraction. In The Thirty-Fourth AAAI Conference on Artificial Intelligence, AAAI 2020, The Thirty-Second Innovative Applications of Artificial Intelligence Conference, IAAI 2020, The Tenth AAAI Symposium on Educational Advances in Artificial Intelligence, EAAI 2020, New York, NY, USA, February 7-12, 2020, pages 8528-8535. AAAI Press, 2020. URL: https://aaai.org/ojs/index.php/AAAI/article/view/6374." >
+    <meta name="citation_reference" content="Anita Nuopponen. Tangled web of concept relations. concept relations for iso 1087-1 and iso 704. In Terminology and Knowledge Engineering 2014, Berlin, Germany, 2014. Association for Computational Linguistics. URL: https://hal.archives-ouvertes.fr/hal-01005882." >
+    <meta name="citation_reference" content="Giulio Petrucci, Marco Rospocher, and Chiara Ghidini. Expressive ontology learning as neural machine translation. Journal of Web Semantics, 52:66-82, 2018. URL: https://doi.org/10.1016/j.websem.2018.10.002." >
+    <meta name="citation_reference" content="Behrang QasemiZadeh and Anne-Kathrin Schumann. The ACL RD-TEC 2.0: A language resource for evaluating term extraction and entity recognition methods. In Proceedings of the Tenth International Conference on Language Resources and Evaluation (LREC&#039;16), pages 1862-1868, Portorož, Slovenia, May 2016. European Language Resources Association (ELRA). URL: https://www.aclweb.org/anthology/L16-1294." >
+    <meta name="citation_reference" content="Bo Qiao, Zhuoyang Zou, Yu Huang, Kui Fang, Xinghui Zhu, and Yiming Chen. A joint model for entity and relation extraction based on bert. Neural Computing and Applications, pages 1-11, 2021. URL: https://doi.org/10.1007/s00521-021-05815-z." >
+    <meta name="citation_reference" content="Ayla Rigouts Terryn, Veronique Hoste, Patrick Drouin, and Els Lefever. TermEval 2020: Shared task on automatic term extraction using the annotated corpora for term extraction research (ACTER) dataset. In Béatrice Daille, Kyo Kageura, and Ayla Rigouts Terryn, editors, Proceedings of the 6th International Workshop on Computational Terminology, pages 85-94, Marseille, France, May 2020. European Language Resources Association. URL: https://www.aclweb.org/anthology/2020.computerm-1.12." >
+    <meta name="citation_reference" content="Christophe Roche, Marie Calberg-Challot, Luc Damas, and Philippe Rouard. Ontoterminology: A new paradigm for terminology. In International Conference on Knowledge Engineering and Ontology Development, pages 321-326, 2009." >
+    <meta name="citation_reference" content="Aivaras Rokas, Sigita Rackevičienė, and Andrius Utka. Automatic extraction of lithuanian cybersecurity terms using deep learning approaches. In Human Language Technologies-The Baltic Perspective, volume 328, pages 39-46. IOS Press, 2020. URL: https://doi.org/10.3233/FAIA200600." >
+    <meta name="citation_reference" content="Antonio Šajatović, Maja Buljan, Jan Šnajder, and Bojana Dalbelo Bašić. Evaluating automatic term extraction methods on individual documents. In Agata Savary, Carla Parra Escartín, Francis Bond, Jelena Mitrović, and Verginica Barbu Mititelu, editors, Proceedings of the Joint Workshop on Multiword Expressions and WordNet (MWE-WN 2019), pages 149-154, Florence, Italy, 2019. Association for Computational Linguistics. URL: https://doi.org/10.18653/v1/W19-5118." >
+    <meta name="citation_reference" content="Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N. Gomez, undefinedukasz Kaiser, and Illia Polosukhin. Attention is all you need. In Proceedings of the 31st International Conference on Neural Information Processing Systems, NIPS&#039;17, page 6000–6010, Red Hook, NY, USA, 2017. Curran Associates Inc." >
+    <meta name="citation_reference" content="Lennart Wachowiak, Christian Lang, Barbara Heinisch, and Dagmar Gromann. CogALex-VI shared task: Transrelation - a robust multilingual language model for multilingual relation identification. In Rong Xiang, Emmanuele Chersoni, Luca Iacoponi, and Enrico Santus, editors, Proceedings of the Workshop on the Cognitive Aspects of the Lexicon, pages 59-64, Online, 2020. Association for Computational Linguistics. URL: https://www.aclweb.org/anthology/2020.cogalex-1.7." >
+    <meta name="citation_reference" content="Thomas Wolf, Lysandre Debut, Victor Sanh, Julien Chaumond, Clement Delangue, Anthony Moi, Pierric Cistac, Tim Rault, Rémi Louf, Morgan Funtowicz, and Jamie Brew. Huggingface’s transformers: State-of-the-art natural language processing. CoRR, abs/1910.03771, 2019. URL: http://arxiv.org/abs/1910.03771." >
+    <meta name="citation_reference" content="Ikuya Yamada, Akari Asai, Hiroyuki Shindo, Hideaki Takeda, and Yuji Matsumoto. LUKE: Deep contextualized entity representations with entity-aware self-attention. In Bonnie Webber, Trevor Cohn, Yulan He, and Yang Liu, editors, Proceedings of the 2020 Conference on Empirical Methods in Natural Language Processing (EMNLP), pages 6442-6454, Online, November 2020. Association for Computational Linguistics. URL: https://doi.org/10.18653/v1/2020.emnlp-main.523." >
+    <meta name="citation_reference" content="Yuan Yao, Deming Ye, Peng Li, Xu Han, Yankai Lin, Zhenghao Liu, Zhiyuan Liu, Lixin Huang, Jie Zhou, and Maosong Sun. DocRED: A large-scale document-level relation extraction dataset. In Anna Korhonen, David Traum, and Lluís Màrquez, editors, Proceedings of the 57th Annual Meeting of the Association for Computational Linguistics, pages 764-777, Florence, Italy, July 2019. Association for Computational Linguistics. URL: https://doi.org/10.18653/v1/P19-1074." >
+    <meta name="citation_reference" content="Shuang Zeng, Runxin Xu, Baobao Chang, and Lei Li. Double graph based reasoning for document-level relation extraction. In Bonnie Webber, Trevor Cohn, Yulan He, and Yang Liu, editors, Proceedings of the 2020 Conference on Empirical Methods in Natural Language Processing (EMNLP), pages 1630-1640, Online, November 2020. Association for Computational Linguistics. URL: https://doi.org/10.18653/v1/2020.emnlp-main.127." >
+    <meta name="citation_reference" content="Yuhao Zhang, Victor Zhong, Danqi Chen, Gabor Angeli, and Christopher D. Manning. Position-aware attention and supervised data improve slot filling. In Martha Palmer, Rebecca Hwa, and Sebastian Riedel, editors, Proceedings of the 2017 Conference on Empirical Methods in Natural Language Processing, pages 35-45, Copenhagen, Denmark, September 2017. Association for Computational Linguistics. URL: https://doi.org/10.18653/v1/D17-1004." >
+    <meta name="citation_reference" content="Ziqi Zhang, Jose Iria, Christopher Brewster, and Fabio Ciravegna. A comparative evaluation of term recognition algorithms. In Nicoletta Calzolari, Khalid Choukri, Bente Maegaard, Joseph Mariani, Jan Odijk, Stelios Piperidis, and Daniel Tapias, editors, Proceedings of the Sixth International Conference on Language Resources and Evaluation (LREC&#039;08), Marrakech, Morocco, May 2008. European Language Resources Association (ELRA). URL: http://www.lrec-conf.org/proceedings/lrec2008/pdf/538_paper.pdf." >
+    <meta name="citation_reference" content="Suncong Zheng, Yuexing Hao, Dongyuan Lu, Hongyun Bao, Jiaming Xu, Hongwei Hao, and Bo Xu. Joint entity and relation extraction based on a hybrid neural network. Neurocomputing, 257:59-66, 2017. URL: https://doi.org/10.1016/j.neucom.2016.12.075." >
+    <meta name="citation_reference" content="Wenxuan Zhou, Kevin Huang, Tengyu Ma, and Jing Huang. Document-level relation extraction with adaptive thresholding and localized context pooling. CoRR, abs/2010.11304, 2020. URL: http://arxiv.org/abs/2010.11304." >
+    <meta name="citation_publisher" content="Schloss Dagstuhl – Leibniz-Zentrum für Informatik" >
+    <script type="application/ld+json">
+    {
+    "@context": "https://schema.org/",
+    "@type": "WebPage",
+    "mainEntity": {
+        "@type": "ScholarlyArticle",
+        "url": "https://drops.dagstuhl.de/entities/document/10.4230/OASIcs.LDK.2021.22",
+        "headline": "Towards Learning Terminological Concept Systems from Multilingual Natural Language Text",
+        "name": "Towards Learning Terminological Concept Systems from Multilingual Natural Language Text",
+        "abstract": "Terminological Concept Systems (TCS) provide a means of organizing, structuring and representing domain-specific multilingual information and are important to ensure terminological consistency in many tasks, such as translation and cross-border communication. While several approaches to (semi-)automatic term extraction exist, learning their interrelations is vastly underexplored. We propose an automated method to extract terms and relations across natural languages and specialized domains. To this end, we adapt pretrained multilingual neural language models, which we evaluate on term extraction standard datasets with best performing results and a combination of relation extraction standard datasets with competitive results. Code and dataset are publicly available.",
+        "keywords": [
+            "Terminologies",
+            "Neural Language Models",
+            "Multilingual Information Extraction"
+        ],
+        "author": [
+            {
+                "@type": "Person",
+                "name": "Wachowiak, Lennart",
+                "givenName": "Lennart",
+                "familyName": "Wachowiak",
+                "email": "mailto:lennart.wachowiak@univie.ac.at",
+                "affiliation": "Centre for Translation Studies, University of Vienna, Austria"
+            },
+            {
+                "@type": "Person",
+                "name": "Lang, Christian",
+                "givenName": "Christian",
+                "familyName": "Lang",
+                "email": "mailto:christian.lang@univie.ac.at",
+                "affiliation": "Centre for Translation Studies, University of Vienna, Austria"
+            },
+            {
+                "@type": "Person",
+                "name": "Heinisch, Barbara",
+                "givenName": "Barbara",
+                "familyName": "Heinisch",
+                "email": "mailto:barbara.heinisch@univie.ac.at",
+                "affiliation": "Centre for Translation Studies, University of Vienna, Austria"
+            },
+            {
+                "@type": "Person",
+                "name": "Gromann, Dagmar",
+                "givenName": "Dagmar",
+                "familyName": "Gromann",
+                "email": "mailto:dagmar.gromann@univie.ac.at",
+                "affiliation": "Centre for Translation Studies, University of Vienna, Austria"
+            }
+        ],
+        "position": 22,
+        "dateCreated": "2021-08-30",
+        "datePublished": "2021-08-30",
+        "isAccessibleForFree": true,
+        "license": "https://creativecommons.org/licenses/by/4.0/legalcode",
+        "copyrightHolder": [
+            {
+                "@type": "Person",
+                "name": "Wachowiak, Lennart",
+                "givenName": "Lennart",
+                "familyName": "Wachowiak",
+                "email": "mailto:lennart.wachowiak@univie.ac.at",
+                "affiliation": "Centre for Translation Studies, University of Vienna, Austria"
+            },
+            {
+                "@type": "Person",
+                "name": "Lang, Christian",
+                "givenName": "Christian",
+                "familyName": "Lang",
+                "email": "mailto:christian.lang@univie.ac.at",
+                "affiliation": "Centre for Translation Studies, University of Vienna, Austria"
+            },
+            {
+                "@type": "Person",
+                "name": "Heinisch, Barbara",
+                "givenName": "Barbara",
+                "familyName": "Heinisch",
+                "email": "mailto:barbara.heinisch@univie.ac.at",
+                "affiliation": "Centre for Translation Studies, University of Vienna, Austria"
+            },
+            {
+                "@type": "Person",
+                "name": "Gromann, Dagmar",
+                "givenName": "Dagmar",
+                "familyName": "Gromann",
+                "email": "mailto:dagmar.gromann@univie.ac.at",
+                "affiliation": "Centre for Translation Studies, University of Vienna, Austria"
+            }
+        ],
+        "copyrightYear": "2021",
+        "creativeWorkStatus": "Published",
+        "inLanguage": "en-US",
+        "identifier": "https://doi.org/10.4230/OASIcs.LDK.2021.22",
+        "funding": "This research has been conducted within the Text2TCS project (https://text2tcs.univie.ac.at/) funded by European Language Grid (ELG) H2020 No. 825627.",
+        "publisher": {
+            "@type": "Organization",
+            "name": "Schloss Dagstuhl \u2013 Leibniz-Zentrum f\u00fcr Informatik",
+            "alternateName": [
+                "Schloss Dagstuhl - Leibniz Center for Informatics",
+                "Schloss Dagstuhl - LZI GmbH"
+            ],
+            "identifier": "https://ror.org/00k4h2615",
+            "sameAs": [
+                "https://isni.org/isni/0000000100093196",
+                "https://www.dagstuhl.de",
+                "https://de.wikipedia.org/wiki/Leibniz-Zentrum_f%C3%BCr_Informatik"
+            ],
+            "department": {
+                "@type": "Organization",
+                "name": "Dagstuhl Publishing",
+                "logo": {
+                    "@type": "ImageObject",
+                    "url": "https://www.dagstuhl.de/storage/media/0005/5660/publishing-logo.jpg"
+                },
+                "contactPoint": {
+                    "@type": "ContactPoint",
+                    "contactType": "customer support",
+                    "email": "mailto:publishing@dagstuhl.de",
+                    "url": "https://www.dagstuhl.de/en/publishing/team"
+                }
+            },
+            "contactPoint": {
+                "@type": "ContactPoint",
+                "contactType": "customer support",
+                "email": "mailto:lzi@dagstuhl.de",
+                "url": "https://www.dagstuhl.de/en/institute/team"
+            }
+        },
+        "citation": [
+            "https://doi.org/10.1109/ICSPIS48872.2019.9066084",
+            "http://www.wi.cs.uni-frankfurt.de/webdav/publications/TLDIA_Paper_IEEE_CRC.pdf",
+            "https://doi.org/10.18653/v1/2020.acl-main.747",
+            "https://doi.org/10.18653/v1/N19-1423",
+            "https://www.aclweb.org/anthology/2020.ldl-1.5",
+            "https://doi.org/10.18653/v1/P19-1136",
+            "https://doi.org/10.1016/j.neucom.2020.12.037",
+            "https://www.aclweb.org/anthology/S07-1003",
+            "https://doi.org/10.18653/v1/P19-1024",
+            "https://doi.org/10.18653/v1/2020.acl-main.258",
+            "https://www.aclweb.org/anthology/2020.computerm-1.13",
+            "https://www.aclweb.org/anthology/S10-1006",
+            "https://doi.org/10.5281/zenodo.1212303",
+            "https://doi.org/10.18653/v1/2020.coling-main.8",
+            "https://doi.org/10.1016/j.cosrev.2020.100339",
+            "https://doi.org/10.1093/database/baw068",
+            "http://arxiv.org/abs/1907.11692",
+            "https://doi.org/10.18653/v1/2020.acl-main.645",
+            "http://www.lrec-conf.org/proceedings/lrec2010/pdf/20_Paper.pdf",
+            "https://aaai.org/ojs/index.php/AAAI/article/view/6374",
+            "https://hal.archives-ouvertes.fr/hal-01005882",
+            "https://doi.org/10.1016/j.websem.2018.10.002",
+            "https://www.aclweb.org/anthology/L16-1294",
+            "https://doi.org/10.1007/s00521-021-05815-z",
+            "https://www.aclweb.org/anthology/2020.computerm-1.12",
+            "https://doi.org/10.3233/FAIA200600",
+            "https://doi.org/10.18653/v1/W19-5118",
+            "https://www.aclweb.org/anthology/2020.cogalex-1.7",
+            "http://arxiv.org/abs/1910.03771",
+            "https://doi.org/10.18653/v1/2020.emnlp-main.523",
+            "https://doi.org/10.18653/v1/P19-1074",
+            "https://doi.org/10.18653/v1/2020.emnlp-main.127",
+            "https://doi.org/10.18653/v1/D17-1004",
+            "http://www.lrec-conf.org/proceedings/lrec2008/pdf/538_paper.pdf",
+            "https://doi.org/10.1016/j.neucom.2016.12.075",
+            "http://arxiv.org/abs/2010.11304"
+        ],
+        "pageStart": "22:1",
+        "pageEnd": "22:18",
+        "accessMode": "textual",
+        "accessModeSufficient": "textual",
+        "thumbnailUrl": "https://drops.dagstuhl.de/storage/01oasics/oasics-vol093-ldk2021/thumbnails/OASIcs.LDK.2021.22/OASIcs.LDK.2021.22.png",
+        "potentialAction": {
+            "@type": "ReadAction",
+            "target": {
+                "@type": "EntryPoint",
+                "urlTemplate": "https://drops.dagstuhl.de/entities/document/10.4230/OASIcs.LDK.2021.22",
+                "actionPlatform": [
+                    "https://schema.org/DesktopWebPlatform",
+                    "https://schema.org/AndroidPlatform",
+                    "https://schema.org/IOSPlatform"
+                ]
+            }
+        },
+        "isPartOf": {
+            "@type": "PublicationVolume",
+            "@id": "https://drops.dagstuhl.de/entities/volume/OASIcs-volume-93",
+            "url": "https://drops.dagstuhl.de/entities/volume/OASIcs-volume-93",
+            "volumeNumber": 93,
+            "name": "3rd Conference on Language, Data and Knowledge (LDK 2021)",
+            "dateCreated": "2021-08-30",
+            "datePublished": "2021-08-30",
+            "editor": [
+                {
+                    "@type": "Person",
+                    "name": "Gromann, Dagmar",
+                    "givenName": "Dagmar",
+                    "familyName": "Gromann",
+                    "email": "mailto:dagmar.gromann@gmail.com",
+                    "sameAs": "https://orcid.org/0000-0003-0929-6103",
+                    "affiliation": "University of Vienna, Austria"
+                },
+                {
+                    "@type": "Person",
+                    "name": "S\u00e9rasset, Gilles",
+                    "givenName": "Gilles",
+                    "familyName": "S\u00e9rasset",
+                    "email": "mailto:gilles.serasset@imag.fr",
+                    "sameAs": "https://orcid.org/0000-0003-2761-7353",
+                    "affiliation": "Universit\u00e9 Grenoble Alpes, France"
+                },
+                {
+                    "@type": "Person",
+                    "name": "Declerck, Thierry",
+                    "givenName": "Thierry",
+                    "familyName": "Declerck",
+                    "email": "mailto:declerck@dfki.de",
+                    "sameAs": "https://orcid.org/0000-0002-9450-6648",
+                    "affiliation": "DFKI GmbH, Germany"
+                },
+                {
+                    "@type": "Person",
+                    "name": "McCrae, John P.",
+                    "givenName": "John P.",
+                    "familyName": "McCrae",
+                    "email": "mailto:john.mccrae@insight-centre.org",
+                    "sameAs": "https://orcid.org/0000-0002-7227-1331",
+                    "affiliation": "National University of Ireland Galway, Ireland"
+                },
+                {
+                    "@type": "Person",
+                    "name": "Gracia, Jorge",
+                    "givenName": "Jorge",
+                    "familyName": "Gracia",
+                    "email": "mailto:jogracia@unizar.es",
+                    "sameAs": "https://orcid.org/0000-0001-6452-7627",
+                    "affiliation": "University of Zaragoza, Spain"
+                },
+                {
+                    "@type": "Person",
+                    "name": "Bosque-Gil, Julia",
+                    "givenName": "Julia",
+                    "familyName": "Bosque-Gil",
+                    "sameAs": "https://orcid.org/0000-0001-6433-4649",
+                    "affiliation": "University of Zaragoza, Spain"
+                },
+                {
+                    "@type": "Person",
+                    "name": "Bobillo, Fernando",
+                    "givenName": "Fernando",
+                    "familyName": "Bobillo",
+                    "sameAs": "https://orcid.org/0000-0001-5136-4152",
+                    "affiliation": "University of Zaragoza, Spain"
+                },
+                {
+                    "@type": "Person",
+                    "name": "Heinisch, Barbara",
+                    "givenName": "Barbara",
+                    "familyName": "Heinisch",
+                    "email": "mailto:barbara.heinisch@univie.ac.at",
+                    "sameAs": "https://orcid.org/0000-0002-1362-4088",
+                    "affiliation": "University of Vienna, Austria"
+                }
+            ],
+            "isAccessibleForFree": true,
+            "publisher": {
+                "@type": "Organization",
+                "name": "Schloss Dagstuhl \u2013 Leibniz-Zentrum f\u00fcr Informatik",
+                "alternateName": [
+                    "Schloss Dagstuhl - Leibniz Center for Informatics",
+                    "Schloss Dagstuhl - LZI GmbH"
+                ],
+                "identifier": "https://ror.org/00k4h2615",
+                "sameAs": [
+                    "https://isni.org/isni/0000000100093196",
+                    "https://www.dagstuhl.de",
+                    "https://de.wikipedia.org/wiki/Leibniz-Zentrum_f%C3%BCr_Informatik"
+                ],
+                "department": {
+                    "@type": "Organization",
+                    "name": "Dagstuhl Publishing",
+                    "logo": {
+                        "@type": "ImageObject",
+                        "url": "https://www.dagstuhl.de/storage/media/0005/5660/publishing-logo.jpg"
+                    },
+                    "contactPoint": {
+                        "@type": "ContactPoint",
+                        "contactType": "customer support",
+                        "email": "mailto:publishing@dagstuhl.de",
+                        "url": "https://www.dagstuhl.de/en/publishing/team"
+                    }
+                },
+                "contactPoint": {
+                    "@type": "ContactPoint",
+                    "contactType": "customer support",
+                    "email": "mailto:lzi@dagstuhl.de",
+                    "url": "https://www.dagstuhl.de/en/institute/team"
+                }
+            },
+            "isPartOf": {
+                "@type": "BookSeries",
+                "url": "https://drops.dagstuhl.de/entities/series/OASIcs",
+                "name": "Open Access Series in Informatics",
+                "issn": "2190-6807",
+                "isAccessibleForFree": true,
+                "publisher": {
+                    "@type": "Organization",
+                    "name": "Schloss Dagstuhl \u2013 Leibniz-Zentrum f\u00fcr Informatik",
+                    "alternateName": [
+                        "Schloss Dagstuhl - Leibniz Center for Informatics",
+                        "Schloss Dagstuhl - LZI GmbH"
+                    ],
+                    "identifier": "https://ror.org/00k4h2615",
+                    "sameAs": [
+                        "https://isni.org/isni/0000000100093196",
+                        "https://www.dagstuhl.de",
+                        "https://de.wikipedia.org/wiki/Leibniz-Zentrum_f%C3%BCr_Informatik"
+                    ],
+                    "department": {
+                        "@type": "Organization",
+                        "name": "Dagstuhl Publishing",
+                        "logo": {
+                            "@type": "ImageObject",
+                            "url": "https://www.dagstuhl.de/storage/media/0005/5660/publishing-logo.jpg"
+                        },
+                        "contactPoint": {
+                            "@type": "ContactPoint",
+                            "contactType": "customer support",
+                            "email": "mailto:publishing@dagstuhl.de",
+                            "url": "https://www.dagstuhl.de/en/publishing/team"
+                        }
+                    },
+                    "contactPoint": {
+                        "@type": "ContactPoint",
+                        "contactType": "customer support",
+                        "email": "mailto:lzi@dagstuhl.de",
+                        "url": "https://www.dagstuhl.de/en/institute/team"
+                    }
+                },
+                "hasPart": "https://drops.dagstuhl.de/entities/volume/OASIcs-volume-93"
+            }
+        }
+    }
+}
+</script>
+
+    <link rel="alternate" type="application/xml" title="Towards Learning Terminological Concept Systems from Multilingual Natural Language Text / XML" href="https://drops.dagstuhl.de/entities/document/10.4230/OASIcs.LDK.2021.22/metadata/xml">
+    <link rel="alternate" type="application/x-bibtex" title="Towards Learning Terminological Concept Systems from Multilingual Natural Language Text / BibTeX" href="https://drops.dagstuhl.de/entities/document/10.4230/OASIcs.LDK.2021.22/metadata/bibtex/download">
+    <link rel="alternate" type="application/ld+json" title="Towards Learning Terminological Concept Systems from Multilingual Natural Language Text / Schema.org" href="https://drops.dagstuhl.de/entities/document/10.4230/OASIcs.LDK.2021.22/metadata/schema-org">
+    <link rel="alternate" type="application/xml" title="Towards Learning Terminological Concept Systems from Multilingual Natural Language Text / OAI-DublinCore" href="/oai/?verb=GetRecord&metadataPrefix=oai_dc&identifier=14558">
+
+    <style>
+        
+    </style>
+
+        <title>Towards Learning Terminological Concept Systems from Multilingual Natural Language Text</title>
+
+        <link rel="icon" href="https://drops.dagstuhl.de/favicon.ico">
+        <link rel="stylesheet" href="https://drops.dagstuhl.de/css/app.css?drops-core-2026-05-13">
+
+            </head>
+
+    <body>
+        
+    <nav class="navbar main fixed-top navbar-expand-lg navbar-light bg-light">
+
+    <div class="container-fluid">
+
+        <a class="navbar-brand" href="https://www.dagstuhl.de">
+            <img class="lzi-logo" src="https://drops.dagstuhl.de/images/LZI-Logo.jpg" width="84" height="62" alt="Schloss Dagstuhl - LZI - Logo">
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+                <li class="nav-item" style="white-space: nowrap">
+                    <a class="nav-link" href="https://drops.dagstuhl.de" title="DROPS Home">
+                        <i class="bi bi-house large-icon"></i>
+                    </a>
+                </li>
+
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownAboutUs" role="button"
+                       data-bs-toggle="dropdown" aria-expanded="false" data-fix-width>
+                        <img width="54" src="https://drops.dagstuhl.de/images/dagpub-bildmarke-grey.png" alt="Dagstuhl Publishing Logo" style="vertical-align: bottom; transform: translateY(-2px)">
+                        <span class="nav-text-dagstuhl-publishing">Dagstuhl Publishing</span>
+                        
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li>
+                            <a class="dropdown-item" href="https://www.dagstuhl.de/en/publishing">
+                                Dagstuhl Publishing
+                            </a>
+                            <a class="dropdown-item" href="https://www.dagstuhl.de/en/publishing/team">
+                                Dagstuhl Publishing Team
+                            </a>
+                        </li>
+                        <li class="dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item" href="/docs/ethics">
+                                Publication Ethics
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="/docs/gen-ai">
+                                GenAI Statement
+                            </a>
+                        </li>
+                        <li class="dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item" href="https://drops.dagstuhl.de/docs/about">
+                                About DROPS
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="https://www.dagstuhl.de/en/publishing/team">
+                                Contact
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownSeries" role="button"
+                       data-bs-toggle="dropdown" aria-expanded="false" data-fix-width>
+                        <i class="bi bi-journals large-icon"></i> Series
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        
+                            <li><a class="dropdown-item" href="https://drops.dagstuhl.de/entities/series/LIPIcs">
+                                    LIPIcs – Leibniz International Proceedings in Informatics
+                                </a>
+                            </li>
+                        
+                            <li><a class="dropdown-item" href="https://drops.dagstuhl.de/entities/series/OASIcs">
+                                    OASIcs – Open Access Series in Informatics
+                                </a>
+                            </li>
+                        
+                            <li><a class="dropdown-item" href="https://drops.dagstuhl.de/entities/series/DFU">
+                                    Dagstuhl Follow-Ups
+                                </a>
+                            </li>
+                        
+                            <li><a class="dropdown-item" href="https://drops.dagstuhl.de/entities/series/DagAnnRep">
+                                    Schloss Dagstuhl Jahresbericht
+                                </a>
+                            </li>
+                                                <li class="dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item" href="/#discontinued-series">Discontinued Series</a>
+                        </li>
+                    </ul>
+                </li>
+
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownJournals" role="button"
+                       data-bs-toggle="dropdown" aria-expanded="false" data-fix-width>
+                        <i class="bi bi-journal large-icon"></i> Journals
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        
+                            <li><a class="dropdown-item" href="https://drops.dagstuhl.de/entities/journal/DARTS">
+                                    DARTS – Dagstuhl Artifacts Series
+                                </a>
+                            </li>
+                        
+                            <li><a class="dropdown-item" href="https://drops.dagstuhl.de/entities/journal/DagRep">
+                                    Dagstuhl Reports
+                                </a>
+                            </li>
+                        
+                            <li><a class="dropdown-item" href="https://drops.dagstuhl.de/entities/journal/DagMan">
+                                    Dagstuhl Manifestos
+                                </a>
+                            </li>
+                        
+                            <li><a class="dropdown-item" href="https://drops.dagstuhl.de/entities/journal/LITES">
+                                    LITES – Leibniz Transactions on Embedded Systems
+                                </a>
+                            </li>
+                        
+                            <li><a class="dropdown-item" href="https://drops.dagstuhl.de/entities/journal/TGDK">
+                                    TGDK – Transactions on Graph Data and Knowledge
+                                </a>
+                            </li>
+                                            </ul>
+                </li>
+
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownConferences" role="button"
+                       data-bs-toggle="dropdown" aria-expanded="false" data-fix-width>
+                        <i class="bi bi-people large-icon"></i> Conferences
+                    </a>
+                    <ul class="dropdown-menu conference-dropdown" aria-labelledby="navbarDropdown">
+                        <div class="row">
+                            <div class="col-sm-4 nav-conference-col">
+                                <li>
+            <a class="dropdown-item" href="https://drops.dagstuhl.de/entities/conference/AFT">
+                AFT
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="https://drops.dagstuhl.de/entities/conference/AIB">
+                AIB
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="https://drops.dagstuhl.de/entities/conference/AofA">
+                AofA
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="https://drops.dagstuhl.de/entities/conference/APPROX">
+                APPROX
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="https://drops.dagstuhl.de/entities/conference/ATMOS">
+                ATMOS
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="https://drops.dagstuhl.de/entities/conference/CALCO">
+                CALCO
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="https://drops.dagstuhl.de/entities/conference/CCC">
+                CCC
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="https://drops.dagstuhl.de/entities/conference/CONCUR">
+                CONCUR
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="https://drops.dagstuhl.de/entities/conference/COSIT">
+                COSIT
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="https://drops.dagstuhl.de/entities/conference/CP">
+                CP
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="https://drops.dagstuhl.de/entities/conference/CPM">
+                CPM
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="https://drops.dagstuhl.de/entities/conference/CSL">
+                CSL
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="https://drops.dagstuhl.de/entities/conference/DISC">
+                DISC
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="https://drops.dagstuhl.de/entities/conference/DITAM">
+                DITAM
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="https://drops.dagstuhl.de/entities/conference/DNA">
+                DNA
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="https://drops.dagstuhl.de/entities/conference/ECOOP">
+                ECOOP
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="https://drops.dagstuhl.de/entities/conference/ECRTS">
+                ECRTS
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="https://drops.dagstuhl.de/entities/conference/ESA">
+                ESA
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="https://drops.dagstuhl.de/entities/conference/FAB">
+                FAB
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="https://drops.dagstuhl.de/entities/conference/FMBC">
+                FMBC
+            </a>
+        </li>
+                            </div>
+                            <div class="col-sm-4 nav-conference-col">
+                                <li>
+            <a class="dropdown-item" href="https://drops.dagstuhl.de/entities/conference/FORC">
+                FORC
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="https://drops.dagstuhl.de/entities/conference/FSCD">
+                FSCD
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="https://drops.dagstuhl.de/entities/conference/FSTTCS">
+                FSTTCS
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="https://drops.dagstuhl.de/entities/conference/FUN">
+                FUN
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="https://drops.dagstuhl.de/entities/conference/GD">
+                GD
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="https://drops.dagstuhl.de/entities/conference/GIScience">
+                GIScience
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="https://drops.dagstuhl.de/entities/conference/ICALP">
+                ICALP
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="https://drops.dagstuhl.de/entities/conference/ICDT">
+                ICDT
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="https://drops.dagstuhl.de/entities/conference/ICPEC">
+                ICPEC
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="https://drops.dagstuhl.de/entities/conference/IPEC">
+                IPEC
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="https://drops.dagstuhl.de/entities/conference/iPMVM">
+                iPMVM
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="https://drops.dagstuhl.de/entities/conference/ISAAC">
+                ISAAC
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="https://drops.dagstuhl.de/entities/conference/ITC">
+                ITC
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="https://drops.dagstuhl.de/entities/conference/ITCS">
+                ITCS
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="https://drops.dagstuhl.de/entities/conference/ITP">
+                ITP
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="https://drops.dagstuhl.de/entities/conference/LDK">
+                LDK
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="https://drops.dagstuhl.de/entities/conference/MFCS">
+                MFCS
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="https://drops.dagstuhl.de/entities/conference/Microservices">
+                Microservices
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="https://drops.dagstuhl.de/entities/conference/NG-RES">
+                NG-RES
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="https://drops.dagstuhl.de/entities/conference/OPODIS">
+                OPODIS
+            </a>
+        </li>
+                            </div>
+                            <div class="col-sm-4 nav-conference-col">
+                                <li>
+            <a class="dropdown-item" href="https://drops.dagstuhl.de/entities/conference/PARMA">
+                PARMA
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="https://drops.dagstuhl.de/entities/conference/RANDOM">
+                RANDOM
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="https://drops.dagstuhl.de/entities/conference/SAND">
+                SAND
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="https://drops.dagstuhl.de/entities/conference/SAT">
+                SAT
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="https://drops.dagstuhl.de/entities/conference/SEA">
+                SEA
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="https://drops.dagstuhl.de/entities/conference/SLATE">
+                SLATE
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="https://drops.dagstuhl.de/entities/conference/SNAPL">
+                SNAPL
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="https://drops.dagstuhl.de/entities/conference/SoCG">
+                SoCG
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="https://drops.dagstuhl.de/entities/conference/STACS">
+                STACS
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="https://drops.dagstuhl.de/entities/conference/SWAT">
+                SWAT
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="https://drops.dagstuhl.de/entities/conference/TIME">
+                TIME
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="https://drops.dagstuhl.de/entities/conference/Tokenomics">
+                Tokenomics
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="https://drops.dagstuhl.de/entities/conference/TQC">
+                TQC
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="https://drops.dagstuhl.de/entities/conference/TYPES">
+                TYPES
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="https://drops.dagstuhl.de/entities/conference/WABI">
+                WABI
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="https://drops.dagstuhl.de/entities/conference/WCET">
+                WCET
+            </a>
+        </li>
+                            </div>
+                        </div>
+                    </ul>
+                </li>
+
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownArtifacts" role="button"
+                       data-bs-toggle="dropdown" aria-expanded="false" data-fix-width>
+                        <i class="bi bi-braces-asterisk large-icon"></i> Artifacts
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+
+                        <li>
+                            <a class="dropdown-item" href="https://drops.dagstuhl.de/entities/collection/supplementary-materials">
+                                Supplementary Materials (Software, Datasets, ...)
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="https://drops.dagstuhl.de/entities/collection/dblp">
+                                dblp Artifacts
+                            </a>
+                        </li>
+                        <li class="dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item" href="/entities/journal/DARTS">
+                                DARTS (Evaluated Artifacts)
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+
+                            <form class="navbar-search d-flex" action="https://drops.dagstuhl.de/search" method="post">
+                    <input type="hidden" name="_token" value="yds0belVvb8Uk1hviKerpDKwH9DBdpVDkTuYMoRi" autocomplete="off">
+                    <div class="input-group">
+                        <input class="form-control" type="search" placeholder="Search" aria-label="Search"
+                               name="term" autocomplete="off" maxlength="600">
+                        <button class="btn btn-outline-success" type="submit">
+                            <i class="bi bi-search" style="color: #000"></i>
+                        </button>
+                    </div>
+                </form>
+            
+            <ul class="navbar-nav nav-metadata">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" id="navbarDropdownMetadata" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-database-down large-icon"></i><span class="nav-text-metadata">Metadata Export</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-metadata" aria-labelledby="navbarDropdownMetadata">
+                        <li>
+                            <a class="dropdown-item" href="https://drops.dagstuhl.de/metadata">Metadata Export</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="https://drops.dagstuhl.de/oai?verb=Identify" target="_blank">OAI Interface</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+
+                    </div>
+    </div>
+</nav>
+
+    
+    <div id="app"
+         data-release="drops-core-2026-05-13"
+         class="container  ">
+
+        <div id="_top-of-page"></div>
+
+        
+                    <div class="fixed-search-button"><i class="bi bi-search"></i></div>
+        
+                
+        
+    <div class="document-details">
+
+        <section class="mt-3 mb-2 title metadata">
+
+    <div class="entity-type document">
+
+        <div class="row">
+
+            <div class="col-lg-3 entity-type-name">
+                <i class="bi bi-file-earmark"></i>
+ Document
+                <img src="https://drops.dagstuhl.de/images/open-access-logo.png" width="80" alt="Open Access Logo"
+                     style="transform: translate(1em, -0.2em);">
+            </div>
+
+            <div class="col-lg-9">
+
+                <input id="doi" type="text" style="position: fixed; top: -50vh"
+                       value="https://doi.org/10.4230/OASIcs.LDK.2021.22">
+
+                <div class="sharing-section">
+
+                         <span class="permalink">
+                            <span>
+                                <code><span class="hide-mobile">https://doi.org/</span>10.4230/OASIcs.LDK.2021.22</code>
+
+                                <span class="btn btn-clipboard copy-to-clipboard" title="Copy to clipboard"
+                                      data-selector="doi">
+                                    <i class="bi bi-clipboard" aria-hidden="true"></i>
+                                    <i class="bi bi-check -hidden" aria-hidden="true"></i>
+                                </span>
+                            </span>
+
+                        </span>
+
+                    <span class="sharing-buttons">
+
+    <a class="btn sharing-btn facebook" href="https://facebook.com/sharer/sharer.php?u=https%3A%2F%2Fdoi.org%2F10.4230%2FOASIcs.LDK.2021.22" target="_blank" rel="noopener" aria-hidden="true">
+        <i class="bi bi-facebook"></i>
+    </a>
+
+    <a class="btn sharing-btn reddit" href="https://www.reddit.com/submit?url=https%3A%2F%2Fdoi.org%2F10.4230%2FOASIcs.LDK.2021.22&title=Towards+Learning+Terminological+Concept+Systems+from+Multilingual+Natural+Language+Text" target="_blank" rel="noopener" aria-hidden="true">
+        <i class="bi bi-reddit"></i>
+    </a>
+
+    <a class="btn sharing-btn twitter" href="https://twitter.com/intent/tweet/?text=Towards+Learning+Terminological+Concept+Systems+from+Multilingual+Natural+Language+Text&url=https%3A%2F%2Fdoi.org%2F10.4230%2FOASIcs.LDK.2021.22" target="_blank" rel="noopener" aria-hidden="true">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-twitter-x" viewBox="0 0 16 16">
+          <path d="M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865l8.875 11.633Z"/>
+        </svg>
+    </a>
+
+    <a class="btn sharing-btn email" href="mailto:?subject=Towards+Learning+Terminological+Concept+Systems+from+Multilingual+Natural+Language+Text&amp;body=https%3A%2F%2Fdoi.org%2F10.4230%2FOASIcs.LDK.2021.22" target="_self" rel="noopener" aria-hidden="true">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M22 4H2C.9 4 0 4.9 0 6v12c0 1.1.9 2 2 2h20c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zM7.25 14.43l-3.5 2c-.08.05-.17.07-.25.07-.17 0-.34-.1-.43-.25-.14-.24-.06-.55.18-.68l3.5-2c.24-.14.55-.06.68.18.14.24.06.55-.18.68zm4.75.07c-.1 0-.2-.03-.27-.08l-8.5-5.5c-.23-.15-.3-.46-.15-.7.15-.22.46-.3.7-.14L12 13.4l8.23-5.32c.23-.15.54-.08.7.15.14.23.07.54-.16.7l-8.5 5.5c-.08.04-.17.07-.27.07zm8.93 1.75c-.1.16-.26.25-.43.25-.08 0-.17-.02-.25-.07l-3.5-2c-.24-.13-.32-.44-.18-.68s.44-.32.68-.18l3.5 2c.24.13.32.44.18.68z"/>
+        </svg>
+    </a>
+
+</span>
+
+                    <span class="sharing-buttons">
+        <span class="dropdown">
+            <a class="btn sharing-btn metadata dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-download"></i></a>
+            <ul class="dropdown-menu dropdown-menu-end">
+                                    <li>
+                        <a class="dropdown-item" href="https://drops.dagstuhl.de/entities/document/10.4230/OASIcs.LDK.2021.22/metadata/xml">
+                            Export XML
+                        </a>
+                    </li>
+                                    <li>
+                        <a class="dropdown-item" href="https://drops.dagstuhl.de/entities/document/10.4230/OASIcs.LDK.2021.22/metadata/acm-xml">
+                            Export ACM-XML
+                        </a>
+                    </li>
+                                    <li>
+                        <a class="dropdown-item" href="https://drops.dagstuhl.de/entities/document/10.4230/OASIcs.LDK.2021.22/metadata/doaj-xml">
+                            Export DOAJ-XML
+                        </a>
+                    </li>
+                                    <li>
+                        <a class="dropdown-item" href="https://drops.dagstuhl.de/entities/document/10.4230/OASIcs.LDK.2021.22/metadata/schema-org">
+                            Export Schema.org
+                        </a>
+                    </li>
+                                    <li>
+                        <a class="dropdown-item" href="https://drops.dagstuhl.de/entities/document/10.4230/OASIcs.LDK.2021.22/metadata/bibtex">
+                            Export BibTeX
+                        </a>
+                    </li>
+                            </ul>
+        </span>
+    </span>
+
+                    
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <hr>
+
+
+            <h1>Towards Learning Terminological Concept Systems from Multilingual Natural Language Text</h1>
+    
+    <h3 class="mt-2 authors">
+                    Authors
+        
+                    <a href="#author-details" style="font-size: 0.8em; padding-right: 1em"><i class="bi bi-info-circle"></i></a>
+                            <span class="author">
+                    <a href="https://drops.dagstuhl.de/search/documents?author=Wachowiak, Lennart"
+                       class="name">Lennart Wachowiak</a><!---->,                </span>
+                            <span class="author">
+                    <a href="https://drops.dagstuhl.de/search/documents?author=Lang, Christian"
+                       class="name">Christian Lang</a><!---->,                </span>
+                            <span class="author">
+                    <a href="https://drops.dagstuhl.de/search/documents?author=Heinisch, Barbara"
+                       class="name">Barbara Heinisch</a><!---->,                </span>
+                            <span class="author">
+                    <a href="https://drops.dagstuhl.de/search/documents?author=Gromann, Dagmar"
+                       class="name">Dagmar Gromann</a><!---->                </span>
+                    
+            </h3>
+
+    <hr>
+
+    <ul class="mt-4">
+        
+        <li>
+        
+            <span style="margin-right: 10px; ">Part of:</span>
+            <span style="white-space: nowrap">
+                <i class="bi bi-book-half"></i>
+                Volume:
+            </span>
+                <a href="https://drops.dagstuhl.de/entities/volume/OASIcs-volume-93">3rd Conference on Language, Data and Knowledge (LDK 2021) </a>
+            <br> 
+        
+            <span style="margin-right: 10px; visibility: hidden;">Part of:</span>
+            <span style="white-space: nowrap">
+                <i class="bi bi-journals"></i>
+                Series:
+            </span>
+                <a href="https://drops.dagstuhl.de/entities/series/OASIcs">Open Access Series in Informatics (OASIcs)</a>
+            <br> 
+        
+            <span style="margin-right: 10px; visibility: hidden;">Part of:</span>
+            <span style="white-space: nowrap">
+                <i class="bi bi-people"></i>
+                Conference:
+            </span>
+                <a href="https://drops.dagstuhl.de/entities/conference/LDK">Conference on Language, Data and Knowledge (LDK)</a>
+            
+                </li>
+                    <li class="mt-2">License: &nbsp; <a href="https://creativecommons.org/licenses/by/4.0/legalcode">
+
+                                <img class="license-logo" src="https://drops.dagstuhl.de/images/cc-by.png" alt="CC-BY Logo">
+                
+    Creative Commons Attribution 4.0 International license
+</a>
+</li>
+                <li>Publication Date: 2021-08-30
+                </li>
+    </ul>
+
+    <hr>
+
+</section>
+
+                    <a class="fixed-pdf-button" href="https://drops.dagstuhl.de/storage/01oasics/oasics-vol093-ldk2021/OASIcs.LDK.2021.22/OASIcs.LDK.2021.22.pdf" title="View as PDF">
+                <i class="bi bi-file-earmark-pdf-fill" style="color:red; background: #fff; padding-top: .05em; border-radius: .125em"></i><span class="pdf">PDF</span>
+            </a>
+                
+        <div class="row mt-2">
+
+            <div class="col-lg-4 mt-2">
+
+                <section class="metadata files">
+
+                    <h2>File</h2>
+        
+            <section class="metadata thumbnail">
+
+        <a href="https://drops.dagstuhl.de/storage/01oasics/oasics-vol093-ldk2021/OASIcs.LDK.2021.22/OASIcs.LDK.2021.22.pdf" title="View PDF"><img src="https://drops.dagstuhl.de/storage/01oasics/oasics-vol093-ldk2021/thumbnails/OASIcs.LDK.2021.22/OASIcs.LDK.2021.22.png"
+             alt="Thumbnail PDF"></a>
+
+    </section>
+
+        <div class="content mt-4">
+                            <div class="mt-2">
+                    <a href="https://drops.dagstuhl.de/storage/01oasics/oasics-vol093-ldk2021/OASIcs.LDK.2021.22/OASIcs.LDK.2021.22.pdf" title="View as PDF">
+                                                    <span class="badge" style="background-color: #444; width: 300px; transform: translateY(-2px); font-size: unset;">
+                                <i class="bi bi-file-earmark-pdf-fill" style="color:red; background-color: #fff; border-radius: 2px; padding-top: 1px"></i> PDF
+                            </span>
+                                                <div class="mt-2">OASIcs.LDK.2021.22.pdf</div>
+                    </a>
+
+                    <ul>
+                                                    <li>Filesize: 1.59 MB</li>
+                        
+                                                    <li>18 pages</li>
+                        
+                    </ul>
+                </div>
+                    </div>
+
+    </section>
+                <section class="metadata identifiers mt-3">
+
+    <h2>Document Identifiers</h2>
+
+    <div class="content">
+
+        <ul>
+            <li><b>DOI:</b> <a href="https://doi.org/10.4230/OASIcs.LDK.2021.22">10.4230/OASIcs.LDK.2021.22</a></li>
+            <li><b>URN:</b> <a href="https://nbn-resolving.org/urn:nbn:de:0030-drops-145586">urn:nbn:de:0030-drops-145586</a></li>
+        </ul>
+
+    </div>
+
+</section>
+                                <section class="metadata subject-classifications mt-3">
+
+        <h2>Subject Classification</h2>
+
+        
+            <div class="acm-subject-classifications">
+                <h5>ACM Subject Classification</h5>
+                <div class="content">
+                    <ul>
+                                            <li>Computing methodologies → Information extraction</li>
+                                            <li>Computing methodologies → Neural networks</li>
+                                            <li>Computing methodologies → Language resources</li>
+                                        </ul>
+                </div>
+            </div>
+
+        
+        
+            <div class="keywords ">
+                <h5>Keywords</h5>
+                <div class="content">
+                    <ul class="list-style-comma">
+                                                    <li>Terminologies</li>
+                                                    <li>Neural Language Models</li>
+                                                    <li>Multilingual Information Extraction</li>
+                                            </ul>
+                </div>
+            </div>
+
+        
+            </section>
+
+                <section class="metadata metrics mt-3">
+
+    <h2>Metrics</h2>
+
+    <div class="content">
+        <ul>
+            <li>
+                <a href="#" class="btn-statistics" data-entity="document/10.4230/OASIcs.LDK.2021.22" data-title="Towards Learning Terminological Concept Systems from Multilingual Natural Language Text">
+    <i class="bi bi-graph-up"></i> Access Statistics
+</a>
+            </li>
+            <li>
+                Total Accesses (updated on a weekly basis)
+
+<div class="stats-total">
+            <div class="stats total-document-views">
+            <div class="circle">
+                <div class="number -hidden" data-number="0">0</div>
+            </div>
+            <div class="circle-overlay">
+                <div class="number -hidden" data-number="0" data-part="0"></div>
+            </div>
+            <div class="label">
+                Document<br>
+                <span class="icon pdf -hidden"><i class="bi bi-file-earmark-pdf-fill"></i></span>
+                <span class="icon html -hidden"><i class="bi bi-filetype-html"></i></span>
+            </div>
+        </div>
+        <div class="stats total-metadata-views">
+        <div class="circle">
+            <div class="number -hidden" data-number="0">0</div>
+        </div>
+        <div class="label">
+            Metadata<br>
+            <span class="icon metadata -hidden"><i class="bi bi-list-columns-reverse"></i></span>
+        </div>
+    </div>
+    
+</div>
+
+<!-- must be externally available for the series/journal case -->
+            </li>
+        </ul>
+
+    </div>
+
+</section>
+
+<div class="offcanvas offcanvas-bottom" tabindex="-1" id="statistics-offcanvas" aria-labelledby="statistics-offcanvas">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title"></h5>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body small"
+         data-context=""
+         data-access-types="abstract,pdf"
+    >
+        <div style="margin-top: 20vh" class="centered-loader"><div class="loader"></div></div>
+        <iframe class="-hidden"></iframe>
+    </div>
+</div>
+
+
+            </div>
+
+            <div class="col-lg-8 mt-2">
+
+                                <section class="metadata abstract">
+
+        <h2>Abstract</h2>
+
+                    <pre class="content" style="white-space: -moz-pre-wrap; white-space: -o-pre-wrap; word-wrap: break-word; white-space: pre-wrap;">Terminological Concept Systems (TCS) provide a means of organizing, structuring and representing domain-specific multilingual information and are important to ensure terminological consistency in many tasks, such as translation and cross-border communication. While several approaches to (semi-)automatic term extraction exist, learning their interrelations is vastly underexplored. We propose an automated method to extract terms and relations across natural languages and specialized domains. To this end, we adapt pretrained multilingual neural language models, which we evaluate on term extraction standard datasets with best performing results and a combination of relation extraction standard datasets with competitive results. Code and dataset are publicly available.</pre>
+        
+    </section>
+                <section class="metadata cite-as mt-3">
+
+    <h2>Cite As <span class="btn btn-primary btn-xs" style="float: right" data-bs-toggle="modal" data-bs-target="#bibtex-modal">Get BibTex</span></h2>
+
+    <div class="content">
+        Lennart Wachowiak, Christian Lang, Barbara Heinisch, and Dagmar Gromann. Towards Learning Terminological Concept Systems from Multilingual Natural Language Text. In 3rd Conference on Language, Data and Knowledge (LDK 2021). Open Access Series in Informatics (OASIcs), Volume 93, pp. 22:1-22:18, Schloss Dagstuhl – Leibniz-Zentrum für Informatik (2021)
+        <a href="https://doi.org/10.4230/OASIcs.LDK.2021.22">https://doi.org/10.4230/OASIcs.LDK.2021.22</a>
+    </div>
+
+    <div class="modal fade" id="bibtex-modal" tabindex="-1" aria-labelledby="bibtexModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="bibtexModalLabel">BibTex</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <pre class="bibtex">@InProceedings{wachowiak_et_al:OASIcs.LDK.2021.22,
+  author =	{Wachowiak, Lennart and Lang, Christian and Heinisch, Barbara and Gromann, Dagmar},
+  title =	{{Towards Learning Terminological Concept Systems from Multilingual Natural Language Text}},
+  booktitle =	{3rd Conference on Language, Data and Knowledge (LDK 2021)},
+  pages =	{22:1--22:18},
+  series =	{Open Access Series in Informatics (OASIcs)},
+  ISBN =	{978-3-95977-199-3},
+  ISSN =	{2190-6807},
+  year =	{2021},
+  volume =	{93},
+  editor =	{Gromann, Dagmar and S\&#039;{e}rasset, Gilles and Declerck, Thierry and McCrae, John P. and Gracia, Jorge and Bosque-Gil, Julia and Bobillo, Fernando and Heinisch, Barbara},
+  publisher =	{Schloss Dagstuhl -- Leibniz-Zentrum f{\&quot;u}r Informatik},
+  address =	{Dagstuhl, Germany},
+  URL =		{https://drops.dagstuhl.de/entities/document/10.4230/OASIcs.LDK.2021.22},
+  URN =		{urn:nbn:de:0030-drops-145586},
+  doi =		{10.4230/OASIcs.LDK.2021.22},
+  annote =	{Keywords: Terminologies, Neural Language Models, Multilingual Information Extraction}
+}</pre>
+                    <div style="overflow: hidden">
+                        <textarea style="position: absolute; top: -400vh" id="bibtex-input">@InProceedings{wachowiak_et_al:OASIcs.LDK.2021.22,
+  author =	{Wachowiak, Lennart and Lang, Christian and Heinisch, Barbara and Gromann, Dagmar},
+  title =	{{Towards Learning Terminological Concept Systems from Multilingual Natural Language Text}},
+  booktitle =	{3rd Conference on Language, Data and Knowledge (LDK 2021)},
+  pages =	{22:1--22:18},
+  series =	{Open Access Series in Informatics (OASIcs)},
+  ISBN =	{978-3-95977-199-3},
+  ISSN =	{2190-6807},
+  year =	{2021},
+  volume =	{93},
+  editor =	{Gromann, Dagmar and S\&#039;{e}rasset, Gilles and Declerck, Thierry and McCrae, John P. and Gracia, Jorge and Bosque-Gil, Julia and Bobillo, Fernando and Heinisch, Barbara},
+  publisher =	{Schloss Dagstuhl -- Leibniz-Zentrum f{\&quot;u}r Informatik},
+  address =	{Dagstuhl, Germany},
+  URL =		{https://drops.dagstuhl.de/entities/document/10.4230/OASIcs.LDK.2021.22},
+  URN =		{urn:nbn:de:0030-drops-145586},
+  doi =		{10.4230/OASIcs.LDK.2021.22},
+  annote =	{Keywords: Terminologies, Neural Language Models, Multilingual Information Extraction}
+}</textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary copy-to-clipboard" data-selector="bibtex-input"><i class="bi bi-clipboard"></i> Copy BibTex To Clipboard<span class="bi bi-check -hidden" style="padding-left: 1em; font-weight: bold"></span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>
+                <section class="metadata authors mt-3" id="author-details">
+
+        <h2>Author Details</h2>
+
+        
+            <div class="author person-details">
+
+    <div>
+                    <i class="bi bi-person-fill"></i>
+        
+        <span class="name"><b>Lennart Wachowiak</b></span>
+
+        
+                    <a href="https://transvienna.univie.ac.at/"><i class="bi bi-house"></i></a>
+        
+                    <a href="mailto:lennart.wachowiak@univie.ac.at"><i class="bi bi-envelope"></i></a>
+        
+                    <a href="https://drops.dagstuhl.de/search/documents?author=Wachowiak, Lennart"><small><i class="bi bi-search"></i></small></a>
+            </div>
+
+    
+    <ul>
+                                <li class="affiliation">Centre for Translation Studies, University of Vienna, Austria
+                            </li>
+                        </ul>
+
+</div>
+
+        
+            <div class="author person-details">
+
+    <div>
+                    <i class="bi bi-person-fill"></i>
+        
+        <span class="name"><b>Christian Lang</b></span>
+
+        
+                    <a href="https://transvienna.univie.ac.at/"><i class="bi bi-house"></i></a>
+        
+                    <a href="mailto:christian.lang@univie.ac.at"><i class="bi bi-envelope"></i></a>
+        
+                    <a href="https://drops.dagstuhl.de/search/documents?author=Lang, Christian"><small><i class="bi bi-search"></i></small></a>
+            </div>
+
+    
+    <ul>
+                                <li class="affiliation">Centre for Translation Studies, University of Vienna, Austria
+                            </li>
+                        </ul>
+
+</div>
+
+        
+            <div class="author person-details">
+
+    <div>
+                    <i class="bi bi-person-fill"></i>
+        
+        <span class="name"><b>Barbara Heinisch</b></span>
+
+        
+                    <a href="https://transvienna.univie.ac.at/"><i class="bi bi-house"></i></a>
+        
+                    <a href="mailto:barbara.heinisch@univie.ac.at"><i class="bi bi-envelope"></i></a>
+        
+                    <a href="https://drops.dagstuhl.de/search/documents?author=Heinisch, Barbara"><small><i class="bi bi-search"></i></small></a>
+            </div>
+
+    
+    <ul>
+                                <li class="affiliation">Centre for Translation Studies, University of Vienna, Austria
+                            </li>
+                        </ul>
+
+</div>
+
+        
+            <div class="author person-details">
+
+    <div>
+                    <i class="bi bi-person-fill"></i>
+        
+        <span class="name"><b>Dagmar Gromann</b></span>
+
+        
+                    <a href="https://transvienna.univie.ac.at/"><i class="bi bi-house"></i></a>
+        
+                    <a href="mailto:dagmar.gromann@univie.ac.at"><i class="bi bi-envelope"></i></a>
+        
+                    <a href="https://drops.dagstuhl.de/search/documents?author=Gromann, Dagmar"><small><i class="bi bi-search"></i></small></a>
+            </div>
+
+    
+    <ul>
+                                <li class="affiliation">Centre for Translation Studies, University of Vienna, Austria
+                            </li>
+                        </ul>
+
+</div>
+
+        
+        
+    </section>
+
+
+                <section class="metadata related-version mt-3">
+
+        <h2>Funding</h2>
+
+        <div class="content">
+
+                            This research has been conducted within the Text2TCS project (https://text2tcs.univie.ac.at/) funded by European Language Grid (ELG) H2020 No. 825627.
+            
+            <ul>
+
+                                                                                                                                                                
+            </ul>
+
+        </div>
+
+    </section>
+
+                                                <section class="metadata related-version mt-3">
+
+        <h2>Supplementary Materials</h2>
+
+        <div class="content">
+
+            <ul>
+
+                                    <li style="margin-bottom: 0.3em">
+                                                                            <span style="display: block;">
+                            <b>Software (Source Code and Dataset)</b>
+                                                                    <i class="bi bi-github"></i>
+                                                                                                    <a href="https://github.com/Text2TCS/Towards-Learning-Terminological-Concept-Systems">https://github.com/Text2TCS/Towards-Learning-Terminological-Concept-Systems</a>
+                                                            </span>
+                                                                                                    <span style="display: block;"> &nbsp; <i class="bi bi-arrow-return-right"></i> browse
+                                <a href="#" class="btn-software-heritage"
+       data-swh-id="swh:1:dir:fff3183f35a3dd332e1d4a2cdc54d21259b4fae2;origin=https://github.com/Text2TCS/Towards-Learning-Terminological-Concept-Systems;visit=swh:1:snp:02159fc2fad767f384b225b6a460cae034969061;anchor=swh:1:rev:0cad1148ef696e5e1e8bd55907ef41e02d303b66"
+       data-title="Software (Source Code and Dataset)"
+       data-url="https://github.com/Text2TCS/Towards-Learning-Terminological-Concept-Systems"
+           >
+        <img src="/images/software-heritage-logo-title.512px.png" style="height: 30px" alt="Software Heritage Logo"> <i class="bi bi-archive"></i> archived version
+    </a>
+
+                            </span>
+                                            </li>
+                
+            </ul>
+
+        </div>
+
+    </section>
+
+    <div class="offcanvas offcanvas-bottom" tabindex="-1" id="software-heritage-offcanvas" aria-labelledby="software-heritage-offcanvas">
+    <div class="offcanvas-header">
+        <h2 class="offcanvas-title" style="font-weight: bold"></h2>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="small offcanvas-subtitle"></div>
+    <div class="offcanvas-body small">
+        <div style="margin-top: 20vh" class="centered-loader"><div class="loader"></div></div>
+        <iframe class="-hidden"></iframe>
+    </div>
+</div>
+
+
+                <section class="metadata references mt-3">
+
+        <h2>References</h2>
+
+        <div class="content">
+
+            <ol>
+
+                
+                    <li id="bib.bib1">
+                        <span>
+                                                            ISO 1087:2019. Terminology work and terminology science - Vocabulary. Standard, International Organization for Standardization, Geneva, CH, 2019.
+                                <a href="https://scholar.google.com/scholar?hl=en&q=ISO 1087:2019. Terminology work and terminology science - Vocabulary. Standard, International Organization for Standardization, Geneva, CH, 2019." target="_blank" title="Google Scholar"><img style="opacity: 0.5" src="https://drops.dagstuhl.de/images/google-scholar.dark.16x16.png" alt="Google Scholar"></a>
+                                                                                                            </span>
+                    </li>
+
+                
+                    <li id="bib.bib2">
+                        <span>
+                                                            ISO 30042:2019. Management of terminology resources - TermBase eXchange (TBX). Standard, International Organization for Standardization, Geneva, CH, 2019.
+                                <a href="https://scholar.google.com/scholar?hl=en&q=ISO 30042:2019. Management of terminology resources - TermBase eXchange (TBX). Standard, International Organization for Standardization, Geneva, CH, 2019." target="_blank" title="Google Scholar"><img style="opacity: 0.5" src="https://drops.dagstuhl.de/images/google-scholar.dark.16x16.png" alt="Google Scholar"></a>
+                                                                                                            </span>
+                    </li>
+
+                
+                    <li id="bib.bib3">
+                        <span>
+                                                            ISO 704:2009. Terminology work - Principles and methods. Standard, International Organization for Standardization, Geneva, CH, 2009.
+                                <a href="https://scholar.google.com/scholar?hl=en&q=ISO 704:2009. Terminology work - Principles and methods. Standard, International Organization for Standardization, Geneva, CH, 2009." target="_blank" title="Google Scholar"><img style="opacity: 0.5" src="https://drops.dagstuhl.de/images/google-scholar.dark.16x16.png" alt="Google Scholar"></a>
+                                                                                                            </span>
+                    </li>
+
+                
+                    <li id="bib.bib4">
+                        <span>
+                                                            Nikita Astrakhantsev. ATR4S: toolkit with state-of-the-art automatic terms recognition methods in scala. Language Resources and Evaluation, 52(3):853-872, 2018.
+                                <a href="https://scholar.google.com/scholar?hl=en&q=Nikita Astrakhantsev. ATR4S: toolkit with state-of-the-art automatic terms recognition methods in scala. Language Resources and Evaluation, 52(3):853-872, 2018." target="_blank" title="Google Scholar"><img style="opacity: 0.5" src="https://drops.dagstuhl.de/images/google-scholar.dark.16x16.png" alt="Google Scholar"></a>
+                                                                                                            </span>
+                    </li>
+
+                
+                    <li id="bib.bib5">
+                        <span>
+                                                            Nathalie Aussenac-Gilles, Sylvie Despres, and Sylvie Szulman. The terminae method and platform for ontology engineering from texts, 2008.
+                                <a href="https://scholar.google.com/scholar?hl=en&q=Nathalie Aussenac-Gilles, Sylvie Despres, and Sylvie Szulman. The terminae method and platform for ontology engineering from texts, 2008." target="_blank" title="Google Scholar"><img style="opacity: 0.5" src="https://drops.dagstuhl.de/images/google-scholar.dark.16x16.png" alt="Google Scholar"></a>
+                                                                                                            </span>
+                    </li>
+
+                
+                    <li id="bib.bib6">
+                        <span>
+                                                            Sasan Azimi, Hadi Veisi, and Reyhaneh Amouie. A method for automatic detection of acronyms in texts and building a dataset for acronym disambiguation. In 2019 5th Iranian Conference on Signal Processing and Intelligent Systems (ICSPIS), pages 1-4. IEEE, 2019. URL: <a href="https://doi.org/10.1109/ICSPIS48872.2019.9066084">https://doi.org/10.1109/ICSPIS48872.2019.9066084</a>.
+                                                                                                            </span>
+                    </li>
+
+                
+                    <li id="bib.bib7">
+                        <span>
+                                                            Matthias Bay, Daniel Bruneß, Miriam Herold, Christian Schulze, Michael Guckert, and Mirjam Minor. Term extraction from medical documents using word embeddings. In 4th IEEE Conference on Machine Learning and Natural Language Processing (MNLP 2020). IEEE Computer Society, 2020. URL: <a href="http://www.wi.cs.uni-frankfurt.de/webdav/publications/TLDIA_Paper_IEEE_CRC.pdf">http://www.wi.cs.uni-frankfurt.de/webdav/publications/TLDIA_Paper_IEEE_CRC.pdf</a>.
+                                                                                                            </span>
+                    </li>
+
+                
+                    <li id="bib.bib8">
+                        <span>
+                                                            Philipp Cimiano and Johanna Völker. text2onto. In International conference on application of natural language to information systems, pages 227-238. Springer, 2005.
+                                <a href="https://scholar.google.com/scholar?hl=en&q=Philipp Cimiano and Johanna Völker. text2onto. In International conference on application of natural language to information systems, pages 227-238. Springer, 2005." target="_blank" title="Google Scholar"><img style="opacity: 0.5" src="https://drops.dagstuhl.de/images/google-scholar.dark.16x16.png" alt="Google Scholar"></a>
+                                                                                                            </span>
+                    </li>
+
+                
+                    <li id="bib.bib9">
+                        <span>
+                                                            Alexis Conneau, Kartikay Khandelwal, Naman Goyal, Vishrav Chaudhary, Guillaume Wenzek, Francisco Guzmán, Edouard Grave, Myle Ott, Luke Zettlemoyer, and Veselin Stoyanov. Unsupervised cross-lingual representation learning at scale. In Dan Jurafsky, Joyce Chai, Natalie Schluter, and Joel Tetreault, editors, Proceedings of the 58th Annual Meeting of the Association for Computational Linguistics, pages 8440-8451, Online, July 2020. Association for Computational Linguistics. URL: <a href="https://doi.org/10.18653/v1/2020.acl-main.747">https://doi.org/10.18653/v1/2020.acl-main.747</a>.
+                                                                                                            </span>
+                    </li>
+
+                
+                    <li id="bib.bib10">
+                        <span>
+                                                            Jacob Devlin, Ming-Wei Chang, Kenton Lee, and Kristina Toutanova. BERT: Pre-training of deep bidirectional transformers for language understanding. In Jill Burstein, Christy Doran, and Thamar Solorio, editors, Proceedings of the 2019 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies, Volume 1 (Long and Short Papers), pages 4171-4186, Minneapolis, Minnesota, June 2019. Association for Computational Linguistics. URL: <a href="https://doi.org/10.18653/v1/N19-1423">https://doi.org/10.18653/v1/N19-1423</a>.
+                                                                                                            </span>
+                    </li>
+
+                
+                    <li id="bib.bib11">
+                        <span>
+                                                            Maria Pia di Buono, Philipp Cimiano, Mohammad Fazleh Elahi, and Frank Grimm. Terme-à-LLOD: Simplifying the conversion and hosting of terminological resources as linked data. In Maxim Ionov, John P. McCrae, Christian Chiarcos, Thierry Declerck, Julia Bosque-Gil, and Jorge Gracia, editors, Proceedings of the 7th Workshop on Linked Data in Linguistics (LDL-2020), pages 28-35, Marseille, France, May 2020. European Language Resources Association. URL: <a href="https://www.aclweb.org/anthology/2020.ldl-1.5">https://www.aclweb.org/anthology/2020.ldl-1.5</a>.
+                                                                                                            </span>
+                    </li>
+
+                
+                    <li id="bib.bib12">
+                        <span>
+                                                            Tsu-Jui Fu, Peng-Hsuan Li, and Wei-Yun Ma. GraphRel: Modeling text as relational graphs for joint entity and relation extraction. In Anna Korhonen, David Traum, and Lluís Màrquez, editors, Proceedings of the 57th Annual Meeting of the Association for Computational Linguistics, pages 1409-1418, Florence, Italy, July 2019. Association for Computational Linguistics. URL: <a href="https://doi.org/10.18653/v1/P19-1136">https://doi.org/10.18653/v1/P19-1136</a>.
+                                                                                                            </span>
+                    </li>
+
+                
+                    <li id="bib.bib13">
+                        <span>
+                                                            Emden R. Gansner and Stephen C. North. An open graph visualization system and its applications to software engineering. Software - Practice and Experience, 30(11):1203–1233, 2000.
+                                <a href="https://scholar.google.com/scholar?hl=en&q=Emden R. Gansner and Stephen C. North. An open graph visualization system and its applications to software engineering. Software - Practice and Experience, 30(11):1203–1233, 2000." target="_blank" title="Google Scholar"><img style="opacity: 0.5" src="https://drops.dagstuhl.de/images/google-scholar.dark.16x16.png" alt="Google Scholar"></a>
+                                                                                                            </span>
+                    </li>
+
+                
+                    <li id="bib.bib14">
+                        <span>
+                                                            Zhiqiang Geng, Yanhui Zhang, and Yongming Han. Joint entity and relation extraction model based on rich semantics. Neurocomputing, 429:132-140, 2021. URL: <a href="https://doi.org/10.1016/j.neucom.2020.12.037">https://doi.org/10.1016/j.neucom.2020.12.037</a>.
+                                                                                                            </span>
+                    </li>
+
+                
+                    <li id="bib.bib15">
+                        <span>
+                                                            Roxana Girju, Preslav Nakov, Vivi Nastase, Stan Szpakowicz, Peter Turney, and Deniz Yuret. SemEval-2007 task 04: Classification of semantic relations between nominals. In Eneko Agirre, Lluís Màrquez, and Richard Wicentowski, editors, Proceedings of the Fourth International Workshop on Semantic Evaluations (SemEval-2007), pages 13-18, Prague, Czech Republic, June 2007. Association for Computational Linguistics. URL: <a href="https://www.aclweb.org/anthology/S07-1003">https://www.aclweb.org/anthology/S07-1003</a>.
+                                                                                                            </span>
+                    </li>
+
+                
+                    <li id="bib.bib16">
+                        <span>
+                                                            Dagmar Gromann. A model and method to terminologize existing domain ontologies. In Terminology and Knowledge Engineering 2014, pages 10-p, 2014.
+                                <a href="https://scholar.google.com/scholar?hl=en&q=Dagmar Gromann. A model and method to terminologize existing domain ontologies. In Terminology and Knowledge Engineering 2014, pages 10-p, 2014." target="_blank" title="Google Scholar"><img style="opacity: 0.5" src="https://drops.dagstuhl.de/images/google-scholar.dark.16x16.png" alt="Google Scholar"></a>
+                                                                                                            </span>
+                    </li>
+
+                
+                    <li id="bib.bib17">
+                        <span>
+                                                            Zhijiang Guo, Yan Zhang, and Wei Lu. Attention guided graph convolutional networks for relation extraction. In Anna Korhonen, David Traum, and Lluís Màrquez, editors, Proceedings of the 57th Annual Meeting of the Association for Computational Linguistics, pages 241-251, Florence, Italy, July 2019. Association for Computational Linguistics. URL: <a href="https://doi.org/10.18653/v1/P19-1024">https://doi.org/10.18653/v1/P19-1024</a>.
+                                                                                                            </span>
+                    </li>
+
+                
+                    <li id="bib.bib18">
+                        <span>
+                                                            Anna Hätty, Dominik Schlechtweg, Michael Dorna, and Sabine Schulte im Walde. Predicting degrees of technicality in automatic terminology extraction. In Dan Jurafsky, Joyce Chai, Natalie Schluter, and Joel Tetreault, editors, Proceedings of the 58th Annual Meeting of the Association for Computational Linguistics, pages 2883-2889, Online, July 2020. Association for Computational Linguistics. URL: <a href="https://doi.org/10.18653/v1/2020.acl-main.258">https://doi.org/10.18653/v1/2020.acl-main.258</a>.
+                                                                                                            </span>
+                    </li>
+
+                
+                    <li id="bib.bib19">
+                        <span>
+                                                            Amir Hazem, Mérieme Bouhandi, Florian Boudin, and Beatrice Daille. TermEval 2020: TALN-LS2N system for automatic term extraction. In Béatrice Daille, Kyo Kageura, and Ayla Rigouts Terryn, editors, Proceedings of the 6th International Workshop on Computational Terminology, pages 95-100, Marseille, France, 2020. European Language Resources Association. URL: <a href="https://www.aclweb.org/anthology/2020.computerm-1.13">https://www.aclweb.org/anthology/2020.computerm-1.13</a>.
+                                                                                                            </span>
+                    </li>
+
+                
+                    <li id="bib.bib20">
+                        <span>
+                                                            Iris Hendrickx, Su Nam Kim, Zornitsa Kozareva, Preslav Nakov, Diarmuid Ó Séaghdha, Sebastian Padó, Marco Pennacchiotti, Lorenza Romano, and Stan Szpakowicz. SemEval-2010 task 8: Multi-way classification of semantic relations between pairs of nominals. In Katrin Erk and Carlo Strapparava, editors, Proceedings of the 5th International Workshop on Semantic Evaluation, pages 33-38, Uppsala, Sweden, July 2010. Association for Computational Linguistics. URL: <a href="https://www.aclweb.org/anthology/S10-1006">https://www.aclweb.org/anthology/S10-1006</a>.
+                                                                                                            </span>
+                    </li>
+
+                
+                    <li id="bib.bib21">
+                        <span>
+                                                            Matthew Honnibal, Ines Montani, Sofie Van Landeghem, and Adriane Boyd. spaCy: Industrial-strength Natural Language Processing in Python, 2020. URL: <a href="https://doi.org/10.5281/zenodo.1212303">https://doi.org/10.5281/zenodo.1212303</a>.
+                                                                                                            </span>
+                    </li>
+
+                
+                    <li id="bib.bib22">
+                        <span>
+                                                            Bin Ji, Jie Yu, Shasha Li, Jun Ma, Qingbo Wu, Yusong Tan, and Huijun Liu. Span-based joint entity and relation extraction with attention-based span-specific and contextual semantic representations. In Donia Scott, Nuria Bel, and Chengqing Zong, editors, Proceedings of the 28th International Conference on Computational Linguistics, pages 88-99, Barcelona, Spain (Online), December 2020. International Committee on Computational Linguistics. URL: <a href="https://doi.org/10.18653/v1/2020.coling-main.8">https://doi.org/10.18653/v1/2020.coling-main.8</a>.
+                                                                                                            </span>
+                    </li>
+
+                
+                    <li id="bib.bib23">
+                        <span>
+                                                            Ahlem Chérifa Khadir, Hassina Aliane, and Ahmed Guessoum. Ontology learning: Grand tour and challenges. Computer Science Review, 39, 2021. URL: <a href="https://doi.org/10.1016/j.cosrev.2020.100339">https://doi.org/10.1016/j.cosrev.2020.100339</a>.
+                                                                                                            </span>
+                    </li>
+
+                
+                    <li id="bib.bib24">
+                        <span>
+                                                            Javier Lacasta, Javier Nogueras-Iso, and Francisco Javier Zarazaga Soria. Terminological Ontologies: Design, Management and Practical Applications, volume 9. Springer Science &amp; Business Media, 2010.
+                                <a href="https://scholar.google.com/scholar?hl=en&q=Javier Lacasta, Javier Nogueras-Iso, and Francisco Javier Zarazaga Soria. Terminological Ontologies: Design, Management and Practical Applications, volume 9. Springer Science &amp; Business Media, 2010." target="_blank" title="Google Scholar"><img style="opacity: 0.5" src="https://drops.dagstuhl.de/images/google-scholar.dark.16x16.png" alt="Google Scholar"></a>
+                                                                                                            </span>
+                    </li>
+
+                
+                    <li id="bib.bib25">
+                        <span>
+                                                            Jiao Li, Yueping Sun, Robin Johnson, Daniela Sciaky, Chih-Hsuan Wei, Robert Leaman, Allan Peter Davis, Carolyn Mattingly, Thomas Wiegers, and Zhiyong lu. Biocreative v cdr task corpus: a resource for chemical disease relation extraction. Database, page baw068, 2016. URL: <a href="https://doi.org/10.1093/database/baw068">https://doi.org/10.1093/database/baw068</a>.
+                                                                                                            </span>
+                    </li>
+
+                
+                    <li id="bib.bib26">
+                        <span>
+                                                            Yinhan Liu, Myle Ott, Naman Goyal, Jingfei Du, Mandar Joshi, Danqi Chen, Omer Levy, Mike Lewis, Luke Zettlemoyer, and Veselin Stoyanov. Roberta: A robustly optimized BERT pretraining approach. CoRR, abs/1907.11692, 2019. URL: <a href="http://arxiv.org/abs/1907.11692">http://arxiv.org/abs/1907.11692</a>.
+                                                                                                            </span>
+                    </li>
+
+                
+                    <li id="bib.bib27">
+                        <span>
+                                                            Louis Martin, Benjamin Muller, Pedro Javier Ortiz Suárez, Yoann Dupont, Laurent Romary, Éric de la Clergerie, Djamé Seddah, and Benoît Sagot. CamemBERT: a tasty French language model. In Dan Jurafsky, Joyce Chai, Natalie Schluter, and Joel Tetreault, editors, Proceedings of the 58th Annual Meeting of the Association for Computational Linguistics, pages 7203-7219, Online, 2020. Association for Computational Linguistics. URL: <a href="https://doi.org/10.18653/v1/2020.acl-main.645">https://doi.org/10.18653/v1/2020.acl-main.645</a>.
+                                                                                                            </span>
+                    </li>
+
+                
+                    <li id="bib.bib28">
+                        <span>
+                                                            Roberto Navigli, Paola Velardi, and Juana Maria Ruiz-Martínez. An annotated dataset for extracting definitions and hypernyms from the web. In Nicoletta Calzolari, Khalid Choukri, Bente Maegaard, Joseph Mariani, Jan Odijk, Stelios Piperidis, Mike Rosner, and Daniel Tapias, editors, Proceedings of the Seventh International Conference on Language Resources and Evaluation (LREC'10), Valletta, Malta, May 2010. European Language Resources Association (ELRA). URL: <a href="http://www.lrec-conf.org/proceedings/lrec2010/pdf/20_Paper.pdf">http://www.lrec-conf.org/proceedings/lrec2010/pdf/20_Paper.pdf</a>.
+                                                                                                            </span>
+                    </li>
+
+                
+                    <li id="bib.bib29">
+                        <span>
+                                                            Tapas Nayak and Hwee Tou Ng. Effective modeling of encoder-decoder architecture for joint entity and relation extraction. In The Thirty-Fourth AAAI Conference on Artificial Intelligence, AAAI 2020, The Thirty-Second Innovative Applications of Artificial Intelligence Conference, IAAI 2020, The Tenth AAAI Symposium on Educational Advances in Artificial Intelligence, EAAI 2020, New York, NY, USA, February 7-12, 2020, pages 8528-8535. AAAI Press, 2020. URL: <a href="https://aaai.org/ojs/index.php/AAAI/article/view/6374">https://aaai.org/ojs/index.php/AAAI/article/view/6374</a>.
+                                                                                                            </span>
+                    </li>
+
+                
+                    <li id="bib.bib30">
+                        <span>
+                                                            Anita Nuopponen. Tangled web of concept relations. concept relations for iso 1087-1 and iso 704. In Terminology and Knowledge Engineering 2014, Berlin, Germany, 2014. Association for Computational Linguistics. URL: <a href="https://hal.archives-ouvertes.fr/hal-01005882">https://hal.archives-ouvertes.fr/hal-01005882</a>.
+                                                                                                            </span>
+                    </li>
+
+                
+                    <li id="bib.bib31">
+                        <span>
+                                                            Giulio Petrucci, Marco Rospocher, and Chiara Ghidini. Expressive ontology learning as neural machine translation. Journal of Web Semantics, 52:66-82, 2018. URL: <a href="https://doi.org/10.1016/j.websem.2018.10.002">https://doi.org/10.1016/j.websem.2018.10.002</a>.
+                                                                                                            </span>
+                    </li>
+
+                
+                    <li id="bib.bib32">
+                        <span>
+                                                            Behrang QasemiZadeh and Anne-Kathrin Schumann. The ACL RD-TEC 2.0: A language resource for evaluating term extraction and entity recognition methods. In Proceedings of the Tenth International Conference on Language Resources and Evaluation (LREC'16), pages 1862-1868, Portorož, Slovenia, May 2016. European Language Resources Association (ELRA). URL: <a href="https://www.aclweb.org/anthology/L16-1294">https://www.aclweb.org/anthology/L16-1294</a>.
+                                                                                                            </span>
+                    </li>
+
+                
+                    <li id="bib.bib33">
+                        <span>
+                                                            Bo Qiao, Zhuoyang Zou, Yu Huang, Kui Fang, Xinghui Zhu, and Yiming Chen. A joint model for entity and relation extraction based on bert. Neural Computing and Applications, pages 1-11, 2021. URL: <a href="https://doi.org/10.1007/s00521-021-05815-z">https://doi.org/10.1007/s00521-021-05815-z</a>.
+                                                                                                            </span>
+                    </li>
+
+                
+                    <li id="bib.bib34">
+                        <span>
+                                                            Ayla Rigouts Terryn, Veronique Hoste, Patrick Drouin, and Els Lefever. TermEval 2020: Shared task on automatic term extraction using the annotated corpora for term extraction research (ACTER) dataset. In Béatrice Daille, Kyo Kageura, and Ayla Rigouts Terryn, editors, Proceedings of the 6th International Workshop on Computational Terminology, pages 85-94, Marseille, France, May 2020. European Language Resources Association. URL: <a href="https://www.aclweb.org/anthology/2020.computerm-1.12">https://www.aclweb.org/anthology/2020.computerm-1.12</a>.
+                                                                                                            </span>
+                    </li>
+
+                
+                    <li id="bib.bib35">
+                        <span>
+                                                            Christophe Roche, Marie Calberg-Challot, Luc Damas, and Philippe Rouard. Ontoterminology: A new paradigm for terminology. In International Conference on Knowledge Engineering and Ontology Development, pages 321-326, 2009.
+                                <a href="https://scholar.google.com/scholar?hl=en&q=Christophe Roche, Marie Calberg-Challot, Luc Damas, and Philippe Rouard. Ontoterminology: A new paradigm for terminology. In International Conference on Knowledge Engineering and Ontology Development, pages 321-326, 2009." target="_blank" title="Google Scholar"><img style="opacity: 0.5" src="https://drops.dagstuhl.de/images/google-scholar.dark.16x16.png" alt="Google Scholar"></a>
+                                                                                                            </span>
+                    </li>
+
+                
+                    <li id="bib.bib36">
+                        <span>
+                                                            Aivaras Rokas, Sigita Rackevičienė, and Andrius Utka. Automatic extraction of lithuanian cybersecurity terms using deep learning approaches. In Human Language Technologies-The Baltic Perspective, volume 328, pages 39-46. IOS Press, 2020. URL: <a href="https://doi.org/10.3233/FAIA200600">https://doi.org/10.3233/FAIA200600</a>.
+                                                                                                            </span>
+                    </li>
+
+                
+                    <li id="bib.bib37">
+                        <span>
+                                                            Antonio Šajatović, Maja Buljan, Jan Šnajder, and Bojana Dalbelo Bašić. Evaluating automatic term extraction methods on individual documents. In Agata Savary, Carla Parra Escartín, Francis Bond, Jelena Mitrović, and Verginica Barbu Mititelu, editors, Proceedings of the Joint Workshop on Multiword Expressions and WordNet (MWE-WN 2019), pages 149-154, Florence, Italy, 2019. Association for Computational Linguistics. URL: <a href="https://doi.org/10.18653/v1/W19-5118">https://doi.org/10.18653/v1/W19-5118</a>.
+                                                                                                            </span>
+                    </li>
+
+                
+                    <li id="bib.bib38">
+                        <span>
+                                                            Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N. Gomez, undefinedukasz Kaiser, and Illia Polosukhin. Attention is all you need. In Proceedings of the 31st International Conference on Neural Information Processing Systems, NIPS&#039;17, page 6000–6010, Red Hook, NY, USA, 2017. Curran Associates Inc.
+                                <a href="https://scholar.google.com/scholar?hl=en&q=Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N. Gomez, undefinedukasz Kaiser, and Illia Polosukhin. Attention is all you need. In Proceedings of the 31st International Conference on Neural Information Processing Systems, NIPS&#039;17, page 6000–6010, Red Hook, NY, USA, 2017. Curran Associates Inc." target="_blank" title="Google Scholar"><img style="opacity: 0.5" src="https://drops.dagstuhl.de/images/google-scholar.dark.16x16.png" alt="Google Scholar"></a>
+                                                                                                            </span>
+                    </li>
+
+                
+                    <li id="bib.bib39">
+                        <span>
+                                                            Lennart Wachowiak, Christian Lang, Barbara Heinisch, and Dagmar Gromann. CogALex-VI shared task: Transrelation - a robust multilingual language model for multilingual relation identification. In Rong Xiang, Emmanuele Chersoni, Luca Iacoponi, and Enrico Santus, editors, Proceedings of the Workshop on the Cognitive Aspects of the Lexicon, pages 59-64, Online, 2020. Association for Computational Linguistics. URL: <a href="https://www.aclweb.org/anthology/2020.cogalex-1.7">https://www.aclweb.org/anthology/2020.cogalex-1.7</a>.
+                                                                                                            </span>
+                    </li>
+
+                
+                    <li id="bib.bib40">
+                        <span>
+                                                            Thomas Wolf, Lysandre Debut, Victor Sanh, Julien Chaumond, Clement Delangue, Anthony Moi, Pierric Cistac, Tim Rault, Rémi Louf, Morgan Funtowicz, and Jamie Brew. Huggingface’s transformers: State-of-the-art natural language processing. CoRR, abs/1910.03771, 2019. URL: <a href="http://arxiv.org/abs/1910.03771">http://arxiv.org/abs/1910.03771</a>.
+                                                                                                            </span>
+                    </li>
+
+                
+                    <li id="bib.bib41">
+                        <span>
+                                                            Ikuya Yamada, Akari Asai, Hiroyuki Shindo, Hideaki Takeda, and Yuji Matsumoto. LUKE: Deep contextualized entity representations with entity-aware self-attention. In Bonnie Webber, Trevor Cohn, Yulan He, and Yang Liu, editors, Proceedings of the 2020 Conference on Empirical Methods in Natural Language Processing (EMNLP), pages 6442-6454, Online, November 2020. Association for Computational Linguistics. URL: <a href="https://doi.org/10.18653/v1/2020.emnlp-main.523">https://doi.org/10.18653/v1/2020.emnlp-main.523</a>.
+                                                                                                            </span>
+                    </li>
+
+                
+                    <li id="bib.bib42">
+                        <span>
+                                                            Yuan Yao, Deming Ye, Peng Li, Xu Han, Yankai Lin, Zhenghao Liu, Zhiyuan Liu, Lixin Huang, Jie Zhou, and Maosong Sun. DocRED: A large-scale document-level relation extraction dataset. In Anna Korhonen, David Traum, and Lluís Màrquez, editors, Proceedings of the 57th Annual Meeting of the Association for Computational Linguistics, pages 764-777, Florence, Italy, July 2019. Association for Computational Linguistics. URL: <a href="https://doi.org/10.18653/v1/P19-1074">https://doi.org/10.18653/v1/P19-1074</a>.
+                                                                                                            </span>
+                    </li>
+
+                
+                    <li id="bib.bib43">
+                        <span>
+                                                            Shuang Zeng, Runxin Xu, Baobao Chang, and Lei Li. Double graph based reasoning for document-level relation extraction. In Bonnie Webber, Trevor Cohn, Yulan He, and Yang Liu, editors, Proceedings of the 2020 Conference on Empirical Methods in Natural Language Processing (EMNLP), pages 1630-1640, Online, November 2020. Association for Computational Linguistics. URL: <a href="https://doi.org/10.18653/v1/2020.emnlp-main.127">https://doi.org/10.18653/v1/2020.emnlp-main.127</a>.
+                                                                                                            </span>
+                    </li>
+
+                
+                    <li id="bib.bib44">
+                        <span>
+                                                            Yuhao Zhang, Victor Zhong, Danqi Chen, Gabor Angeli, and Christopher D. Manning. Position-aware attention and supervised data improve slot filling. In Martha Palmer, Rebecca Hwa, and Sebastian Riedel, editors, Proceedings of the 2017 Conference on Empirical Methods in Natural Language Processing, pages 35-45, Copenhagen, Denmark, September 2017. Association for Computational Linguistics. URL: <a href="https://doi.org/10.18653/v1/D17-1004">https://doi.org/10.18653/v1/D17-1004</a>.
+                                                                                                            </span>
+                    </li>
+
+                
+                    <li id="bib.bib45">
+                        <span>
+                                                            Ziqi Zhang, Jose Iria, Christopher Brewster, and Fabio Ciravegna. A comparative evaluation of term recognition algorithms. In Nicoletta Calzolari, Khalid Choukri, Bente Maegaard, Joseph Mariani, Jan Odijk, Stelios Piperidis, and Daniel Tapias, editors, Proceedings of the Sixth International Conference on Language Resources and Evaluation (LREC'08), Marrakech, Morocco, May 2008. European Language Resources Association (ELRA). URL: <a href="http://www.lrec-conf.org/proceedings/lrec2008/pdf/538_paper.pdf">http://www.lrec-conf.org/proceedings/lrec2008/pdf/538_paper.pdf</a>.
+                                                                                                            </span>
+                    </li>
+
+                
+                    <li id="bib.bib46">
+                        <span>
+                                                            Suncong Zheng, Yuexing Hao, Dongyuan Lu, Hongyun Bao, Jiaming Xu, Hongwei Hao, and Bo Xu. Joint entity and relation extraction based on a hybrid neural network. Neurocomputing, 257:59-66, 2017. URL: <a href="https://doi.org/10.1016/j.neucom.2016.12.075">https://doi.org/10.1016/j.neucom.2016.12.075</a>.
+                                                                                                            </span>
+                    </li>
+
+                
+                    <li id="bib.bib47">
+                        <span>
+                                                            Wenxuan Zhou, Kevin Huang, Tengyu Ma, and Jing Huang. Document-level relation extraction with adaptive thresholding and localized context pooling. CoRR, abs/2010.11304, 2020. URL: <a href="http://arxiv.org/abs/2010.11304">http://arxiv.org/abs/2010.11304</a>.
+                                                                                                            </span>
+                    </li>
+
+                
+            </ol>
+
+        </div>
+
+    </section>
+
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    </div>
+
+    <span class="_feedback-button">
+    <i class="bi bi-patch-exclamation -hidden"></i>
+    <i class="bi bi-exclamation-circle"></i>
+    <span class="text"><a href="#">Any Issues?</a></span>
+</span>
+
+<div class="_feedback-form -hidden">
+    <span class="_feedback-close"><a href="#">X</a></span>
+    <p>Feedback on the Current Page</p>
+    <div>
+        <textarea class="form-control" name="_feedback"></textarea>
+        <input class="form-control" type="text" name="name" autocomplete="off" placeholder="Name (optional)" maxlength="60">
+        <input class="form-control" type="email" name="email" autocomplete="off" placeholder="Email (optional)" maxlength="60">
+        <div class="_captcha-check">
+            <button class="btn btn-sm btn-default btn-send">Send</button>
+            <div id="captcha" class="mt-2 -hidden">
+                <img src="" alt="CAPTCHA" style="width: 49%">
+                <input class="form-control" type="text" name="captcha" autocomplete="off" placeholder="Enter CAPTCHA" maxlength="60">
+                <input type="hidden" name="phrase">
+                <button class="btn btn-sm btn-default btn-submit">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="alert alert-success _feedback-success -hidden">
+    <span class="glyphicon glyphicon-ok"></span>
+    <h3>Thanks for your feedback!</h3>
+    <div>Feedback submitted to Dagstuhl Publishing</div>
+    <button class="btn btn-white _feedback-done">OK</button>
+</div>
+
+<div class="alert alert-danger _feedback-error -hidden">
+    <span class="glyphicon glyphicon-remove"></span>
+    <h3>Could not send message</h3>
+    <div>Please try again later or send an <a href="mailto:publishing@dagstuhl.de">E-mail</a></div>
+    <button class="btn btn-white _feedback-done">OK</button>
+</div>
+
+
+    <a class="scroll-up-button -hidden" href="#_top-of-page">
+    <i class="bi bi-arrow-up-circle"></i>
+</a>
+
+    <footer class="page-footer dark">
+
+    <div class="container">
+        <h5>About DROPS</h5>
+        <p>Schloss Dagstuhl - Leibniz Center for Informatics has been operating the Dagstuhl Research Online Publication Server (short: DROPS) since 2004. DROPS enables publication of the latest research findings in a fast, uncomplicated manner, in addition to providing unimpeded, open access to them. All the requisite metadata on each publication is administered in accordance with general guidelines pertaining to online publications (cf. Dublin Core). This enables the online publications to be authorized for citation and made accessible to a wide readership on a permanent basis. Access is free of charge for readers following the open access idea which fosters unimpeded access to scientific publications. </p>
+        <ul style="margin-top: -0.5em">
+            <li><a href="https://drops.dagstuhl.de/docs/about">More about DROPS</a></li>
+        </ul>
+    </div>
+
+    <div class="container">
+
+        <div class="row">
+
+            <div class="col-lg-6">
+
+                <h5>Instructions for Authors</h5>
+
+                <div class="row">
+
+                    <div class="col-sm-6">
+
+                        <b>Dagstuhl Series</b><br>
+                        <ul>
+                                                                                                <li><a href="https://submission.dagstuhl.de/series/details/lipics#author">LIPIcs</a></li>
+                                                                                                                                <li><a href="https://submission.dagstuhl.de/series/details/oasics#author">OASIcs</a></li>
+                                                                                                                                <li><a href="https://submission.dagstuhl.de/series/details/dfu#author">Dagstuhl Follow-Ups</a></li>
+                                                                                                                                                </ul>
+
+                    </div>
+                                        <div class="col-sm-6">
+                        <b>Dagstuhl Journals</b><br>
+                        <ul>
+                                                                <li><a href="https://submission.dagstuhl.de/series/details/darts#author">DARTS – Dagstuhl Artifacts Series</a></li>
+                                                                <li><a href="https://submission.dagstuhl.de/series/details/dagrep#author">Dagstuhl Reports</a></li>
+                                                                <li><a href="https://submission.dagstuhl.de/series/details/dagman#author">Dagstuhl Manifestos</a></li>
+                                                                <li><a href="https://submission.dagstuhl.de/series/details/lites#author">LITES</a></li>
+                                                                <li><a href="https://submission.dagstuhl.de/series/details/tgdk#author">TGDK – Transactions on Graph Data and Knowledge</a></li>
+                                                    </ul>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-6">
+
+                <h5>Instructions for Editors</h5>
+
+                <div class="row">
+
+                    <div class="col-sm-6">
+
+                        <b>Dagstuhl Series</b><br>
+                        <ul>
+                                                                                                <li><a href="https://submission.dagstuhl.de/series/details/lipics#editor">LIPIcs</a></li>
+                                                                                                                                <li><a href="https://submission.dagstuhl.de/series/details/oasics#editor">OASIcs</a></li>
+                                                                                                                                <li><a href="https://submission.dagstuhl.de/series/details/dfu#editor">Dagstuhl Follow-Ups</a></li>
+                                                                                                                                                </ul>
+
+                    </div>
+
+                    <div class="col-sm-6">
+                        <b>Dagstuhl Journals</b><br>
+                        <ul>
+                                                            <li><a href="https://submission.dagstuhl.de/series/details/darts#editor">DARTS – Dagstuhl Artifacts Series</a></li>
+                                                            <li><a href="https://submission.dagstuhl.de/series/details/dagrep#editor">Dagstuhl Reports</a></li>
+                                                            <li><a href="https://submission.dagstuhl.de/series/details/dagman#editor">Dagstuhl Manifestos</a></li>
+                                                            <li><a href="https://submission.dagstuhl.de/series/details/lites#editor">LITES</a></li>
+                                                            <li><a href="https://submission.dagstuhl.de/series/details/tgdk#editor">TGDK – Transactions on Graph Data and Knowledge</a></li>
+                                                    </ul>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</footer>
+
+<div class="copyright">
+
+    &copy; 2023-2026 <a href="https://www.dagstuhl.de">Schloss Dagstuhl – LZI GmbH</a> <a href="https://www.dagstuhl.de">Schloss Dagstuhl – LZI GmbH</a>
+    <a href="https://drops.dagstuhl.de/docs/about">About&nbsp;DROPS</a>
+
+    <a href="https://drops.dagstuhl.de/docs/imprint">Imprint</a>
+
+    <a href="https://drops.dagstuhl.de/docs/privacy">Privacy</a>
+
+    <a href="https://www.dagstuhl.de/en/publishing/team">Contact</a>
+
+</div>
+
+    <script type="text/javascript" src="https://drops.dagstuhl.de/js/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript" src="https://drops.dagstuhl.de/js/app.js?drops-core-2026-05-13"></script>
+    <script type="text/javascript" src="https://drops.dagstuhl.de/js/popper.min.js"></script>
+
+        <script type="text/javascript" src="https://drops.dagstuhl.de/js/circle-progress.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            const view = {
+                statsServer: 'https://drops-stats.dagstuhl.de',
+
+                animationStarted: false,
+
+                isScrolledIntoView: function (elem) {
+                    const rect = elem.getBoundingClientRect();
+                    const elemTop = rect.top;
+                    //const elemBottom = rect.bottom;
+                    // const elemHeight = rect.height;
+
+                    return (elemTop >= 0) && (elemTop <= window.innerHeight);
+                },
+
+                progressCircle: function ($el) {
+                    $('.circle .number').removeClass('-hidden');
+
+                    $el.find('.circle').circleProgress({
+                        value: 1,
+                        size: 80,
+                        fill: { color: '#555' },
+                        animation: { duration: 1200 }
+                    });
+
+                    const $overlay = $el.find('.circle-overlay');
+                    const part = $overlay.find('.number').attr('data-part');
+                    setTimeout(function() {
+                        $overlay.circleProgress({
+                            value: part,
+                            size: 80,
+                            fill: { color: '#ffc107' },
+                            animation: { duration: 1200 }
+                        });
+
+                    }.bind(this), 500);
+                },
+
+                countUp: function($el) {
+                    $el.find('.number').each(function() {
+                        const $this = $(this);
+                        const number = parseInt($this.attr('data-number'));
+
+                        let suffix = '';
+                        if (number > 90000) {
+                            $this.text(Math.ceil(number/1000)+' k');
+                            suffix = ' k';
+                        }
+                        else if (number > 90000000) {
+                            $this.text(Math.ceil(number/1000000)+' m');
+                            suffix = ' m';
+                        }
+                        else {
+                            $this.text(Math.ceil(number))
+                        }
+
+                        $({ Counter: 0 }).animate({
+                            Counter: $this.text().replace(suffix, '').replace(',', '')
+                        }, {
+                            duration: 1000,
+                            easing: 'swing',
+                            step: function() {
+                                $this.text(Math.ceil(this.Counter).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + suffix);
+                            }
+                        });
+                    });
+                },
+
+                checkVisibility: function() {
+                    const $container = $('.stats-total');
+
+                    if (view.isScrolledIntoView($container[0])) {
+
+                        if (!view.animationStarted) {
+                            view.animationStarted = true;
+
+                            view.progressCircle($container);
+
+                            setTimeout(function() { view.countUp($container) }, 200);
+                        }
+                    }
+                },
+
+                setIframeAccessTypes: function (accessTypes) {
+                    $('#statistics-offcanvas').find('[data-access-types]').attr('data-access-types', accessTypes.join(','));
+                },
+
+                initialize: function() {
+
+                    $.ajax({
+                        type: 'get',
+                        url: view.statsServer + '/api/external/drops2/document/10.4230/OASIcs.LDK.2021.22/-/stats',
+                        success: function (result) {
+                            const total = result.total.accessTypes;
+                            const totalDocClicks = total.pdf.clicks + total.html.clicks;
+                            const accessTypes = [ 'abstract' ];
+
+                                                            const $totalDocViews = $('.total-document-views');
+                                accessTypes.push('pdf');
+
+                                $totalDocViews.find('.circle .number').attr('data-number', totalDocClicks);
+                                $totalDocViews.find('.circle-overlay .number').attr('data-number', total.html.clicks).attr('data-part', total.html.clicks / (totalDocClicks + 0.1));
+
+                                let pdfTitle = total.pdf.clicks + ' PDF-Document Views';
+                                let htmlTitle = '';
+
+                                $totalDocViews.find('.icon.pdf').removeClass('-hidden').attr('title', pdfTitle);
+
+                                if (total.html.clicks > 0) {
+                                    htmlTitle = total.html.clicks + ' HTML-Document Views';
+                                    $totalDocViews.find('.icon.html').removeClass('-hidden').attr('title', htmlTitle);
+                                    htmlTitle = ', ' + htmlTitle;
+                                    accessTypes.push('html');
+                                }
+
+                                $totalDocViews.attr('title',pdfTitle + htmlTitle);
+                            
+                            
+                            const $totalMetaViews = $('.total-metadata-views');
+
+                            $totalMetaViews.find('.number').attr('data-number', total.abstract.clicks);
+                            $totalMetaViews.find('.icon.metadata').removeClass('-hidden').attr('title', total.abstract.clicks + ' Metadata Views');
+
+                            $totalMetaViews.attr('title', total.abstract.clicks + ' Metadata Views');
+                            window.addEventListener('scroll', view.checkVisibility);
+                            view.checkVisibility();
+                            view.setIframeAccessTypes(accessTypes);
+                        },
+                        error: function () {
+                            $('.total-downloads .number').text(0);
+                            $('.total-metadata-views .number').text(0);
+
+                            window.addEventListener('scroll', view.checkVisibility);
+                            view.checkVisibility();
+                        }
+                    });
+                }
+            };
+
+            view.initialize();
+        });
+    </script>
+
+    <script type="text/javascript">
+
+        $(document).ready(function() {
+
+            const statistics = {
+
+                statsServer: 'https://drops-stats.dagstuhl.de',
+
+                globalStatsParameter: '?accessTypes={accessTypes}&periods=weekly,monthly,yearly',
+
+                showStatistics: function(e) {
+                    e.preventDefault();
+                    const $offCanvas = $('#statistics-offcanvas');
+                    const $iframe = $offCanvas.find('iframe');
+                    const $loader = $offCanvas.find('.centered-loader');
+
+                    $iframe.addClass('-hidden');
+                    $loader.removeClass('-hidden');
+
+                    $iframe[0].onload = function () {
+                        $iframe.removeClass('-hidden');
+                        $loader.addClass('-hidden');
+                    }.bind(this);
+
+
+                    const $target = $(e.currentTarget);
+                    const entityId = $target.attr('data-entity');
+                    const title = $target.attr('data-title');
+                    const accessTypes = $offCanvas.find('[data-access-types]').attr('data-access-types');
+                    let statsParameter = statistics.globalStatsParameter.replace('{accessTypes}', accessTypes);
+                    const embedUrl = statistics.statsServer + '/embed/external/drops2/' + entityId + statsParameter;
+
+                    let context = $offCanvas.find('.offcanvas-body').attr('data-context');
+
+                    if (context === title) {
+                        context = '';
+                    }
+
+                    if (context !== '') {
+                        context += '<br>';
+                    }
+
+                    $offCanvas.find('.offcanvas-title').html(context + '<h2 style="font-weight: bold">' + title + '</h2>');
+                    $offCanvas.offcanvas('show');
+                    $offCanvas.find('iframe').attr('src', embedUrl);
+
+                    return false;
+                },
+
+                initialize: function() {
+                    $('.btn-statistics').on('click', this.showStatistics);
+                }
+            };
+
+            statistics.initialize();
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('a.btn-software-heritage').click(function(e) {
+                const permanentId = $(this).data('permanent-id') ?? null;
+                const contentIndex = $(this).data('content-index') ?? null;
+                if(permanentId !== null && contentIndex !== null) {
+                    $.ajax({
+                        url: '/entities/' + permanentId + '/_investigation/content/' + contentIndex,
+                        type: 'get',
+                    });
+                }
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+
+        $(document).ready(function() {
+
+            const $offCanvas = $('#software-heritage-offcanvas');
+            const $offCanvasTitle = $offCanvas.find('.offcanvas-title');
+            const $offCanvasSubtitle = $offCanvas.find('.offcanvas-subtitle');
+            const $iframe = $offCanvas.find('iframe');
+            const $loader = $offCanvas.find('.centered-loader');
+
+            $iframe[0].onload = function () {
+                $iframe.removeClass('-hidden');
+                $loader.addClass('-hidden');
+            }.bind(this);
+
+            $('.btn-software-heritage').on('click', function(event) {
+                event.preventDefault();
+
+                const $target = $(event.currentTarget);
+                console.log($target);
+                const swhId = $target.data('swh-id');
+                const title = $target.data('title');
+                const url = $target.data('url');
+                const embedUrl = 'https://archive.softwareheritage.org/browse/embed/' + swhId;
+
+                $offCanvasTitle.text('Archived Version: ' + title);
+                $offCanvasSubtitle.html('(archived from <a href="' + url +'">'+url+'</a>)');
+
+                $iframe.addClass('-hidden');
+                $loader.removeClass('-hidden');
+                $iframe.attr('src', embedUrl);
+                $offCanvas.offcanvas('show');
+            });
+
+        });
+    </script>
+
+    <script type="text/javascript">
+
+    function _enableFeedback() {
+
+        const $feedbackButton = $('._feedback-button, .fixed-beta-button');
+        const $feedbackClose = $('._feedback-close');
+        const $feedbackForm = $('._feedback-form');
+        const $feedbackSend = $('._feedback-form .btn-send');
+        const $textarea = $feedbackForm.find('textarea');
+        const $captcha = $('#captcha');
+        const $captchaSend = $captcha.find('.btn-submit');
+
+        const $feedbackSuccess = $('._feedback-success');
+        const $feedbackError = $('._feedback-error');
+
+        const $feedbackDoneButton = $('._feedback-done');
+
+        const getCaptchaImage = function() {
+            $.ajax({
+                url: '/api/v1/feedback/captcha',
+                type: 'get',
+                success: function (result) {
+                    replaceCaptchaImage(result);
+                },
+                error: function () {
+                    $feedbackError.removeClass('-hidden');
+                }
+            });
+        }
+
+        const replaceCaptchaImage = function(result) {
+            $captcha.removeClass('-hidden');
+            $captcha.find('input[name="phrase"]').val(result.phrase);
+            $captcha.find('img').attr('src', result.image);
+            $captcha.find('input[name="captcha"]').val('');
+            $captcha.find('input[name="captcha"]').focus();
+            $feedbackSend.addClass('-hidden');
+        }
+
+        const getMessage = function() {
+            let message = $textarea.val();
+
+            if (message === undefined) {
+                message = '';
+            }
+
+            return message.trim();
+        }
+
+        $feedbackButton.addClass('_show');
+
+        $feedbackButton.on('click', function (e) {
+            e.preventDefault();
+            $feedbackButton.addClass('-hidden');
+            $feedbackForm.removeClass('-hidden');
+            $textarea.focus();
+            return false;
+        });
+
+        $feedbackClose.on('click', function (e) {
+            e.preventDefault();
+            $feedbackSuccess.addClass('-hidden');
+            $feedbackForm.addClass('-hidden');
+            $feedbackButton.removeClass('-hidden');
+            return false;
+        });
+
+        $feedbackDoneButton.on('click', function () {
+            $feedbackError.addClass('-hidden');
+            $feedbackSuccess.addClass('-hidden');
+            $feedbackForm.addClass('-hidden');
+            $feedbackButton.removeClass('-hidden');
+            $feedbackSend.removeClass('-hidden');
+        });
+
+        $feedbackSend.on('click', function () {
+            const message = getMessage();
+            if (message.length < 4) {
+                return;
+            }
+
+            getCaptchaImage();
+        });
+
+        $captchaSend.on('click', function () {
+            const message = getMessage();
+            if (message.length < 4) {
+                return;
+            }
+
+            $.ajax({
+                url: '/api/v1/feedback',
+                type: 'post',
+                data: {
+                    content: message,
+                    context: window.location.href,
+                    name: $('input[name="name"]').val(),
+                    email: $('input[name="email"]').val(),
+                    captcha: $('input[name="captcha"]').val(),
+                    phrase: $('input[name="phrase"]').val(),
+                },
+                success: function (result) {
+                    if (result.image !== undefined) {
+                        replaceCaptchaImage(result);
+                    }
+                    else {
+                        $textarea.val('');
+                        $feedbackButton.removeClass('-hidden');
+                        $captcha.addClass('-hidden');
+                        $feedbackSuccess.removeClass('-hidden');
+                    }
+                },
+                error: function () {
+                    $feedbackError.removeClass('-hidden');
+                    $captcha.addClass('-hidden');
+                }
+            });
+        });
+    }
+
+    let _defer_counter = 0;
+
+    function _defer(method) {
+        if (window.jQuery) {
+            method();
+        } else {
+            if (_defer_counter < 20) {
+                setTimeout(function () {
+                    _defer(method);
+                    console.log(_defer_counter);
+                    _defer_counter++;
+                }, 500);
+            }
+        }
+    }
+
+    setTimeout(function() {
+        _defer(_enableFeedback);
+    }, 1000);
+
+</script>
+
+    <script type="text/javascript">
+    $(document).ready(function() {
+        const app = {
+            maxScrollPos: window.innerWidth < 500
+                ? 100	// mobile
+                : 400,	// desktop
+
+            $el : {
+                navbarSearch: $('nav .navbar-search'),
+                fixedSearchButton: $('.fixed-search-button'),
+                copyToClipboard: $('.copy-to-clipboard')
+            },
+
+            methods: {
+                hideMenuOnScroll: function(scrollPos) {
+                    const $menu = $('nav.navbar.main');
+                    const $stickySearch = $('.search.sticky');
+                    const $banner = $('#_banner');
+                    const $fixedSearchButton = $('.fixed-search-button');
+
+                    if (scrollPos > app.maxScrollPos) {
+                        $menu.addClass('-hide');
+                        $banner.addClass('-hide');
+                        $stickySearch.addClass('-top');
+                        $fixedSearchButton.addClass('-show');
+                    }
+                    else {
+                        app.methods.showMenu(null, false);
+                    }
+                },
+
+                showMenu: function(e, focus) {
+                    const $menu = $('nav.navbar.main');
+                    const $stickySearch = $('.search.sticky');
+                    const $banner = $('#_banner');
+                    const $fixedSearchButton = $('.fixed-search-button');
+
+                    $menu.removeClass('-hide');
+                    $banner.removeClass('-hide');
+                    $stickySearch.removeClass('-top');
+                    $fixedSearchButton.removeClass('-show');
+
+                    if (focus !== false) {
+                        $('.navbar-search').find('input[name="term"]').focus();
+                    }
+                },
+
+                showUpLinkOnScroll: function(scrollPos) {
+                    const $upLink = $('.scroll-up-button');
+
+                    if (scrollPos > app.maxScrollPos) {
+                        $upLink.removeClass('-hidden');
+                    }
+                    else {
+                        $upLink.addClass('-hidden');
+                    }
+                },
+
+                scrollHandler: function() {
+                    const scrollPos = $(document).scrollTop();
+
+                    app.methods.hideMenuOnScroll(scrollPos);
+                    app.methods.showUpLinkOnScroll(scrollPos);
+                },
+
+                copyToClipboard: function(e) {
+                    e.preventDefault();
+                    const $current  = $(e.currentTarget); // console.log($current.attr('data-selector'));
+                    const element = $('#'+$current.attr('data-selector'))[0]; console.log(element);
+                    element.select();
+                    document.execCommand("copy");
+                    const $success = $current.find('.bi-check');
+                    $success.removeClass('-hidden');
+                    setTimeout(function() {
+                        $success.addClass('-hidden');
+                    }, 1000);
+                },
+
+                initTooltips: function() {
+                    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+                    const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                        return new bootstrap.Tooltip(tooltipTriggerEl)
+                    });
+                },
+
+                expandSearch: function() {
+                    app.$el.navbarSearch.addClass('expanded');
+                },
+
+                collapseSearch: function(e) {
+                    if (!$(e.currentTarget).is('button.btn-outline-success')) {
+                        app.$el.navbarSearch.removeClass('expanded');
+                    }
+                },
+
+                initDeepLinksTabs: function() {
+
+                    app.methods.initTabLinks();
+
+                    const innerAnchors =[];
+
+                    $('.tab-pane').find('[id]').each(function() {
+                        innerAnchors.push(this.getAttribute('id'));
+                    });
+
+                    const anchors = [];
+
+                    $('a[role="tab"]').each(function() {
+                        anchors.push($(this).attr('aria-controls'));
+                    });
+
+                    innerAnchors.forEach(function(anchor) {
+                        if ($('#'+anchor).length > 0) {
+                            anchors.push(anchor);
+                        }
+                    });
+
+                    if (anchors.length === 0) {
+                        return;
+                    }
+
+                    let selectedAnchor = window.location.hash.substring(1);
+                    if (anchors.indexOf(selectedAnchor) === -1) {
+                        $('#publications-tab').tab('show');
+                        window.scrollTo(0,0);
+                        return;
+                    }
+
+                    if (selectedAnchor !== 'publications') {
+
+                        const innerAnchorIndex = innerAnchors.indexOf(selectedAnchor);
+
+                        // anchor sits inside tab -> open the tab first, then scroll to anchor
+                        if (innerAnchorIndex > -1) {
+                            const $tab = $('#'+selectedAnchor).closest('.tab-pane');
+
+                            console.log($tab);
+
+                            try {
+                                $('#'+$tab.attr('id')+'-tab').tab('show');
+                            }
+                            catch (e) { }
+                            setTimeout(function () {
+                                $('#' + selectedAnchor)[0].scrollIntoView();
+                            }, 800);
+                        } else {
+                            try {
+                                $('#' + selectedAnchor + '-tab').tab('show');
+                            }
+                            catch (e) { }
+                            window.scrollTo(0, 0);
+                        }
+                    }
+                },
+
+                fixNavWidth: function() {
+                    $('[data-fix-width]').each(function() {
+                        let $el = $(this);
+                        $el.css('width', 'unset');
+                        $el.css('width', ($el[0].clientWidth+5)+'px');
+                    });
+                },
+
+                initTabLinks: function() {
+                    $('[data-tab-link]').on('click', function(e) {
+                        e.preventDefault();
+                        const $target = $(e.currentTarget);
+                        document.location.href = $target.attr('href');
+                        document.location.reload();
+                    });
+                },
+            },
+
+            initialize: function() {
+                $(window).on('scroll', app.methods.scrollHandler);
+                $(window).on('scroll-to-top', function() { window.scrollTo(0,0) });
+                $(window).on('resize', app.methods.fixNavWidth);
+
+                $(document).trigger('scroll'); // set correct status for scroll-related parts (navbar/back-to-top) on page reload
+
+                app.$el.copyToClipboard.on('click', app.methods.copyToClipboard);
+                app.$el.fixedSearchButton.on('click', app.methods.showMenu);
+                app.$el.navbarSearch.find('input').on('click', app.methods.expandSearch)
+                app.$el.navbarSearch.find('input').on('blur', app.methods.collapseSearch);
+
+                app.methods.initTooltips();
+                app.methods.fixNavWidth();
+                app.methods.initDeepLinksTabs();
+
+            }
+        };
+
+        app.initialize();
+    });
+</script>
+
+    </body>
+</html>

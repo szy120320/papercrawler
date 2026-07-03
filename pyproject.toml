@@ -1,0 +1,53 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "papercrawler"
+version = "1.0.0"
+description = "PaperCrawler: domain-aware academic paper searcher, classifier and downloader. Filters by user interest, auto-categorizes (experiment / theory / force-field / etc.), exports CSV, downloads OA full-text via MarkItDown."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+keywords = ["academic", "paper", "download", "research", "literature", "classification", "domain-filter"]
+authors = [{ name = "PaperCrawler contributors" }]
+
+dependencies = [
+    "typer[all]>=0.12",
+    "httpx[http2]>=0.27",
+    "aiofiles>=23.0",
+    "pydantic>=2.0",
+    "pydantic-settings>=2.0",
+    "sqlalchemy>=2.0",
+    "aiosqlite>=0.19",
+    "markitdown[all]>=0.1",
+    "rich>=13.0",
+    "loguru>=0.7",
+    "python-slugify>=8.0",
+    "tenacity>=8.0",
+    "anyio>=4.0",
+]
+
+[project.optional-dependencies]
+scihub = ["scidownl>=1.0"]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+    "pytest-httpx>=0.30",
+    "respx>=0.21",
+    "coverage>=7.0",
+]
+
+[project.scripts]
+papercrawler = "papercrawler.cli:app"
+
+[tool.hatch.build.targets.wheel]
+packages = ["papercrawler"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+
+[tool.coverage.run]
+source = ["papercrawler"]
+omit = ["tests/*"]

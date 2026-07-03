@@ -1,0 +1,26 @@
+[
+  {
+    "index": 1,
+    "title": "Reactions of Singly-Reduced Ethylene Carbonate in Lithium Battery Electrolytes: A Molecular Dynamics Simulation Study Using the ReaxFF",
+    "doi": "10.1021/jp210345b",
+    "year": 2012,
+    "access_status": "metadata_only",
+    "dir": "2012_dmitry_reactions_singly_reduced_ethylene_carbonate_jp210345b"
+  },
+  {
+    "index": 2,
+    "title": "ReaxFF Reactive Force Field Simulations on the Influence of Teflon on Electrolyte Decomposition during Li/SWCNT Anode Discharge in Lithium-Sulfur Batteries",
+    "doi": "10.1149/2.005408jes",
+    "year": 2014,
+    "access_status": "oa_pdf",
+    "dir": "2014_md_reaxff_reactive_force_field_simulations_2005408jes"
+  },
+  {
+    "index": 3,
+    "title": "Lithium-electrolyte solvation and reaction in the electrolyte of a lithium ion battery: A ReaxFF reactive force field study",
+    "doi": "10.1063/5.0003333",
+    "year": 2020,
+    "access_status": "oa_pdf",
+    "dir": "2020_hossain_lithium_electrolyte_solvation_reaction_electrolyte_50003333"
+  }
+]

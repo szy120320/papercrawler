@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+            <!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
+            <!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8" lang="en"> <![endif]-->
+            <!--[if IE 8]>    <html class="no-js lt-ie9" lang="en"> <![endif]-->
+            <!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+            <head><META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+<meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
+<meta content="width=device-width,initial-scale=1" name="viewport">
+<link rel="shortcut icon" href="https://cdn.libraries.mit.edu/files/branding/favicons/favicon.ico">
+<link rel="apple-touch-icon" href="https://cdn.libraries.mit.edu/files/branding/favicons/apple-touch-icon.png">
+<meta name="Generator" content="DSpace 6.3">
+<link type="text/css" rel="stylesheet" media="screen" href="/themes/Mirage2/../../themes/ReportingSuite/lib/statistics-style.css">
+<link href="/themes/Mirage2/styles/main.css" rel="stylesheet">
+<link type="application/opensearchdescription+xml" rel="search" href="https://dspace.mit.edu:443/open-search/description.xml" title="DSpace">
+<script>
+                //Clear default text of empty text areas on focus
+                function tFocus(element)
+                {
+                if (element.value == ''){element.value='';}
+                }
+                //Clear default text of empty text areas on submit
+                function tSubmit(form)
+                {
+                var defaultedElements = document.getElementsByTagName("textarea");
+                for (var i=0; i != defaultedElements.length; i++){
+                if (defaultedElements[i].value == ''){
+                defaultedElements[i].value='';}}
+                }
+                //Disable pressing 'enter' key to submit a form (otherwise pressing 'enter' causes a submission to start over)
+                function disableEnterKey(e)
+                {
+                var key;
+
+                if(window.event)
+                key = window.event.keyCode; //Internet Explorer
+                else
+                key = e.which; //Firefox and Netscape
+
+                if(key == 13) //if "Enter" pressed, then disable!
+                return false;
+                else
+                return true;
+                }
+            </script><!--[if lt IE 9]>
+                <script src="/themes/Mirage2/node_modules/html5shiv/dist/html5shiv.js"> </script>
+                <script src="/themes/Mirage2/node_modules/respond/dest/respond.min.js"> </script>
+                <![endif]--><script src="/themes/Mirage2/vendor/modernizr/modernizr.min.js"> </script>
+<title>Inorganic Solid-State Electrolytes for Lithium Batteries: Mechanisms and Properties Governing Ion Conduction</title>
+<link rel="schema.DCTERMS" href="http://purl.org/dc/terms/" />
+<link rel="schema.DC" href="http://purl.org/dc/elements/1.1/" />
+<meta name="DC.creator" content="Lux, Simon F." />
+<meta name="DC.creator" content="Paschos, Odysseas" />
+<meta name="DC.creator" content="Maglia, Filippo" />
+<meta name="DC.creator" content="Lupart, Saskia" />
+<meta name="DC.creator" content="Lamp, Peter" />
+<meta name="DC.creator" content="Bachman, Chris" />
+<meta name="DC.creator" content="Muy, Sokseiha" />
+<meta name="DC.creator" content="Grimaud, Alexis" />
+<meta name="DC.creator" content="Chang, Hao Hsun" />
+<meta name="DC.creator" content="Pour, Nir" />
+<meta name="DC.creator" content="Giordano, Livia" />
+<meta name="DC.creator" content="Shao-Horn, Yang" />
+<meta name="DCTERMS.dateAccepted" content="2017-06-02T15:09:19Z" scheme="DCTERMS.W3CDTF" />
+<meta name="DCTERMS.available" content="2017-06-02T15:09:19Z" scheme="DCTERMS.W3CDTF" />
+<meta name="DCTERMS.issued" content="2015-12" scheme="DCTERMS.W3CDTF" />
+<meta name="DC.identifier" content="0009-2665" />
+<meta name="DC.identifier" content="1520-6890" />
+<meta name="DC.identifier" content="http://hdl.handle.net/1721.1/109539" scheme="DCTERMS.URI" />
+<meta name="DCTERMS.abstract" content="This Review is focused on ion-transport mechanisms and fundamental properties of solid-state electrolytes to be used in electrochemical energy-storage systems. Properties of the migrating species significantly affecting diffusion, including the valency and ionic radius, are discussed. The natures of the ligand and metal composing the skeleton of the host framework are analyzed and shown to have large impacts on the performance of solid-state electrolytes. A comprehensive identification of the candidate migrating species and structures is carried out. Not only the bulk properties of the conductors are explored, but the concept of tuning the conductivity through interfacial effects—specifically controlling grain boundaries and strain at the interfaces—is introduced. High-frequency dielectric constants and frequencies of low-energy optical phonons are shown as examples of properties that correlate with activation energy across many classes of ionic conductors. Experimental studies and theoretical results are discussed in parallel to give a pathway for further improvement of solid-state electrolytes. Through this discussion, the present Review aims to provide insight into the physical parameters affecting the diffusion process, to allow for more efficient and target-oriented research on improving solid-state ion conductors." xml:lang="en_US" />
+<meta name="DC.description" content="National Science Foundation (U.S.) (Graduate Research Fellowship (1122374)" xml:lang="en_US" />
+<meta name="DC.description" content="Taiwan. Ministry of Science and Technology (102-2917-I-564-006-A1)" xml:lang="en_US" />
+<meta name="DC.description" content="BMW Group" xml:lang="en_US" />
+<meta name="DC.description" content="Skoltech-MIT Center" xml:lang="en_US" />
+<meta name="DC.language" content="en_US" scheme="DCTERMS.RFC1766" />
+<meta name="DC.publisher" content="American Chemical Society (ACS)" xml:lang="en_US" />
+<meta name="DCTERMS.isVersionOf" content="http://dx.doi.org/10.1021/acs.chemrev.5b00563" xml:lang="en_US" />
+<meta name="DC.rights" content="Article is made available in accordance with the publisher's policy and may be subject to US copyright law. Please refer to the publisher's site for terms of use." xml:lang="en_US" />
+<meta name="DC.source" content="Prof. Shao-Horn via Angie Locknar" xml:lang="en_US" />
+<meta name="DC.title" content="Inorganic Solid-State Electrolytes for Lithium Batteries: Mechanisms and Properties Governing Ion Conduction" xml:lang="en_US" />
+<meta name="DCTERMS.alternative" content="Inorganic Solid-State Electrolytes for Lithium Batteries: Mechanisms and Properties Governing Ion Conduction" xml:lang="en_US" />
+<meta name="DC.type" content="Article" xml:lang="en_US" />
+<meta name="DCTERMS.bibliographicCitation" content="Bachman, John Christopher, Sokseiha Muy, Alexis Grimaud, Hao-Hsun Chang, Nir Pour, Simon F. Lux, Odysseas Paschos, et al. “Inorganic Solid-State Electrolytes for Lithium Batteries: Mechanisms and Properties Governing Ion Conduction.” Chemical Reviews 116, no. 1 (January 13, 2016): 140–162." xml:lang="en_US" />
+<meta name="DC.contributor" content="MIT Materials Research Laboratory" xml:lang="en_US" />
+<meta name="DC.contributor" content="Massachusetts Institute of Technology. Department of Materials Science and Engineering" xml:lang="en_US" />
+<meta name="DC.contributor" content="Massachusetts Institute of Technology. Department of Mechanical Engineering" xml:lang="en_US" />
+<meta name="DC.contributor" content="Massachusetts Institute of Technology. Research Laboratory of Electronics" xml:lang="en_US" />
+<meta name="DC.contributor" content="Shao-Horn, Yang" xml:lang="en_US" />
+<meta name="DC.contributor" content="Bachman, Chris" />
+<meta name="DC.contributor" content="Muy, Sokseiha" />
+<meta name="DC.contributor" content="Grimaud, Alexis" />
+<meta name="DC.contributor" content="Chang, Hao Hsun" />
+<meta name="DC.contributor" content="Pour, Nir" />
+<meta name="DC.contributor" content="Giordano, Livia" />
+<meta name="DC.contributor" content="Shao-Horn, Yang" />
+<meta name="DC.relation" content="Chemical Reviews" xml:lang="en_US" />
+<meta name="DC.type" content="http://purl.org/eprint/type/JournalArticle" xml:lang="en_US" />
+<meta name="DC.identifier" content="https://orcid.org/0000-0003-1992-0029" />
+<meta name="DC.identifier" content="https://orcid.org/0000-0001-6457-9187" />
+<meta name="DC.identifier" content="https://orcid.org/0000-0002-9966-205X" />
+<meta name="DC.identifier" content="https://orcid.org/0000-0002-2701-8265" />
+<meta name="DC.identifier" content="https://orcid.org/0000-0001-7840-6682" />
+<meta content="Article" name="citation_keywords">
+<meta content="Inorganic Solid-State Electrolytes for Lithium Batteries: Mechanisms and Properties Governing Ion Conduction" name="citation_title">
+<meta content="0009-2665" name="citation_issn">
+<meta content="American Chemical Society (ACS)" name="citation_publisher">
+<meta content="en_US" name="citation_language">
+<meta content="Bachman, John Christopher" name="citation_author">
+<meta content="Muy, Sokseiha" name="citation_author">
+<meta content="Grimaud, Alexis" name="citation_author">
+<meta content="Chang, Hao-Hsun" name="citation_author">
+<meta content="Pour, Nir" name="citation_author">
+<meta content="Lux, Simon F." name="citation_author">
+<meta content="Paschos, Odysseas" name="citation_author">
+<meta content="Maglia, Filippo" name="citation_author">
+<meta content="Lupart, Saskia" name="citation_author">
+<meta content="Lamp, Peter" name="citation_author">
+<meta content="Giordano, Livia" name="citation_author">
+<meta content="Shao-Horn, Yang" name="citation_author">
+<meta content="https://dspace.mit.edu/bitstream/1721.1/109539/4/A%20review%20of%20inorganic%20with%20SI.pdf" name="citation_pdf_url">
+<meta content="2015-12" name="citation_date">
+<meta content="https://dspace.mit.edu/handle/1721.1/109539" name="citation_abstract_html_url">
+</head><body>
+<div class="wrap-outer-header layout-band">
+<div class="wrap-header">
+<header role="banner" class="header-site header-slim">
+<div class="wrap-header-core">
+<h1 class="name-site group nav-logo">
+<a href="https://libraries.mit.edu/" class="logo-mit-lib"><img height="35" alt="MIT Libraries logo" src="https://cdn.libraries.mit.edu/files/branding/local/mitlib-wordmark.svg"></a><a href="/" class="platform-name">DSpace@MIT</a>
+</h1>
+</div>
+<div class="wrap-header-supp">
+<a href="https://www.mit.edu" class="link-logo-mit"><img height="35" alt="MIT" src="https://cdn.libraries.mit.edu/files/branding/local/mit_logo_std_rgb_white.svg"></a>
+</div>
+</header>
+</div>
+</div>
+<div class="trail-wrapper hidden-print">
+<div>
+<div>
+<div>
+<div class="breadcrumb dropdown visible-xs">
+<a data-toggle="dropdown" class="dropdown-toggle" role="button" href="#" id="trail-dropdown-toggle">View Item&nbsp;<b class="caret"></b></a>
+<ul aria-labelledby="trail-dropdown-toggle" role="menu" class="dropdown-menu">
+<li role="presentation">
+<a role="menuitem" href="/">DSpace@MIT Home</a>
+</li>
+<li role="presentation">
+<a role="menuitem" href="/handle/1721.1/49432">MIT Open Access Articles</a>
+</li>
+<li role="presentation">
+<a role="menuitem" href="/handle/1721.1/49433">MIT Open Access Articles</a>
+</li>
+<li role="presentation" class="disabled">
+<a href="#" role="menuitem">View Item</a>
+</li>
+</ul>
+</div>
+<ul class="wrap-breadcrumb breadcrumb hidden-xs">
+<li>
+<a href="/">DSpace@MIT Home</a>
+</li>
+<li>
+<a href="/handle/1721.1/49432">MIT Open Access Articles</a>
+</li>
+<li>
+<a href="/handle/1721.1/49433">MIT Open Access Articles</a>
+</li>
+<li class="active">View Item</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="hidden" id="no-js-warning-wrapper">
+<div id="no-js-warning">
+<div class="notice failure">JavaScript is disabled for your browser. Some features of this site may not work without it.</div>
+</div>
+</div>
+<div class="wrap-content" id="main-container">
+<div class="starter">
+<button type="button" class="navbar-toggle visible-xs visible-sm pull-right" data-toggle="offcanvas"><span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button>
+</div>
+<div class="row row-offcanvas row-offcanvas-right">
+<div class="horizontal-slider clearfix">
+<div class="col-xs-12 col-sm-12 col-md-9 main-content">
+<div>
+<div id="aspect_versioning_VersionNoticeTransformer_div_item-view" class="ds-static-div primary">
+<!-- External Metadata URL: cocoon://metadata/handle/1721.1/109539/mets.xml-->
+<div class="item-summary-view-metadata">
+<h2 class="page-header first-page-header">Inorganic Solid-State Electrolytes for Lithium Batteries: Mechanisms and Properties Governing Ion Conduction</h2>
+<div class="simple-item-view-authors item-page-field-wrapper table">
+<h5>Author(s)</h5>
+<span class=" ds-dc_contributor_author-authority "><span class="author-list-1">Lux, Simon F.</span></span><span class="author-spacer-list-2">;&nbsp;</span><span class=" ds-dc_contributor_author-authority "><span class="author-list-2">Paschos, Odysseas</span></span><span class="author-spacer-list-3">;&nbsp;</span><span class=" ds-dc_contributor_author-authority "><span class="author-list-3">Maglia, Filippo</span></span><span class="author-spacer-list-4">;&nbsp;</span><span class=" ds-dc_contributor_author-authority "><span class="author-list-4">Lupart, Saskia</span></span><span class="author-spacer-list-5">;&nbsp;</span><span class=" ds-dc_contributor_author-authority "><span class="author-list-5">Lamp, Peter</span></span><span class="author-spacer-list-6 hidden ">;&nbsp;</span><span class=" ds-dc_contributor_author-authority "><span class="author-list-6 hidden ">Bachman, Chris</span></span><span class="author-spacer-list-7 hidden ">;&nbsp;</span><span class=" ds-dc_contributor_author-authority "><span class="author-list-7 hidden ">Muy, Sokseiha</span></span><span class="author-spacer-list-8 hidden ">;&nbsp;</span><span class=" ds-dc_contributor_author-authority "><span class="author-list-8 hidden ">Grimaud, Alexis</span></span><span class="author-spacer-list-9 hidden ">;&nbsp;</span><span class=" ds-dc_contributor_author-authority "><span class="author-list-9 hidden ">Chang, Hao Hsun</span></span><span class="author-spacer-list-10 hidden ">;&nbsp;</span><span class=" ds-dc_contributor_author-authority "><span class="author-list-10 hidden ">Pour, Nir</span></span><span class="author-spacer-list-11 hidden ">;&nbsp;</span><span class=" ds-dc_contributor_author-authority "><span class="author-list-11 hidden ">Giordano, Livia</span></span><span class="author-spacer-list-12 hidden ">;&nbsp;</span><span class=" ds-dc_contributor_author-authority "><span class="author-list-12 hidden ">Shao-Horn, Yang</span></span><span id="item-view-authors-truncated">; ...</span><span>&nbsp;</span><span><a onClick="showAuthors(); return false;" href="#" id="item-view-show-all-authors-link">Show
+                                more
+                            </a><a class="hidden" onClick="hideAuthors(); return false;" href="#" id="item-view-hide-authors-link">Show less
+                            </a></span>
+</div>
+<div class="row">
+<div class="col-sm-4 smaller-font">
+<div class="row">
+<div class="col-xs-6 col-sm-12">
+<div class="thumbnail">
+<img alt="Thumbnail" class="img-thumbnail" src="/bitstream/handle/1721.1/109539/A%20review%20of%20inorganic%20with%20SI.pdf.jpg?sequence=16&isAllowed=y"></div>
+</div>
+<div class="col-xs-6 col-sm-12">
+<div class="item-page-field-wrapper table word-break">
+<div>
+<a class="btn btn-primary download-button" href="/bitstream/handle/1721.1/109539/A%20review%20of%20inorganic%20with%20SI.pdf?sequence=4&isAllowed=y">Download</a>A review of inorganic with SI.pdf (3.171Mb)</div>
+<div class="bitstream-license">
+<a href="#" class="license-key"><i class="glyphicon  glyphicon-list-alt" aria-hidden="true"></i> PUBLISHER_POLICY</a>
+<div class="hidden license-content"><!DOCTYPE html>
+<html>
+<body>
+
+<h1>Publisher Policy</h1>
+
+<p>Article is made available in accordance with the publisher's policy and may be subject to US copyright law. Please refer to the publisher's site for terms of use.</p>
+
+</body>
+</html></div>
+</div>
+</div>
+<div class="item-page-field-wrapper table word-break"></div>
+</div>
+</div>
+<div class="simple-item-view-alternative-title item-page-field-wrapper">
+<h5>Alternative title</h5>
+<div>Inorganic Solid-State Electrolytes for Lithium Batteries: Mechanisms and Properties Governing Ion Conduction</div>
+</div>
+<div class="simple-item-view-terms item-page-field-wrapper">
+<h5>Terms of use</h5>
+<div>
+<field mdschema="dc" language="en_US" element="rights">Article is made available in accordance with the publisher's policy and may be subject to US copyright law. Please refer to the publisher's site for terms of use.</field>
+</div>
+</div>
+<div class="simple-item-view-show-full item-page-field-wrapper table">
+<h5>Metadata</h5>
+<a href="/handle/1721.1/109539?show=full">Show full item record</a>
+</div>
+</div>
+<div class="col-sm-8">
+<div class="simple-item-view-description item-page-field-wrapper table">
+<h5>Abstract</h5>
+<div>This Review is focused on ion-transport mechanisms and fundamental properties of solid-state electrolytes to be used in electrochemical energy-storage systems. Properties of the migrating species significantly affecting diffusion, including the valency and ionic radius, are discussed. The natures of the ligand and metal composing the skeleton of the host framework are analyzed and shown to have large impacts on the performance of solid-state electrolytes. A comprehensive identification of the candidate migrating species and structures is carried out. Not only the bulk properties of the conductors are explored, but the concept of tuning the conductivity through interfacial effects&mdash;specifically controlling grain boundaries and strain at the interfaces&mdash;is introduced. High-frequency dielectric constants and frequencies of low-energy optical phonons are shown as examples of properties that correlate with activation energy across many classes of ionic conductors. Experimental studies and theoretical results are discussed in parallel to give a pathway for further improvement of solid-state electrolytes. Through this discussion, the present Review aims to provide insight into the physical parameters affecting the diffusion process, to allow for more efficient and target-oriented research on improving solid-state ion conductors.</div>
+</div>
+<div class="simple-item-view-date word-break item-page-field-wrapper table">
+<h5>Date issued</h5>2015-12</div>
+<div class="simple-item-view-uri item-page-field-wrapper table">
+<h5>URI</h5>
+<span><a href="http://hdl.handle.net/1721.1/109539">http://hdl.handle.net/1721.1/109539</a></span>
+</div>
+<div class="simple-item-view-department item-page-field-wrapper">
+<h5>Department</h5>
+<span>MIT Materials Research Laboratory<span class="spacer">;&nbsp;</span>Massachusetts Institute of Technology. Department of Materials Science and Engineering<span class="spacer">;&nbsp;</span>Massachusetts Institute of Technology. Department of Mechanical Engineering<span class="spacer">;&nbsp;</span>Massachusetts Institute of Technology. Research Laboratory of Electronics</span>
+</div>
+<div class="simple-item-view-journal item-page-field-wrapper">
+<h5>Journal</h5>
+<div>Chemical Reviews</div>
+</div>
+<div class="simple-item-view-journal item-page-field-wrapper">
+<h5>Publisher</h5>
+<div>American Chemical Society (ACS)</div>
+</div>
+<div class="simple-item-view-citation item-page-field-wrapper">
+<h5>Citation</h5>
+<div>Bachman, John Christopher, Sokseiha Muy, Alexis Grimaud, Hao-Hsun Chang, Nir Pour, Simon F. Lux, Odysseas Paschos, et al. &ldquo;Inorganic Solid-State Electrolytes for Lithium Batteries: Mechanisms and Properties Governing Ion Conduction.&rdquo; Chemical Reviews 116, no. 1 (January 13, 2016): 140&ndash;162.</div>
+<div>Version: <field qualifier="version" mdschema="dc" language="en_US" element="eprint">Author's final manuscript</field>
+</div>
+</div>
+<div class="simple-item-view-identifier item-page-field-wrapper">
+<h5>ISSN</h5>
+<div>0009-2665</div>
+<div>1520-6890</div>
+</div>
+<hr class="collection-separator">
+<div class="simple-item-view-collections item-page-field-wrapper table">
+<h5>Collections</h5>
+<ul class="ds-referenceSet-list">
+<!-- External Metadata URL: cocoon://metadata/handle/1721.1/49433/mets.xml-->
+<li>
+<a href="/handle/1721.1/49433">MIT Open Access Articles</a>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="aspect_statistics_statlet_StatletTransformer_div_showStats" class="ds-static-div">
+<p class="ds-paragraph">
+<a href="#" class="btn btn-default">Show Statistical Information</a>
+</p>
+<p class="ds-paragraph">
+<input id="aspect_statistics_statlet_StatletTransformer_field_contextpath" class="ds-hidden-field form-control" name="contextpath" type="hidden" value="">
+</p>
+<p class="ds-paragraph">
+<input id="aspect_statistics_statlet_StatletTransformer_field_statlet-ms-hide" class="ds-hidden-field form-control" name="statlet-ms-hide" type="hidden" value="Hide Statistical Information">
+</p>
+<p class="ds-paragraph">
+<input id="aspect_statistics_statlet_StatletTransformer_field_statlet-ms-ajax-timeout" class="ds-hidden-field form-control" name="statlet-ms-ajax-timeout" type="hidden" value="The server did not respond in time. Please try again.">
+</p>
+<p class="ds-paragraph">
+<input id="aspect_statistics_statlet_StatletTransformer_field_statlet-ms-ajax-timeout-retry" class="ds-hidden-field form-control" name="statlet-ms-ajax-timeout-retry" type="hidden" value="Retry">
+</p>
+<p class="ds-paragraph">
+<input id="aspect_statistics_statlet_StatletTransformer_field_statlet-ms-ajax-error" class="ds-hidden-field form-control" name="statlet-ms-ajax-error" type="hidden" value="No statistical information could be retrieved. Please try again later.">
+</p>
+<p class="ds-paragraph">
+<input id="aspect_statistics_statlet_StatletTransformer_field_statlet-ajax-call" class="ds-hidden-field form-control" name="statlet-ajax-call" type="hidden" value="/statlet/em/handle/1721.1/109539">
+</p>
+<p class="ds-paragraph">
+<input id="aspect_statistics_statlet_StatletTransformer_field_statlet-ajax-handle" class="ds-hidden-field form-control" name="statlet-ajax-handle" type="hidden" value="1721.1/109539">
+</p>
+</div>
+</div>
+</div>
+<div role="navigation" id="sidebar" class="col-xs-6 col-sm-3 sidebar-offcanvas">
+<div class="word-break hidden-print" id="ds-options">
+<div class="ds-option-set" id="ds-search-option">
+<form method="post" class="" id="ds-search-form" action="/discover">
+<fieldset>
+<div class="input-group">
+<input placeholder="Search" type="text" class="ds-text-field form-control" aria-label="Search MIT DSpace" name="query"><span class="input-group-btn"><button title="Go" class="ds-button-field btn btn-primary"><span aria-hidden="true" class="glyphicon glyphicon-search"></span></button></span>
+</div>
+<div class="radio">
+<label><input checked value="" name="scope" type="radio" id="ds-search-form-scope-all">Search DSpace</label>
+</div>
+<div class="radio">
+<label><input name="scope" type="radio" id="ds-search-form-scope-container" value="1721.1/49433">This Collection</label>
+</div>
+</fieldset>
+</form>
+</div>
+<h2 class="ds-option-set-head  h6">Browse</h2>
+<div id="aspect_viewArtifacts_Navigation_list_browse" class="list-group">
+<a class="list-group-item active"><span class="h5 list-group-item-heading  h5">All of DSpace</span></a><a href="/community-list" class="list-group-item ds-option">Communities &amp; Collections</a><a href="/browse?type=dateissued" class="list-group-item ds-option">By Issue Date</a><a href="/browse?type=author" class="list-group-item ds-option">Authors</a><a href="/browse?type=title" class="list-group-item ds-option">Titles</a><a href="/browse?type=subject" class="list-group-item ds-option">Subjects</a><a class="list-group-item active"><span class="h5 list-group-item-heading  h5">This Collection</span></a><a href="/handle/1721.1/49433/browse?type=dateissued" class="list-group-item ds-option">By Issue Date</a><a href="/handle/1721.1/49433/browse?type=author" class="list-group-item ds-option">Authors</a><a href="/handle/1721.1/49433/browse?type=title" class="list-group-item ds-option">Titles</a><a href="/handle/1721.1/49433/browse?type=subject" class="list-group-item ds-option">Subjects</a>
+</div>
+<h2 class="ds-option-set-head  h6">My Account</h2>
+<div id="aspect_viewArtifacts_Navigation_list_account" class="list-group">
+<a href="/login" class="list-group-item ds-option">Login</a>
+</div>
+<div id="aspect_viewArtifacts_Navigation_list_context" class="list-group"></div>
+<div id="aspect_viewArtifacts_Navigation_list_administrative" class="list-group"></div>
+<div id="aspect_discovery_Navigation_list_discovery" class="list-group"></div>
+<h2 class="ds-option-set-head  h6">Statistics</h2>
+<div id="aspect_statistics_Navigation_list_reportingSuite" class="list-group atmire-module">
+<a href="/oastats" class="list-group-item ds-option">OA Statistics</a><a href="/handle/1721.1/49433/most-popular/country" class="list-group-item ds-option">Statistics by Country</a><a href="/handle/1721.1/49433/most-popular/department" class="list-group-item ds-option">Statistics by Department</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<footer>
+<div class="wrap-outer-footer layout-band">
+<div class="wrap-footer footer-slim">
+<div aria-label="MIT Libraries footer" class="footer-main">
+<div class="identity">
+<div class="wrap-logo-lib">
+<a class="logo-mit-lib" href="https://libraries.mit.edu"><img width="150" alt="MIT Libraries" src="https://cdn.libraries.mit.edu/files/branding/local/mitlib-wordmark.svg"></a>
+</div>
+<div class="wrap-middle">
+<div class="wrap-policies">
+<nav aria-label="MIT Libraries policy menu">
+<span class="item"><a class="link-sub" href="https://libraries.mit.edu/privacy">Privacy</a></span><span class="item"><a class="link-sub" href="https://libraries.mit.edu/permissions">Permissions</a></span><span class="item"><a class="link-sub" href="https://libraries.mit.edu/accessibility">Accessibility</a></span><span class="item"><a class="link-sub" href="https://libraries.mit.edu/contact">Contact us</a></span>
+</nav>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="wrap-outer-footer-institute layout-band">
+<div class="wrap-footer-institute">
+<div class="footer-info-institute">
+<a href="https://www.mit.edu" class="link-logo-mit"><img width="150" alt="MIT" src="https://cdn.libraries.mit.edu/files/branding/local/mit_lockup_std-three-line_rgb_white.svg"></a>
+<div class="license">Content created by the MIT Libraries, <a href="https://creativecommons.org/licenses/by-nc/4.0/">CC BY-NC</a> unless otherwise noted. <a href="https://libraries.mit.edu/research-support/notices/copyright-notify/">Notify us about copyright concerns</a>.
+                        </div>
+</div>
+</div>
+</div>
+</footer>
+<script type="text/javascript">
+                         if(typeof window.import === 'undefined'){
+                            window.import={};
+                          };
+                        window.import.contextPath= '';window.import.themePath= '/themes/Mirage2/';</script><script type="text/javascript">
+                         if(typeof window.publication === 'undefined'){
+                            window.publication={};
+                          };
+                        window.publication.contextPath= '';window.publication.themePath= '/themes/Mirage2/';</script><script type="text/javascript">
+            if(typeof window.DSpace === 'undefined'){
+            window.DSpace={};
+            };</script><script>if(!window.DSpace){window.DSpace={};}window.DSpace.context_path='';window.DSpace.theme_path='/themes/Mirage2/';</script><script src="/themes/Mirage2/scripts/theme.js"> </script><script src="/aspects/ReportingSuite/scripts/statlet_main.js"> 
+                    </script><script src="/aspects/MetadataQuality/mqm-global.js"> 
+                    </script><script>
+          var _paq = window._paq = window._paq || [];
+          /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+          _paq.push(['trackPageView']);
+          _paq.push(['enableLinkTracking']);
+          (function() {
+            var u="https://matomo.libraries.mit.edu/";
+            _paq.push(['setTrackerUrl', u+'matomo.php']);
+            _paq.push(['setSiteId', '7']);
+            var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+            g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+          })();
+      </script>
+</body></html>

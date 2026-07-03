@@ -1,0 +1,73 @@
+{
+  "title": "Understanding the origin of lithium dendrite branching in Li6.5La3Zr1.5Ta0.5O12 solid-state electrolyte via microscopy measurements",
+  "authors": [
+    {
+      "name": "Can Yildirim",
+      "affiliation": null,
+      "orcid": null
+    },
+    {
+      "name": "F. Flatscher",
+      "affiliation": null,
+      "orcid": null
+    },
+    {
+      "name": "Steffen Ganschow",
+      "affiliation": null,
+      "orcid": null
+    },
+    {
+      "name": "A. Lassnig",
+      "affiliation": null,
+      "orcid": null
+    },
+    {
+      "name": "C. Gammer",
+      "affiliation": null,
+      "orcid": null
+    },
+    {
+      "name": "J. Todt",
+      "affiliation": null,
+      "orcid": null
+    },
+    {
+      "name": "Jozef Keckes",
+      "affiliation": null,
+      "orcid": null
+    },
+    {
+      "name": "D. Rettenwander",
+      "affiliation": null,
+      "orcid": null
+    }
+  ],
+  "year": 2024,
+  "journal": "Nature Communications",
+  "volume": null,
+  "issue": null,
+  "pages": null,
+  "doi": "10.1038/s41467-024-52412-4",
+  "url": "https://www.semanticscholar.org/paper/6d0eedef5ddfcfb387c01d267eab9598b635c1af",
+  "abstract": "Lithium dendrite growth in inorganic solid-state electrolytes acts as a main stumbling block for the commercial development of all-solid-state lithium batteries. Indeed, Li dendrites often lead to solid-state electrolyte fractures, undermining device integrity and safety. Despite the significance of these issues, the mechanisms driving the solid-state electrolyte fracture process at the microscopic level remain poorly understood. Here, via operando optical and ex situ dark field X-ray microscopy measurements of LiSn∣single-crystal Li6.5La3Zr1.5Ta0.5O12∣LiSn symmetric cells, we provide insights into solid-state electrolyte strain patterns and lattice orientation changes associated with dendrite growth. We report the observation of dislocations in the immediate vicinity of dendrite tips, including one instance where a dislocation is anchored directly to a tip. This latter occurrence in single-crystalline ceramics suggests an interplay between dendrite proliferation and dislocation formation. We speculate that the mechanical stress induced by dendrite expansion triggers dislocation generation. These dislocations seem to influence the fracture process, potentially affecting the directional growth and branching observed in lithium dendrites. Lithium dendrite growth in solid-state electrolytes is a significant challenge for next-generation battery development. Here, authors used dark-field X-ray microscopy to investigate dislocations near dendrite tips, suggesting that stress-induced dislocation may influence dendrite branching and material fracture.",
+  "keywords": [],
+  "citations_count": 40,
+  "references_count": 58,
+  "access_status": "oa_pdf",
+  "oa_url": "https://doi.org/10.1038/s41467-024-52412-4",
+  "preprint_url": null,
+  "sources": [
+    "semantic_scholar"
+  ],
+  "raw_ids": {
+    "semantic_scholar": "6d0eedef5ddfcfb387c01d267eab9598b635c1af",
+    "arxiv": null,
+    "pubmed": "39294112"
+  },
+  "downloaded_at": "2026-05-14T13:43:05.319245",
+  "files": {
+    "pdf": "paper.pdf",
+    "markdown": "paper.md"
+  },
+  "author_match_score": null
+}

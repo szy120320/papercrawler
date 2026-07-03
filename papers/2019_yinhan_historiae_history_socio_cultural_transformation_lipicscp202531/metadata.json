@@ -1,0 +1,67 @@
+{
+  "title": "HISTORIAE, History of Socio-Cultural Transformation as Linguistic Data Science. A Humanities Use Case",
+  "authors": [
+    {
+      "name": "Yinhan Liu",
+      "affiliation": null,
+      "orcid": null
+    },
+    {
+      "name": "Myle Ott",
+      "affiliation": null,
+      "orcid": null
+    },
+    {
+      "name": "Arora, Ravneet",
+      "affiliation": null,
+      "orcid": null
+    },
+    {
+      "name": "Jingfei Du",
+      "affiliation": null,
+      "orcid": null
+    }
+  ],
+  "year": 2019,
+  "journal": "DROPS (Schloss Dagstuhl – Leibniz Center for Informatics)",
+  "volume": null,
+  "issue": null,
+  "pages": null,
+  "doi": "10.4230/lipics.cp.2025.31",
+  "url": null,
+  "abstract": "Given a combinatorial optimisation problem, there are typically multiple ways of modelling it for presentation to an automated solver. Choosing the right combination of model and target solver can have a significant impact on the effectiveness of the solving process. The best combination of model and solver can also be instance-dependent: there may not exist a single combination that works best for all instances of the same problem. We consider the task of building machine learning models to automatically select the best combination for a problem instance. Critical to the learning process is to define instance features, which serve as input to the selection model. Our contribution is the automatic learning of instance features directly from the high-level representation of a problem instance using a transformer encoder. We evaluate the performance of our approach using the Essence modelling language via a case study of three problem classes.",
+  "keywords": [
+    "Hyperparameter",
+    "Computer science",
+    "Replication (statistics)",
+    "Code (set theory)",
+    "Key (lock)",
+    "Language model",
+    "Artificial intelligence",
+    "Machine learning",
+    "Training set",
+    "Natural language processing",
+    "Programming language",
+    "Statistics",
+    "Mathematics",
+    "Set (abstract data type)",
+    "Computer security"
+  ],
+  "citations_count": 17287,
+  "references_count": null,
+  "access_status": "oa_pdf",
+  "oa_url": "https://drops.dagstuhl.de/entities/document/10.4230/OASIcs.LDK.2021.22",
+  "preprint_url": null,
+  "sources": [
+    "openalex"
+  ],
+  "raw_ids": {
+    "openalex": "https://openalex.org/W2965373594"
+  },
+  "downloaded_at": "2026-05-13T17:17:41.576069",
+  "files": {
+    "pdf": "paper.pdf",
+    "markdown": "paper.md"
+  },
+  "author_match_score": null
+}
