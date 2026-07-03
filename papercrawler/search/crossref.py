@@ -47,7 +47,7 @@ class CrossRefAdapter(BaseSearchAdapter):
             params["sort"] = "published"
             params["order"] = "desc"
 
-        data = await self._get(f"{_BASE}/works", params=params)
+        data = await self._get_json(f"{_BASE}/works", params=params)
         if not data:
             return []
 
@@ -61,7 +61,7 @@ class CrossRefAdapter(BaseSearchAdapter):
         return self._tag_source(results)
 
     async def _by_doi(self, doi: str) -> list[PaperMetadata]:
-        data = await self._get(
+        data = await self._get_json(
             f"{_BASE}/works/{doi}",
             params={"mailto": "user@example.com"},
         )
@@ -113,6 +113,7 @@ class CrossRefAdapter(BaseSearchAdapter):
                 access_status=AccessStatus.UNKNOWN,
                 raw_ids={"crossref": doi},
             )
-        except Exception as e:
-            logger.debug(f"[crossref] 解析失败: {e}")
+        except (KeyError, AttributeError, TypeError, ValueError) as e:
+            # 单篇解析失败:字段缺失 / 类型错
+            logger.opt(exception=True).debug(f"[crossref] 解析失败: {e}")
             return None

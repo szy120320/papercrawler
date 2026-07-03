@@ -32,10 +32,13 @@ ENV/
 *~
 
 # ---------- 用户配置(包含 API key / 邮箱,绝不入库) ----------
-papercrawler.toml
+config/papercrawler.toml
+papercrawler.toml             # 向后兼容(根目录旧位置)
 
 # ---------- 项目运行产物 ----------
-papers/                       # 下载的论文及数据库
+results/                      # 所有 search / download / batch 的输出(每次运行一个子目录)
+test_output_*/                # e2e 测试输出目录(根目录的临时测试产物,test_full_flow.py / test_20_papers.py 跑出来)
+papers/                       # 老输出位置(2026-06 之前,已迁移到 results/)
 *.log
 test_*.csv                    # e2e 测试输出
 _tmp_*.py                     # 临时脚本

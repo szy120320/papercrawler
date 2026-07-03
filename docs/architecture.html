@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PaperCrawler 架构总览</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Outfit:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<style>
+  :root {
+    --bg: #f7f5f0;
+    --bg-card: #ffffff;
+    --line: #e9e3d6;
+    --line-soft: #f0ebe1;
+    --ink: #14171e;
+    --ink-2: #3a4256;
+    --ink-3: #7c7a72;
+    --primary: #2f6f5e;
+    --primary-soft: rgba(47, 111, 94, 0.08);
+    --accent: #c97b3f;
+    --accent-soft: rgba(201, 123, 63, 0.10);
+    --danger: #b06367;
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+    --shadow-md: 0 4px 16px -2px rgba(0, 0, 0, 0.06);
+    --radius: 14px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Outfit', system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  body::before {
+    content: "";
+    position: fixed;
+    top: -200px; right: -200px;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(47, 111, 94, 0.06) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  body::after {
+    content: "";
+    position: fixed;
+    bottom: -200px; left: -200px;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(201, 123, 63, 0.05) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .page {
+    position: relative;
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 64px 32px 96px;
+    z-index: 1;
+  }
+
+  /* Hero */
+  .hero { margin-bottom: 72px; }
+  .hero-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--primary);
+    margin-bottom: 16px;
+  }
+  .hero h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 44px;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    margin: 0 0 18px;
+    color: var(--ink);
+    font-weight: 400;
+  }
+  .hero .lede {
+    font-size: 17px;
+    line-height: 1.55;
+    color: var(--ink-2);
+    max-width: 760px;
+    margin: 0 0 36px;
+  }
+  .hero-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    border-top: 1px solid var(--line);
+    padding-top: 24px;
+  }
+  .stat-num {
+    font-family: 'DM Serif Display', serif;
+    font-size: 34px;
+    line-height: 1;
+    color: var(--primary);
+    margin-bottom: 6px;
+  }
+  .stat-label {
+    font-size: 12px;
+    color: var(--ink-3);
+    letter-spacing: 0.04em;
+  }
+
+  /* Section */
+  section { margin-bottom: 72px; }
+  .sec-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+  .sec-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 28px;
+    line-height: 1.2;
+    letter-spacing: -0.005em;
+    color: var(--ink);
+    margin: 0 0 8px;
+    font-weight: 400;
+  }
+  .sec-sub {
+    color: var(--ink-3);
+    font-size: 14px;
+    margin: 0 0 24px;
+  }
+  p { margin: 0 0 12px; color: var(--ink-2); }
+  code, .mono {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+  }
+  code {
+    background: var(--line-soft);
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--primary);
+  }
+
+  /* Cards */
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 24px;
+    box-shadow: var(--shadow-sm);
+  }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+
+  /* Tree */
+  pre.tree {
+    background: var(--ink);
+    color: #d8d3c4;
+    border-radius: var(--radius);
+    padding: 22px 26px;
+    overflow-x: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    line-height: 1.65;
+    margin: 0;
+  }
+  pre.tree .c-dir { color: #7fb069; }
+  pre.tree .c-py  { color: #f5c97a; }
+  pre.tree .c-toml { color: #c97b3f; }
+  pre.tree .c-md  { color: #b06367; }
+  pre.tree .c-cmt { color: #7c7a72; font-style: italic; }
+
+  /* Diagram (Mermaid) */
+  .mermaid-wrap {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 24px;
+    box-shadow: var(--shadow-sm);
+    overflow-x: auto;
+  }
+
+  /* Pipeline steps */
+  .pipeline { display: grid; grid-template-columns: repeat(9, 1fr); gap: 6px; }
+  .step {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 14px 10px;
+    text-align: center;
+    position: relative;
+    box-shadow: var(--shadow-sm);
+  }
+  .step-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--primary);
+    margin-bottom: 4px;
+  }
+  .step-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 2px;
+  }
+  .step-mod {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--ink-3);
+  }
+  .step-cond {
+    font-size: 10.5px;
+    color: var(--ink-3);
+    margin-top: 6px;
+    line-height: 1.35;
+  }
+  .step-cond b { color: var(--accent); font-weight: 600; }
+
+  /* Two-stage cards */
+  .stage {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 22px 24px;
+    background: var(--bg-card);
+    box-shadow: var(--shadow-sm);
+  }
+  .stage-1 { border-left: 4px solid var(--primary); }
+  .stage-2 { border-left: 4px solid var(--accent); }
+  .stage-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--primary);
+    margin-bottom: 8px;
+  }
+  .stage-2 .stage-label { color: var(--accent); }
+  .stage-name {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 10px;
+  }
+  .stage-formula {
+    background: var(--bg);
+    border: 1px dashed var(--line);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    color: var(--ink-2);
+    margin: 10px 0;
+    line-height: 1.5;
+  }
+  .stage-list {
+    list-style: none;
+    padding: 0;
+    margin: 10px 0 0;
+  }
+  .stage-list li {
+    font-size: 13px;
+    color: var(--ink-2);
+    padding: 4px 0;
+    border-bottom: 1px dashed var(--line-soft);
+    display: flex;
+    gap: 10px;
+  }
+  .stage-list li:last-child { border: none; }
+  .stage-list li::before {
+    content: "→";
+    color: var(--primary);
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+  .stage-2 .stage-list li::before { color: var(--accent); }
+
+  /* Sources table */
+  .sources-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .src {
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 14px 16px;
+    background: var(--bg-card);
+  }
+  .src-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--primary);
+    font-weight: 600;
+  }
+  .src-desc {
+    font-size: 12px;
+    color: var(--ink-3);
+    margin-top: 4px;
+    line-height: 1.4;
+  }
+  .src-key {
+    display: inline-block;
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-top: 6px;
+    background: var(--primary-soft);
+    color: var(--primary);
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .src-key.no-key { background: var(--accent-soft); color: var(--accent); }
+
+  /* Files table */
+  table.files {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  table.files th {
+    text-align: left;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-3);
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--line);
+    background: var(--bg);
+  }
+  table.files td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--line-soft);
+    font-size: 13px;
+    color: var(--ink-2);
+    vertical-align: top;
+  }
+  table.files tr:last-child td { border-bottom: none; }
+  table.files td.code { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--ink); }
+  table.files td.role { color: var(--ink-3); font-size: 12.5px; }
+
+  /* Anti-crawl chain */
+  .chain { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  .chain-step {
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 14px;
+    background: var(--bg-card);
+    text-align: center;
+    position: relative;
+  }
+  .chain-step:not(:last-child)::after {
+    content: "→";
+    position: absolute;
+    right: -10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--primary);
+    font-size: 18px;
+    font-weight: 700;
+  }
+  .chain-icon {
+    width: 28px;
+    height: 28px;
+    margin: 0 auto 8px;
+    color: var(--primary);
+  }
+  .chain-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+  .chain-sub {
+    font-size: 11px;
+    color: var(--ink-3);
+    line-height: 1.4;
+  }
+
+  /* Footer */
+  .footer {
+    margin-top: 64px;
+    padding-top: 32px;
+    border-top: 1px solid var(--line);
+    color: var(--ink-3);
+    font-size: 12px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  @media (max-width: 768px) {
+    .page { padding: 40px 20px 64px; }
+    .hero h1 { font-size: 32px; }
+    .sec-title { font-size: 22px; }
+    .hero-stats { grid-template-columns: repeat(2, 1fr); }
+    .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+    .sources-grid, .chain { grid-template-columns: 1fr; }
+    .pipeline { grid-template-columns: repeat(3, 1fr); }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-eyebrow">PaperCrawler · Architecture Overview</div>
+  <h1>面向领域感知<br>的学术文献爬取工具</h1>
+  <p class="lede">
+    7 个数据源并发检索,两阶段打分精确过滤,MarkItDown 转 Markdown,
+    Sci-Hub Playwright 兜底反爬。一条命令从关键词到结构化论文库。
+  </p>
+  <div class="hero-stats">
+    <div>
+      <div class="stat-num">7</div>
+      <div class="stat-label">检索数据源</div>
+    </div>
+    <div>
+      <div class="stat-num">2</div>
+      <div class="stat-label">阶段打分</div>
+    </div>
+    <div>
+      <div class="stat-num">3</div>
+      <div class="stat-label">输出格式</div>
+    </div>
+    <div>
+      <div class="stat-num">8</div>
+      <div class="stat-label">本轮实测下载</div>
+    </div>
+  </div>
+</header>
+
+<!-- 目录结构 -->
+<section>
+  <div class="sec-eyebrow">01 · Project Layout</div>
+  <h2 class="sec-title">目录结构</h2>
+  <p class="sec-sub">核心源码在 <code>papercrawler/</code>,配置在 <code>config/</code>,测试在 <code>tests/</code>。</p>
+
+<pre class="tree"><span class="c-cmt">PaperCrawler-main/</span>
+├── <span class="c-dir">config/</span>                          <span class="c-cmt">— 用户配置</span>
+│   ├── <span class="c-toml">papercrawler.toml</span>          <span class="c-cmt">— 主配置([interest] 双阶段关键词)</span>
+│   ├── <span class="c-toml">papercrawler_test.toml</span>     <span class="c-cmt">— 简化测试配置</span>
+│   └── <span class="c-toml">papercrawler.toml.example</span>  <span class="c-cmt">— 模板(不进 git)</span>
+│
+├── <span class="c-dir">papercrawler/</span>                  <span class="c-cmt">— 核心源码包</span>
+│   ├── <span class="c-py">cli.py</span>                  <span class="c-cmt">— Typer 命令行入口(search / download / batch)</span>
+│   ├── <span class="c-py">config.py</span>               <span class="c-cmt">— AppConfig / InterestConfig(pydantic-settings)</span>
+│   ├── <span class="c-py">models.py</span>               <span class="c-cmt">— PaperMetadata / DownloadTask / SearchQuery</span>
+│   ├── <span class="c-py">paths.py</span>                <span class="c-cmt">— 全局 DB / 缓存路径</span>
+│   │
+│   ├── <span class="c-dir">search/</span>                <span class="c-cmt">— 7 个数据源适配器 + SearchManager</span>
+│   ├── <span class="c-dir">classify/</span>              <span class="c-cmt">— DomainFilter(粗筛) + SemanticFilter(细筛) + Categorizer</span>
+│   ├── <span class="c-dir">access/</span>               <span class="c-cmt">— OA 状态判定(Unpaywall 反查)</span>
+│   ├── <span class="c-dir">metadata/</span>             <span class="c-cmt">— MetadataExtractor(补 abstract)</span>
+│   ├── <span class="c-dir">download/</span>             <span class="c-cmt">— PaperDownloader + Storage + SciHubDownloader(Playwright)</span>
+│   ├── <span class="c-dir">convert/</span>              <span class="c-cmt">— MarkItDownConverter(PDF/HTML → Markdown)</span>
+│   ├── <span class="c-dir">export/</span>               <span class="c-cmt">— CSVWriter(导出 _interest_filtered.csv)</span>
+│   └── <span class="c-dir">utils/</span>                 <span class="c-cmt">— dedup / naming / rate_limiter / author_filter</span>
+│
+├── <span class="c-dir">tests/</span>                       <span class="c-cmt">— 测试</span>
+│   ├── <span class="c-py">test_full_flow.py</span>        <span class="c-cmt">— 端到端集成测试(10 篇双门限)</span>
+│   └── <span class="c-py">test_paper_dl.py</span>         <span class="c-cmt">— 单元测试</span>
+│
+├── <span class="c-md">README.md</span>                  <span class="c-cmt">— 用户文档</span>
+├── <span class="c-md">CHANGELOG.md</span>               <span class="c-cmt">— 变更日志</span>
+└── <span class="c-toml">pyproject.toml</span>            <span class="c-cmt">— 包元数据 / 依赖 / hatchling 构建</span>
+</pre>
+</section>
+
+<!-- 模块分层 -->
+<section>
+  <div class="sec-eyebrow">02 · Module Layers</div>
+  <h2 class="sec-title">模块分层与依赖关系</h2>
+  <p class="sec-sub">入口层 → 编排层 → 领域模块 → 适配器层 / 基础设施层。下层不感知上层存在。</p>
+
+<div class="mermaid-wrap">
+<pre class="mermaid">
+flowchart TB
+  classDef entry fill:#2f6f5e,color:#fff,stroke:#2f6f5e;
+  classDef orchestrator fill:#c97b3f,color:#fff,stroke:#c97b3f;
+  classDef domain fill:#ffffff,color:#14171e,stroke:#e9e3d6;
+  classDef adapter fill:#f0ebe1,color:#14171e,stroke:#e9e3d6;
+  classDef infra fill:#14171e,color:#d8d3c4,stroke:#14171e;
+
+  User([用户 CLI 命令])
+
+  subgraph EntryLayer[入口层]
+    CLI[cli.py<br/>Typer 命令]
+    Cfg[config.py<br/>pydantic Settings]
+    Models[models.py<br/>PaperMetadata 等]
+  end
+
+  subgraph Orchestrator[编排层]
+    SM[search/manager.py<br/>SearchManager]
+    MX[metadata/extractor.py<br/>MetadataExtractor]
+    DL[download/downloader.py<br/>PaperDownloader]
+  end
+
+  subgraph DomainLayer[领域模块]
+    DF[classify/domain_filter.py<br/>DomainFilter 粗筛]
+    SF[classify/semantic_filter.py<br/>SemanticFilter 细筛]
+    CAT[classify/categorizer.py<br/>Categorizer]
+    CK[access/checker.py<br/>AccessChecker]
+    SH[download/scihub_downloader.py<br/>SciHubDownloader Playwright]
+  end
+
+  subgraph AdapterLayer[适配器层 7 个数据源]
+    AR[arxiv]
+    OA[openalex]
+    CR[crossref]
+    S2[semantic_scholar]
+    PM[pubmed]
+    CORE[core]
+    CX[chemrxiv]
+  end
+
+  subgraph InfraLayer[基础设施层]
+    DB[(download/database.py<br/>SQLite)]
+    ST[download/storage.py<br/>PaperStorage]
+    CV[convert/markitdown_converter.py]
+    CSV[export/csv_writer.py]
+    UP[access/unpaywall.py]
+    UTL[utils/* dedup/naming/rate_limiter]
+  end
+
+  User --> CLI
+  CLI --> Cfg
+  CLI --> Models
+  CLI --> SM
+  CLI --> DL
+
+  SM --> AR & OA & CR & S2 & PM & CORE & CX
+  SM --> UTL
+  SM --> Models
+
+  CLI --> MX
+  MX --> CK
+  MX --> UP
+  MX --> Models
+
+  CLI --> DF
+  CLI --> SF
+  CLI --> CAT
+  DF --> Models
+  SF --> Models
+  CAT --> Models
+
+  DL --> Models
+  DL --> ST
+  DL --> DB
+  DL --> CV
+  DL --> SH
+  DL --> CK
+
+  SH --> Models
+  CK --> UP
+
+  CLI --> CSV
+
+  class User,CLI,Cfg,Models entry;
+  class SM,MX,DL orchestrator;
+  class DF,SF,CAT,CK,SH domain;
+  class AR,OA,CR,S2,PM,CORE,CX adapter;
+  class DB,ST,CV,CSV,UP,UTL infra;
+</pre>
+</div>
+</section>
+
+<!-- 数据流 -->
+<section>
+  <div class="sec-eyebrow">03 · End-to-End Pipeline</div>
+  <h2 class="sec-title">单次 search 的完整数据流</h2>
+  <p class="sec-sub">从 CLI 命令到磁盘 paper.pdf,9 步闭环。</p>
+
+<div class="pipeline">
+  <div class="step">
+    <div class="step-num">01</div>
+    <div class="step-name">Search</div>
+    <div class="step-mod">search/manager</div>
+    <div class="step-cond">7 源并发<br>→ 去重</div>
+  </div>
+  <div class="step">
+    <div class="step-num">02</div>
+    <div class="step-name">粗筛</div>
+    <div class="step-mod">classify/domain</div>
+    <div class="step-cond">只看 <b>title</b><br>≥ 0.7 通过</div>
+  </div>
+  <div class="step">
+    <div class="step-num">03</div>
+    <div class="step-name">Enrich</div>
+    <div class="step-mod">metadata/extractor</div>
+    <div class="step-cond">补 <b>abstract</b><br>+ OA 状态</div>
+  </div>
+  <div class="step">
+    <div class="step-num">04</div>
+    <div class="step-name">细筛</div>
+    <div class="step-mod">classify/semantic</div>
+    <div class="step-cond">title + abstract<br>+ keywords</div>
+  </div>
+  <div class="step">
+    <div class="step-num">05</div>
+    <div class="step-name">双门限</div>
+    <div class="step-mod">cli</div>
+    <div class="step-cond">粗 ≥ 0.7<br>AND 命中 ≥ 3</div>
+  </div>
+  <div class="step">
+    <div class="step-num">06</div>
+    <div class="step-name">Categorize</div>
+    <div class="step-mod">classify/categorizer</div>
+    <div class="step-cond">按配置打<br>多标签</div>
+  </div>
+  <div class="step">
+    <div class="step-num">07</div>
+    <div class="step-name">CSV 导出</div>
+    <div class="step-mod">export/csv_writer</div>
+    <div class="step-cond">_interest_filtered<br>.csv</div>
+  </div>
+  <div class="step">
+    <div class="step-num">08</div>
+    <div class="step-name">Download</div>
+    <div class="step-mod">download/downloader</div>
+    <div class="step-cond">PDF 或<br>Sci-Hub 兜底</div>
+  </div>
+  <div class="step">
+    <div class="step-num">09</div>
+    <div class="step-name">Index</div>
+    <div class="step-mod">download/storage</div>
+    <div class="step-cond">_index.md<br>_index.json</div>
+  </div>
+</div>
+</section>
+
+<!-- 两阶段打分 -->
+<section>
+  <div class="sec-eyebrow">04 · Two-Stage Filtering</div>
+  <h2 class="sec-title">两阶段打分架构</h2>
+  <p class="sec-sub">两个独立分数各自走自己的门限,不合并成一个 final score。避免"方法对领域错"的论文误判。</p>
+
+<div class="grid-2">
+  <div class="stage stage-1">
+    <div class="stage-label">Stage 1 · 粗筛</div>
+    <div class="stage-name">DomainFilter · 基于 title</div>
+    <div class="stage-formula">
+      coarse_score = 0.6 · [must_have 命中]<br>
+                  + 0.1 · [should_have 命中数] (cap 0.3)<br>
+                  − 0.5 · [exclude 命中]<br>
+                  + 0.05 · [category 命中数] (cap 0.20)
+    </div>
+    <ul class="stage-list">
+      <li>只用 title,不需要 abstract,速度极快</li>
+      <li>粗筛过滤后,后续 enrich 和精筛只对通过论文跑</li>
+      <li>门限默认 <b>0.7</b>(可在 CLI / TOML 覆盖)</li>
+    </ul>
+  </div>
+
+  <div class="stage stage-2">
+    <div class="stage-label">Stage 2 · 细筛</div>
+    <div class="stage-name">SemanticFilter · 命中计数</div>
+    <div class="stage-formula">
+      semantic_score = count(kw ∈ semantic_keywords<br>
+                             ∧ match(kw, title + abstract + keywords))<br>
+      保留条件: semantic_score ≥ semantic_min_matches(默认 3)
+    </div>
+    <ul class="stage-list">
+      <li>同时看 title + abstract + keywords 三段文本</li>
+      <li>模糊匹配:大小写不敏感 + difflib 字符相似度</li>
+      <li>命中数 ≥ 3 才通过(用户可配置)</li>
+    </ul>
+  </div>
+</div>
+
+<p style="margin-top:18px; font-size:13px;">
+  <b>双门限</b>:粗筛 ≥ 0.7 <b>且</b> 命中数 ≥ 3。两个独立分数各自判断,不计算合并分数。
+  CSV 中 <code>coarse_score</code> 列是浮点,<code>semantic_score</code> 列是整数(命中数)。
+</p>
+</section>
+
+<!-- 数据源 -->
+<section>
+  <div class="sec-eyebrow">05 · Data Sources</div>
+  <h2 class="sec-title">7 个检索数据源</h2>
+  <p class="sec-sub">SearchManager 并发调度,SearchQuery 配置覆盖,去重后合并输出。</p>
+
+<div class="sources-grid">
+  <div class="src">
+    <div class="src-name">arxiv</div>
+    <div class="src-desc">预印本服务器,全部开放获取</div>
+    <span class="src-key no-key">无 API Key</span>
+  </div>
+  <div class="src">
+    <div class="src-name">openalex</div>
+    <div class="src-desc">全领域元数据,OA 状态内置</div>
+    <span class="src-key no-key">无 API Key</span>
+  </div>
+  <div class="src">
+    <div class="src-name">crossref</div>
+    <div class="src-desc">元数据最全(卷/期/页)</div>
+    <span class="src-key no-key">无 API Key</span>
+  </div>
+  <div class="src">
+    <div class="src-name">semantic_scholar</div>
+    <div class="src-desc">引用数、参考文献</div>
+    <span class="src-key">可填 Key</span>
+  </div>
+  <div class="src">
+    <div class="src-name">pubmed</div>
+    <div class="src-desc">生物医学</div>
+    <span class="src-key">可填 Key</span>
+  </div>
+  <div class="src">
+    <div class="src-name">core</div>
+    <div class="src-desc">OA 全文聚合</div>
+    <span class="src-key">必填 Key</span>
+  </div>
+  <div class="src">
+    <div class="src-name">chemrxiv</div>
+    <div class="src-desc">ACS 化学预印本</div>
+    <span class="src-key no-key">无 API Key</span>
+  </div>
+</div>
+</section>
+
+<!-- Sci-Hub 反爬 -->
+<section>
+  <div class="sec-eyebrow">06 · Sci-Hub Anti-Crawl Bypass</div>
+  <h2 class="sec-title">Sci-Hub 兜底链</h2>
+  <p class="sec-sub">所有合法渠道都失败后,Sci-Hub 是最后兜底。两层反爬必须绕过:</p>
+
+<div class="chain">
+  <div class="chain-step">
+    <svg class="chain-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+    </svg>
+    <div class="chain-title">DDoS-Guard</div>
+    <div class="chain-sub">第一层反爬<br>真浏览器通过</div>
+  </div>
+  <div class="chain-step">
+    <svg class="chain-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <rect x="3" y="11" width="18" height="11" rx="2"/>
+      <path d="M7 11V7a5 5 0 0110 0v4"/>
+    </svg>
+    <div class="chain-title">ALTCHA PoW</div>
+    <div class="chain-sub">第二层反爬<br>浏览器 Web Crypto 算 nonce</div>
+  </div>
+  <div class="chain-step">
+    <svg class="chain-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+      <path d="M14 2v6h6"/>
+    </svg>
+    <div class="chain-title">论文页</div>
+    <div class="chain-sub">跳到 /&lt;doi&gt;<br>提取 &lt;object data&gt;</div>
+  </div>
+  <div class="chain-step">
+    <svg class="chain-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+      <path d="M7 10l5 5 5-5"/>
+      <path d="M12 15V3"/>
+    </svg>
+    <div class="chain-title">PDF</div>
+    <div class="chain-sub">用 page.evaluate<br>(fetch) 下载字节</div>
+  </div>
+</div>
+
+<p style="margin-top:18px; font-size:13px;">
+  关键技术点:<code>scihub_downloader.py</code> 用 <b>Playwright + 系统 Edge / Chrome</b>,
+  不依赖老旧的 <code>scidownl</code> 库(那个库被 DDoS-Guard 全拦截)。
+  浏览器内的 <code>fetch()</code> 拿 PDF 字节(不是 httpx)— httpx 会被 DDoS-Guard 二次拦截。
+</p>
+</section>
+
+<!-- 关键文件 -->
+<section>
+  <div class="sec-eyebrow">07 · Key Files</div>
+  <h2 class="sec-title">核心文件清单</h2>
+  <p class="sec-sub">按修改频率 / 重要性排序。</p>
+
+<table class="files">
+  <thead>
+    <tr>
+      <th style="width:32%">文件</th>
+      <th style="width:18%">类型</th>
+      <th>职责</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="code">papercrawler/cli.py</td>
+      <td class="role">编排 · ~800 行</td>
+      <td>Typer 命令行入口;串联 search → 粗筛 → enrich → 细筛 → 分类 → CSV → 下载 完整流程;含两阶段打分的双门限过滤</td>
+    </tr>
+    <tr>
+      <td class="code">papercrawler/search/manager.py</td>
+      <td class="role">编排 · ~160 行</td>
+      <td>并发调用 7 个 source adapter,合并去重,按 max_results 截断</td>
+    </tr>
+    <tr>
+      <td class="code">papercrawler/classify/domain_filter.py</td>
+      <td class="role">领域 · ~250 行</td>
+      <td>第一阶段粗筛:must_have / should_have / exclude 关键词权重打分,写到 paper.coarse_score</td>
+    </tr>
+    <tr>
+      <td class="code">papercrawler/classify/semantic_filter.py</td>
+      <td class="role">领域 · ~80 行</td>
+      <td>第二阶段细筛:在 title + abstract + keywords 中数 semantic_keywords 命中数,写到 paper.semantic_score</td>
+    </tr>
+    <tr>
+      <td class="code">papercrawler/metadata/extractor.py</td>
+      <td class="role">编排 · ~100 行</td>
+      <td>enrich 阶段:用 Semantic Scholar / CrossRef 反查补 abstract;AccessChecker 检查 OA 状态</td>
+    </tr>
+    <tr>
+      <td class="code">papercrawler/access/checker.py</td>
+      <td class="role">领域 · ~120 行</td>
+      <td>综合 OA 状态判定:Unpaywall API + 各 source 自带的 oa_url + PDF head 探测</td>
+    </tr>
+    <tr>
+      <td class="code">papercrawler/download/downloader.py</td>
+      <td class="role">编排 · ~400 行</td>
+      <td>主下载流程:三阶段(OA → metadata_only → Sci-Hub fallback);并发 + 信号量;写全局 / run DB</td>
+    </tr>
+    <tr>
+      <td class="code">papercrawler/download/scihub_downloader.py</td>
+      <td class="role">领域 · ~330 行</td>
+      <td>Playwright + Edge 绕过 DDoS-Guard + ALTCHA;widget.verify() 触发 PoW;page.evaluate(fetch) 拉 PDF</td>
+    </tr>
+    <tr>
+      <td class="code">papercrawler/download/storage.py</td>
+      <td class="role">基础设施 · ~150 行</td>
+      <td>论文目录管理:metadata.json + paper.md + paper.pdf;write_index() 生成 _index.md / _index.json</td>
+    </tr>
+    <tr>
+      <td class="code">papercrawler/export/csv_writer.py</td>
+      <td class="role">基础设施 · ~130 行</td>
+      <td>CSV 列固定顺序:title / doi / coarse_score / semantic_score / access_status / downloaded / paper_dir</td>
+    </tr>
+    <tr>
+      <td class="code">config/papercrawler.toml</td>
+      <td class="role">配置</td>
+      <td>主配置:[sources] / [interest](含 semantic_keywords 和 semantic_min_matches) / [scihub]</td>
+    </tr>
+    <tr>
+      <td class="code">tests/test_full_flow.py</td>
+      <td class="role">测试</td>
+      <td>端到端集成测试:10 篇 ReaxFF 论文,验证 search → 双门限 → 下载 完整链路</td>
+    </tr>
+  </tbody>
+</table>
+</section>
+
+<footer class="footer">
+  PaperCrawler · MIT License · Built with httpx + pydantic + MarkItDown + Playwright
+</footer>
+
+</div>
+
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'base',
+    themeVariables: {
+      primaryColor: '#ffffff',
+      primaryTextColor: '#14171e',
+      primaryBorderColor: '#e9e3d6',
+      lineColor: '#c97b3f',
+      secondaryColor: '#f7f5f0',
+      tertiaryColor: '#f0ebe1',
+      fontFamily: 'Outfit, system-ui, sans-serif',
+      fontSize: '13px',
+    }
+  });
+</script>
+</body>
+</html>

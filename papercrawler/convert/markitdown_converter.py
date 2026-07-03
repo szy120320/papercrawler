@@ -33,12 +33,12 @@ class MarkItDownConverter:
             logger.debug("MarkItDown 初始化成功")
         except ImportError:
             logger.warning(
-                "markitdown 未安装，格式转换功能不可用。"
+                "markitdown 未安装,格式转换功能不可用。"
                 "请运行: pip install markitdown[all]"
             )
             self.enabled = False
         except Exception as e:
-            logger.warning(f"MarkItDown 初始化失败: {e}")
+            logger.opt(exception=True).warning(f"MarkItDown 初始化失败: {e}")
             self.enabled = False
 
     def convert_file(self, file_path: str) -> Optional[str]:

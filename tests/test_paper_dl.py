@@ -6,11 +6,11 @@ import json
 import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
 
-from paper_dl.models import (
+from papercrawler.models import (
     AccessStatus, Author, DownloadStatus, DownloadTask, PaperMetadata, SearchQuery
 )
-from paper_dl.utils.naming import make_paper_dirname, title_to_slug
-from paper_dl.utils.dedup import deduplicate, merge_papers
+from papercrawler.utils.naming import make_paper_dirname, title_to_slug
+from papercrawler.utils.dedup import deduplicate, merge_papers
 
 
 # ===========================================================================
@@ -214,7 +214,7 @@ class TestDedup:
 class TestSemanticScholarAdapter:
     @pytest.mark.asyncio
     async def test_parse_valid_response(self):
-        from paper_dl.search.semantic_scholar import SemanticScholarAdapter
+        from papercrawler.search.semantic_scholar import SemanticScholarAdapter
 
         fake_response = {
             "data": [
@@ -235,7 +235,7 @@ class TestSemanticScholarAdapter:
         }
 
         adapter = SemanticScholarAdapter()
-        with patch.object(adapter, "_get", new=AsyncMock(return_value=fake_response)):
+        with patch.object(adapter, "_get_json", new=AsyncMock(return_value=fake_response)):
             q = SearchQuery(query="attention transformer")
             results = await adapter.search(q)
 
@@ -246,17 +246,17 @@ class TestSemanticScholarAdapter:
 
     @pytest.mark.asyncio
     async def test_empty_response(self):
-        from paper_dl.search.semantic_scholar import SemanticScholarAdapter
+        from papercrawler.search.semantic_scholar import SemanticScholarAdapter
         adapter = SemanticScholarAdapter()
-        with patch.object(adapter, "_get", new=AsyncMock(return_value={"data": []})):
+        with patch.object(adapter, "_get_json", new=AsyncMock(return_value={"data": []})):
             results = await adapter.search(SearchQuery(query="xyz"))
         assert results == []
 
     @pytest.mark.asyncio
     async def test_network_failure_returns_empty(self):
-        from paper_dl.search.semantic_scholar import SemanticScholarAdapter
+        from papercrawler.search.semantic_scholar import SemanticScholarAdapter
         adapter = SemanticScholarAdapter()
-        with patch.object(adapter, "_get", new=AsyncMock(return_value=None)):
+        with patch.object(adapter, "_get_json", new=AsyncMock(return_value=None)):
             results = await adapter.search(SearchQuery(query="xyz"))
         assert results == []
 
@@ -268,7 +268,7 @@ class TestSemanticScholarAdapter:
 class TestAccessChecker:
     @pytest.mark.asyncio
     async def test_arxiv_detection_from_raw_ids(self):
-        from paper_dl.access.checker import AccessChecker
+        from papercrawler.access.checker import AccessChecker
         checker = AccessChecker()
 
         paper = make_paper(doi="10.48550/arXiv.1706.03762")
@@ -280,7 +280,7 @@ class TestAccessChecker:
 
     @pytest.mark.asyncio
     async def test_arxiv_detection_from_doi(self):
-        from paper_dl.access.checker import AccessChecker
+        from papercrawler.access.checker import AccessChecker
         checker = AccessChecker()
 
         paper = make_paper(doi="10.48550/arXiv.2301.00001")
@@ -289,7 +289,7 @@ class TestAccessChecker:
 
     @pytest.mark.asyncio
     async def test_already_has_oa_url_pdf(self):
-        from paper_dl.access.checker import AccessChecker
+        from papercrawler.access.checker import AccessChecker
         checker = AccessChecker()
 
         paper = make_paper(
@@ -302,7 +302,7 @@ class TestAccessChecker:
 
     @pytest.mark.asyncio
     async def test_metadata_only_when_no_oa(self):
-        from paper_dl.access.checker import AccessChecker
+        from papercrawler.access.checker import AccessChecker
         checker = AccessChecker()
 
         paper = make_paper(doi="10.1038/253694a0")
@@ -319,19 +319,19 @@ class TestAccessChecker:
 
 class TestMarkItDownConverter:
     def test_disabled_converter_returns_none(self):
-        from paper_dl.convert.markitdown_converter import MarkItDownConverter
+        from papercrawler.convert.markitdown_converter import MarkItDownConverter
         converter = MarkItDownConverter(enabled=False)
         assert converter.convert_file("/any/path.pdf") is None
         assert not converter.is_available()
 
     def test_nonexistent_file_returns_none(self):
-        from paper_dl.convert.markitdown_converter import MarkItDownConverter
+        from papercrawler.convert.markitdown_converter import MarkItDownConverter
         converter = MarkItDownConverter(enabled=False)
         result = converter.convert_file("/nonexistent/file.pdf")
         assert result is None
 
     def test_unsupported_format_returns_none(self):
-        from paper_dl.convert.markitdown_converter import MarkItDownConverter
+        from papercrawler.convert.markitdown_converter import MarkItDownConverter
         import tempfile, os
         converter = MarkItDownConverter(enabled=True)
         # 创建临时文件
@@ -352,7 +352,7 @@ class TestMarkItDownConverter:
 class TestPaperStorage:
     @pytest.mark.asyncio
     async def test_save_metadata_creates_file(self, tmp_path):
-        from paper_dl.download.storage import PaperStorage
+        from papercrawler.download.storage import PaperStorage
         storage = PaperStorage(str(tmp_path))
         paper = make_paper(doi="10.1038/test", title="Test Paper", year=2024)
         paper_dir = storage.ensure_paper_dir(paper)
@@ -363,7 +363,7 @@ class TestPaperStorage:
 
     @pytest.mark.asyncio
     async def test_write_index(self, tmp_path):
-        from paper_dl.download.storage import PaperStorage
+        from papercrawler.download.storage import PaperStorage
         storage = PaperStorage(str(tmp_path))
         papers = [
             make_paper(doi="10.1038/p1", title="Paper One", year=2023),
@@ -380,7 +380,7 @@ class TestPaperStorage:
 
 class TestDownloadDatabase:
     def test_upsert_and_is_downloaded(self, tmp_path):
-        from paper_dl.download.database import DownloadDatabase
+        from papercrawler.download.database import DownloadDatabase
         db = DownloadDatabase(str(tmp_path / "test.db"))
         db.upsert(
             doi="10.1038/test",
@@ -396,12 +396,12 @@ class TestDownloadDatabase:
         assert db.is_downloaded("10.1038/test", "abc12345")
 
     def test_not_downloaded_initially(self, tmp_path):
-        from paper_dl.download.database import DownloadDatabase
+        from papercrawler.download.database import DownloadDatabase
         db = DownloadDatabase(str(tmp_path / "test2.db"))
         assert not db.is_downloaded("10.1038/nonexistent", "xyz99999")
 
     def test_stats(self, tmp_path):
-        from paper_dl.download.database import DownloadDatabase
+        from papercrawler.download.database import DownloadDatabase
         db = DownloadDatabase(str(tmp_path / "stats.db"))
         db.upsert("10.1/a", "h1", "T1", [], 2024, None, "oa_pdf", "success", ".")
         db.upsert("10.1/b", "h2", "T2", [], 2024, None, "metadata_only", "success", ".")
@@ -419,9 +419,9 @@ class TestDownloadDatabase:
 class TestArXivIntegration:
     @pytest.mark.asyncio
     async def test_search_and_access_check(self):
-        from paper_dl.search.manager import SearchManager
-        from paper_dl.access.checker import AccessChecker
-        from paper_dl.config import AppConfig
+        from papercrawler.search.manager import SearchManager
+        from papercrawler.access.checker import AccessChecker
+        from papercrawler.config import AppConfig
 
         cfg = AppConfig()
         manager = SearchManager(config=cfg)
@@ -437,3 +437,174 @@ class TestArXivIntegration:
             # arXiv 论文应为预印本
             assert paper.access_status == AccessStatus.OPEN_ACCESS_PREPRINT
             assert paper.oa_url is not None
+
+
+# ===========================================================================
+# 重构后的 search/base + manager + cli/_helpers 测试
+# ===========================================================================
+
+class TestSourceError:
+    """SourceError 异常结构"""
+
+    def test_construction_with_cause(self):
+        from papercrawler.search.base import SourceError
+        cause = ValueError("bad JSON")
+        err = SourceError("openalex", "parse_error", "JSON broken", cause=cause)
+        assert err.source_id == "openalex"
+        assert err.kind == "parse_error"
+        assert err.cause is cause
+        assert "JSON broken" in str(err)
+
+    def test_kind_known_values(self):
+        from papercrawler.search.base import SourceError
+        for kind in ("http_error", "parse_error", "timeout", "rate_limit", "other"):
+            err = SourceError("test", kind, "msg")
+            assert err.kind == kind
+
+
+class TestSourceStats:
+    """SourceStats dataclass + 兼容 shim"""
+
+    def test_default_construction(self):
+        from papercrawler.search.manager import SourceStats
+        s = SourceStats()
+        assert s.ok_count == 0
+        assert s.failure_kind is None
+        assert s.failure_message is None
+
+    def test_full_construction(self):
+        from papercrawler.search.manager import SourceStats
+        s = SourceStats(ok_count=5, failure_kind="http_error", failure_message="401")
+        assert s.ok_count == 5
+        assert s.failure_kind == "http_error"
+        assert s.failure_message == "401"
+
+    def test_compat_shim_failure(self):
+        from papercrawler.search.manager import SourceStats, source_stats_to_int_map
+        s = SourceStats(failure_kind="http_error")
+        back = source_stats_to_int_map({"s1": s})
+        assert back == {"s1": -1}
+
+    def test_compat_shim_success(self):
+        from papercrawler.search.manager import SourceStats, source_stats_to_int_map
+        s = SourceStats(ok_count=42)
+        back = source_stats_to_int_map({"s1": s})
+        assert back == {"s1": 42}
+
+
+class TestBaseAdapterHttpHelpers:
+    """BaseSearchAdapter._get_json / _get_text 公共行为"""
+
+    @pytest.mark.asyncio
+    async def test_get_json_success(self):
+        from papercrawler.search.base import BaseSearchAdapter
+
+        class _DummyAdapter(BaseSearchAdapter):
+            SOURCE_ID = "dummy"
+            async def search(self, query): return []
+
+        import respx, httpx
+        with respx.mock(base_url="https://dummy.test") as mock:
+            mock.get("/ok").mock(return_value=httpx.Response(200, json={"hello": "world"}))
+            a = _DummyAdapter(timeout=5, request_delay=0)
+            data = await a._get_json("https://dummy.test/ok")
+            assert data == {"hello": "world"}
+
+    @pytest.mark.asyncio
+    async def test_get_json_404_returns_none(self):
+        from papercrawler.search.base import BaseSearchAdapter
+
+        class _DummyAdapter(BaseSearchAdapter):
+            SOURCE_ID = "dummy"
+            async def search(self, query): return []
+
+        import respx, httpx
+        with respx.mock(base_url="https://dummy.test") as mock:
+            mock.get("/missing").mock(return_value=httpx.Response(404))
+            a = _DummyAdapter(timeout=5, request_delay=0)
+            data = await a._get_json("https://dummy.test/missing")
+            assert data is None
+
+    @pytest.mark.asyncio
+    async def test_get_json_parse_error_raises_source_error(self):
+        """服务端返回 200 但 body 不是 JSON 时,应抛 SourceError(parse_error)"""
+        from papercrawler.search.base import BaseSearchAdapter, SourceError
+
+        class _DummyAdapter(BaseSearchAdapter):
+            SOURCE_ID = "dummy"
+            async def search(self, query): return []
+
+        import respx, httpx
+        with respx.mock(base_url="https://dummy.test") as mock:
+            mock.get("/broken").mock(return_value=httpx.Response(200, text="not json {{{"))
+            a = _DummyAdapter(timeout=5, request_delay=0)
+            try:
+                await a._get_json("https://dummy.test/broken")
+            except SourceError as e:
+                assert e.kind == "parse_error"
+                assert e.source_id == "dummy"
+                return
+            assert False, "SourceError not raised"
+
+    @pytest.mark.asyncio
+    async def test_get_text_success(self):
+        from papercrawler.search.base import BaseSearchAdapter
+
+        class _DummyAdapter(BaseSearchAdapter):
+            SOURCE_ID = "dummy"
+            async def search(self, query): return []
+
+        import respx, httpx
+        with respx.mock(base_url="https://dummy.test") as mock:
+            mock.get("/xml").mock(return_value=httpx.Response(200, text="<root/>"))
+            a = _DummyAdapter(timeout=5, request_delay=0)
+            data = await a._get_text("https://dummy.test/xml")
+            assert data == "<root/>"
+
+
+class TestCliHelpersDisplay:
+    """_display_source_stats 新旧两种接口"""
+
+    def test_display_with_new_sourcestats(self):
+        from papercrawler.cli._helpers import _display_source_stats
+        from papercrawler.search.manager import SourceStats
+        # 不抛异常即通过(只调用 console.print)
+        stats = {
+            "openalex": SourceStats(ok_count=5),
+            "semantic": SourceStats(failure_kind="rate_limit", failure_message="429"),
+            "core":     SourceStats(failure_kind="http_error"),
+        }
+        _display_source_stats(stats)
+
+    def test_display_with_legacy_int_dict(self):
+        """向后兼容:旧调用方仍可能传 dict[str, int]"""
+        from papercrawler.cli._helpers import _display_source_stats
+        legacy = {"openalex": 5, "crossref": -1, "arxiv": 3}
+        _display_source_stats(legacy)
+
+
+class TestCliPackageLayout:
+    """CLI 包结构测试 — 防止 cli.py 复活"""
+
+    def test_cli_is_package(self):
+        import os
+        cli_path = os.path.join(os.path.dirname(__file__), "..", "papercrawler", "cli")
+        assert os.path.isdir(cli_path), "papercrawler/cli should be a package (directory)"
+        assert os.path.isfile(os.path.join(cli_path, "__init__.py"))
+
+    def test_cli_no_legacy_module(self):
+        """确保旧的 cli.py 不存在(避免包/模块冲突)"""
+        import os
+        legacy = os.path.join(os.path.dirname(__file__), "..", "papercrawler", "cli.py")
+        assert not os.path.exists(legacy), f"{legacy} should not exist; cli/ is the new package"
+
+    def test_cli_exports_app(self):
+        from papercrawler.cli import app
+        assert hasattr(app, "registered_commands")
+        names = {c.name for c in app.registered_commands}
+        assert {"search", "download", "batch", "recategorize", "convert"} <= names
+
+    def test_cli_sub_typers(self):
+        from papercrawler.cli import app
+        sub_names = {g.name for g in app.registered_groups}
+        assert {"history", "config"} <= sub_names

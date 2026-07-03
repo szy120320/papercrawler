@@ -26,10 +26,18 @@ author_match_threshold = 0.0
 
 [interest]
 description = "测试:锂离子电池 + 分子动力学力场"
+# 第一阶段(粗筛)— 快速挡明显不相关的
 must_have = ["solid electrolyte", "force field", "molecular dynamics"]
 should_have = ["Li-ion", "lithium", "ReaxFF", "DFT"]
 exclude = ["review"]
 fuzzy_threshold = 0.85
+
+# 第二阶段(细筛)— 纯关键词命中计数
+semantic_keywords = [
+    "solid electrolyte", "LLZO", "LPS", "lithium", "Li-ion",
+    "inorganic", "ceramic", "sulfide", "ReaxFF", "DFT",
+]
+semantic_min_matches = 3   # 至少命中 3 个关键词才保留
 
 [[interest.categories]]
 name = "材料实验合成"
@@ -52,4 +60,4 @@ keywords = ["molecular dynamics", "AIMD", "LAMMPS", "MD simulation"]
 min_hits = 1
 
 [scihub]
-enabled = false
+enabled = true   # 默认启用:任何下载失败都走 Sci-Hub 兜底(DOI → title 两阶段)

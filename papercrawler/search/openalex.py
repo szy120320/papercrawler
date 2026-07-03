@@ -28,7 +28,8 @@ def _decode_abstract(inverted: dict | None) -> str | None:
             for pos in pos_list:
                 positions[pos] = word
         return " ".join(positions[i] for i in sorted(positions))
-    except Exception:
+    except (KeyError, TypeError, ValueError):
+        # 倒排索引结构异常(非 dict / 列表等)
         return None
 
 
@@ -77,7 +78,7 @@ class OpenAlexAdapter(BaseSearchAdapter):
         # OpenAlex 推荐提供 mailto
         params["mailto"] = "user@example.com"
 
-        data = await self._get(f"{_BASE}/works", params=params)
+        data = await self._get_json(f"{_BASE}/works", params=params)
         if not data:
             return []
 
@@ -140,6 +141,7 @@ class OpenAlexAdapter(BaseSearchAdapter):
                 oa_url=oa_url,
                 raw_ids={"openalex": item.get("id")},
             )
-        except Exception as e:
-            logger.debug(f"[openalex] 解析失败: {e}")
+        except (KeyError, AttributeError, TypeError, ValueError) as e:
+            # 单篇解析失败:字段缺失 / 类型错
+            logger.opt(exception=True).debug(f"[openalex] 解析失败: {e}")
             return None

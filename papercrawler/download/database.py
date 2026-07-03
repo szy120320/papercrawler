@@ -11,7 +11,7 @@ from typing import Optional
 
 from loguru import logger
 from sqlalchemy import (
-    Column, DateTime, Integer, String, Text,
+    Column, DateTime, Integer, String, Text, text,
     create_engine, select, update,
 )
 from sqlalchemy.orm import DeclarativeBase, Session
@@ -35,8 +35,32 @@ class PaperRecord(Base):
     download_status = Column(String(16), nullable=False, default="pending")
     output_dir     = Column(Text, nullable=True)
     error_msg      = Column(Text, nullable=True)
+    download_run   = Column(String(128), nullable=True)  # 首次下载所在 run 的名称(用于跨 run 跳过提示)
     created_at     = Column(DateTime, default=datetime.utcnow)
     updated_at     = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+
+def _migrate_schema(engine) -> None:
+    """
+    幂等 schema 迁移:对已存在的表加新列(若不存在)。
+
+    SQLAlchemy 的 create_all() 只创建不存在的表,不会给已存在表加列。
+    这里手动处理,保证升级平滑。
+    """
+    with engine.begin() as conn:
+        # 检查 papers 表是否存在
+        rs = conn.execute(text(
+            "SELECT name FROM sqlite_master WHERE type='table' AND name='papers'"
+        )).fetchone()
+        if not rs:
+            return  # 新 DB,create_all 已处理
+
+        # 已存在的列名
+        cols = [row[1] for row in conn.execute(text("PRAGMA table_info(papers)"))]
+
+        if "download_run" not in cols:
+            logger.info("[db-migrate] 添加 download_run 列")
+            conn.execute(text("ALTER TABLE papers ADD COLUMN download_run VARCHAR(128)"))
 
 
 class DownloadDatabase:
@@ -45,6 +69,7 @@ class DownloadDatabase:
     def __init__(self, db_path: str):
         self._engine = create_engine(f"sqlite:///{db_path}", echo=False)
         Base.metadata.create_all(self._engine)
+        _migrate_schema(self._engine)
 
     def upsert(
         self,
@@ -58,6 +83,7 @@ class DownloadDatabase:
         download_status: str,
         output_dir: str,
         error_msg: Optional[str] = None,
+        download_run: Optional[str] = None,
     ) -> None:
         with Session(self._engine) as session:
             # 先查
@@ -76,6 +102,9 @@ class DownloadDatabase:
                 existing.access_status = access_status
                 existing.output_dir = output_dir
                 existing.error_msg = error_msg
+                # 首次记录 run name,后续不覆盖
+                if download_run and not existing.download_run:
+                    existing.download_run = download_run
                 existing.updated_at = datetime.utcnow()
             else:
                 record = PaperRecord(
@@ -89,6 +118,7 @@ class DownloadDatabase:
                     download_status=download_status,
                     output_dir=output_dir,
                     error_msg=error_msg,
+                    download_run=download_run,
                 )
                 session.add(record)
             session.commit()
@@ -113,6 +143,25 @@ class DownloadDatabase:
             ).scalar_one_or_none()
             return rec is not None
 
+    def find_existing(self, doi: Optional[str], hash_id: str) -> Optional[PaperRecord]:
+        """查找是否已存在(返回完整记录,含 download_run / output_dir)"""
+        with Session(self._engine) as session:
+            if doi:
+                rec = session.execute(
+                    select(PaperRecord).where(
+                        PaperRecord.doi == doi,
+                        PaperRecord.download_status == "success",
+                    )
+                ).scalar_one_or_none()
+                if rec:
+                    return rec
+            return session.execute(
+                select(PaperRecord).where(
+                    PaperRecord.hash_id == hash_id,
+                    PaperRecord.download_status == "success",
+                )
+            ).scalar_one_or_none()
+
     def list_records(
         self,
         status: Optional[str] = None,
@@ -135,6 +184,7 @@ class DownloadDatabase:
                     "download_status": r.download_status,
                     "output_dir": r.output_dir,
                     "error_msg": r.error_msg,
+                    "download_run": r.download_run,
                     "created_at": str(r.created_at),
                 }
                 for r in rows

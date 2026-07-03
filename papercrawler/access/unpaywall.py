@@ -47,8 +47,14 @@ class UnpaywallClient:
                     return None
                 resp.raise_for_status()
                 data = resp.json()
+        except httpx.HTTPError as e:
+            logger.opt(exception=True).debug(f"[unpaywall] 查询 HTTP 错误 DOI={doi}: {e}")
+            return None
+        except (ValueError, KeyError, TypeError) as e:
+            logger.opt(exception=True).debug(f"[unpaywall] JSON 解析失败 DOI={doi}: {e}")
+            return None
         except Exception as e:
-            logger.debug(f"[unpaywall] 查询失败 DOI={doi}: {e}")
+            logger.opt(exception=True).warning(f"[unpaywall] 查询异常 DOI={doi}: {e}")
             return None
 
         # 优先选择 best_oa_location 中的 PDF URL
@@ -84,6 +90,12 @@ class UnpaywallClient:
                     return {}
                 resp.raise_for_status()
                 return resp.json()
+        except httpx.HTTPError as e:
+            logger.opt(exception=True).debug(f"[unpaywall] 详情查询 HTTP 错误 DOI={doi}: {e}")
+            return {}
+        except (ValueError, KeyError, TypeError) as e:
+            logger.opt(exception=True).debug(f"[unpaywall] 详情查询 JSON 解析失败 DOI={doi}: {e}")
+            return {}
         except Exception as e:
-            logger.debug(f"[unpaywall] 详情查询失败 DOI={doi}: {e}")
+            logger.opt(exception=True).warning(f"[unpaywall] 详情查询异常 DOI={doi}: {e}")
             return {}

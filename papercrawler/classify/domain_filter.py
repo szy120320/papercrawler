@@ -206,10 +206,14 @@ class DomainFilter:
         papers: list["PaperMetadata"],
     ) -> list["PaperMetadata"]:
         """
-        为每篇论文计算 interest_score 并写入 paper.interest_score 字段(原地修改)。
+        为每篇论文计算粗筛分数,写入 paper.coarse_score(原地修改)。
+
+        两阶段打分设计:DomainFilter 是第一阶段粗筛,分数写到 coarse_score,
+        第二阶段 SemanticFilter 把分数写到 semantic_score,
+        最终由 CLI / caller 合并成 interest_score = 0.6*coarse + 0.4*semantic。
         """
         for p in papers:
-            p.interest_score = self.score(p)
+            p.coarse_score = self.score(p)
         return papers
 
     def filter(
@@ -243,7 +247,15 @@ def annotate_interest_scores(
     papers: list["PaperMetadata"],
     interest: "InterestConfig",
 ) -> list["PaperMetadata"]:
-    return DomainFilter(interest).annotate(papers)
+    """为每篇论文计算粗筛分数,写入 paper.coarse_score(不覆盖 interest_score)
+
+    历史兼容:旧版本 annotate_interest_scores 把粗筛分数写到 interest_score。
+    新版两阶段打分:粗筛写 coarse_score,细筛写 semantic_score,合并到 interest_score。
+    """
+    df = DomainFilter(interest)
+    for p in papers:
+        p.coarse_score = df.score(p)
+    return papers
 
 
 def filter_by_interest(

@@ -60,10 +60,25 @@ class FiltersConfig(BaseSettings):
 
 
 class SciHubConfig(BaseSettings):
-    """Sci-Hub 下载配置（须显式启用；请确认在当地合法使用）"""
+    """Sci-Hub 下载配置（默认启用,作为所有下载失败后的统一兜底）
+
+    ⚠️  法律免责声明:Sci-Hub 在美国、欧盟及部分其他地区属于版权侵权行为。
+    请在启用前确认当地法规与机构网络使用政策;建议优先通过合法渠道获取全文。
+
+    工作流:
+      - 任何来源的 PDF / HTML 下载失败时(OA 链接 403/超时/解析失败等),
+        自动尝试 Sci-Hub,先用 DOI 抓取,失败再用 title 二次抓取。
+      - Sci-Hub 也失败,才会回退到「仅元数据」(只生成 paper.md + metadata.json)。
+
+    关闭方式(完全不启用 Sci-Hub):在配置中设 `enabled = false`
+    """
     model_config = SettingsConfigDict(extra="ignore")
-    enabled: bool = False          # 默认关闭，需在 papercrawler.toml 中设 enabled = true
+    enabled: bool = True           # 默认启用 — 所有下载失败时统一兜底
     proxy: str = ""                # 代理地址，如 "socks5://127.0.0.1:7890"
+    mirror: str = "https://sci-hub.st"   # Sci-Hub 镜像 URL(可改,域名经常变)
+    # 浏览器路径可通过环境变量 PAPERCRAWLER_BROWSER_PATH 设置,
+    # 默认自动检测 Edge / Chrome / Chromium
+    headless: bool = True          # 是否无头模式(headless=True 一般够用)
 
 
 # ---------------------------------------------------------------------------
@@ -82,18 +97,38 @@ class InterestConfig(BaseSettings):
     """
     用户研究兴趣描述 + 关键词权重 + 自定义分类。
 
-    用法:
-      - description:    自然语言描述,仅供阅读/未来 LLM 提示词使用
-      - must_have:      命中即得基础分 0.6
-      - should_have:    每个命中 +0.1,封顶 0.3
-      - exclude:        命中即 -0.5
-      - categories:     每类独立计算,一篇可同时属多类
+    两阶段打分配置:
+      - 阶段 1(粗筛): 基于 title,用 must_have/should_have/exclude 关键词权重打分
+      - 阶段 2(细筛): 命中关键词计数,title+abstract+keywords 中命中 semantic_keywords
+                     数量 ≥ semantic_min_matches 才保留
+
+    字段说明:
+      - description         自然语言描述,仅供阅读注释
+      - must_have           阶段 1 命中即得基础分 0.6(粗筛快速过滤)
+      - should_have         阶段 1 每个命中 +0.1,封顶 0.3
+      - exclude             阶段 1 命中即 -0.5(明确剔除)
+      - semantic_keywords   阶段 2 用于计数的关键词列表
+      - semantic_min_matches 阶段 2 保留阈值(命中关键词数 ≥ 此值才通过)
+      - categories          每类独立计算,一篇可同时属多类
+      - fuzzy_threshold      模糊匹配阈值(difflib 字符相似度)
+
+    示例(关注"固体电解质相关分子动力学模拟"):
+        description = "我想找固体电解质相关的分子动力学模拟研究"
+        must_have = ["molecular dynamics"]
+        semantic_keywords = [
+            "solid electrolyte", "LLZO", "lithium", "Li-ion",
+            "inorganic", "ReaxFF", "force field", "MD simulation",
+        ]
+        semantic_min_matches = 3   # 至少命中 3 个关键词才保留
     """
     model_config = SettingsConfigDict(extra="ignore")
     description: str = ""
     must_have: list[str] = []
     should_have: list[str] = []
     exclude: list[str] = []
+    # 第二阶段(细筛)字段
+    semantic_keywords: list[str] = []       # 用于计数的关键词列表
+    semantic_min_matches: int = 3          # 命中数 ≥ 此值才保留,默认 3
     categories: list[InterestCategory] = []
     # 模糊匹配阈值(distance),0.0~1.0,1.0=完全相等,0.85 是较宽松
     fuzzy_threshold: float = 0.85
@@ -114,9 +149,16 @@ class AppConfig(BaseSettings):
 
 
 def _find_config_file() -> Optional[Path]:
-    """按优先级搜索配置文件"""
+    """按优先级搜索配置文件
+
+    搜索顺序:
+      1. ./config/papercrawler.toml  (项目级配置,推荐)
+      2. ./papercrawler.toml          (向后兼容,项目根)
+      3. ~/.config/papercrawler/config.toml  (系统级,XDG 标准)
+    """
     candidates = [
-        Path("papercrawler.toml"),
+        Path("config") / "papercrawler.toml",
+        Path("papercrawler.toml"),  # 向后兼容
         Path.home() / ".config" / "papercrawler" / "config.toml",
     ]
     for p in candidates:

@@ -8,11 +8,10 @@ from __future__ import annotations
 import re
 import xml.etree.ElementTree as ET
 
-import httpx
 from loguru import logger
 
 from papercrawler.models import Author, PaperMetadata, SearchQuery, AccessStatus
-from papercrawler.search.base import BaseSearchAdapter
+from papercrawler.search.base import BaseSearchAdapter, SourceError
 
 _BASE = "https://export.arxiv.org/api/query"
 _NS = {
@@ -34,22 +33,21 @@ class ArXivAdapter(BaseSearchAdapter):
         }
 
         try:
-            await self._limiter.wait(_BASE)
-            async with httpx.AsyncClient(
-                timeout=self.timeout, follow_redirects=True
-            ) as client:
-                resp = await client.get(
-                    _BASE,
-                    params=params,
-                    headers={"User-Agent": "PaperDownloader/1.0 (mailto:user@example.com)"},
-                )
-                resp.raise_for_status()
-                xml_text = resp.text
-        except Exception as e:
-            logger.warning(f"[arxiv] 请求失败: {e}")
+            xml_text = await self._get_text(_BASE, params=params)
+        except SourceError as e:
+            # _get_text 已 log,这里只标记失败
+            logger.debug(f"[arxiv] 检索失败: {e}")
             return []
 
-        results = self._parse(xml_text, query)
+        if not xml_text:
+            return []
+
+        try:
+            results = self._parse(xml_text, query)
+        except ET.ParseError as e:
+            logger.warning(f"[arxiv] XML 解析错误: {e}")
+            return []
+
         logger.debug(f"[arxiv] 找到 {len(results)} 篇论文")
         return self._tag_source(results)
 
@@ -76,13 +74,8 @@ class ArXivAdapter(BaseSearchAdapter):
         return {"date": "submittedDate", "relevance": "relevance"}.get(sort, "relevance")
 
     def _parse(self, xml_text: str, query: SearchQuery) -> list[PaperMetadata]:
-        papers = []
-        try:
-            root = ET.fromstring(xml_text)
-        except ET.ParseError as e:
-            logger.warning(f"[arxiv] XML 解析错误: {e}")
-            return []
-
+        root = ET.fromstring(xml_text)
+        papers: list[PaperMetadata] = []
         for entry in root.findall("atom:entry", _NS):
             paper = self._parse_entry(entry, query)
             if paper:
@@ -97,7 +90,7 @@ class ArXivAdapter(BaseSearchAdapter):
             abstract_el = entry.find("atom:summary", _NS)
             abstract = (abstract_el.text or "").strip() if abstract_el is not None else None
 
-            authors = []
+            authors: list[Author] = []
             for a in entry.findall("atom:author", _NS):
                 name_el = a.find("atom:name", _NS)
                 if name_el is not None and name_el.text:
@@ -135,7 +128,7 @@ class ArXivAdapter(BaseSearchAdapter):
             if year and query.year_to and year > query.year_to:
                 return None
 
-            # DOI（部分 arXiv 论文有）
+            # DOI(部分 arXiv 论文有)
             doi_el = entry.find("arxiv:doi", _NS)
             doi = doi_el.text.strip() if doi_el is not None and doi_el.text else None
 
@@ -160,6 +153,7 @@ class ArXivAdapter(BaseSearchAdapter):
                 preprint_url=f"https://arxiv.org/abs/{arxiv_id}" if arxiv_id else None,
                 raw_ids={"arxiv": arxiv_id},
             )
-        except Exception as e:
-            logger.debug(f"[arxiv] 单篇解析失败: {e}")
+        except (KeyError, AttributeError, TypeError, ValueError) as e:
+            # 单篇解析失败:字段缺失或类型错
+            logger.opt(exception=True).debug(f"[arxiv] 单篇解析失败: {e}")
             return None

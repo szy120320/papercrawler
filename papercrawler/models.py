@@ -76,7 +76,9 @@ class PaperMetadata(BaseModel):
     downloaded_at: Optional[datetime] = None
     files: dict[str, Optional[str]] = Field(default_factory=dict)
     author_match_score: Optional[float] = None  # 作者匹配分数（0.0~1.0），按作者检索时填充
-    interest_score: Optional[float] = None     # 领域相关性分数（0.0~1.0），启用 --interest 时填充
+    interest_score: Optional[float] = None     # 最终领域相关性分数（0.0~1.0）= 0.6*coarse + 0.4*semantic
+    coarse_score: Optional[float] = None        # 第一阶段粗筛分数（仅 title + must_have/should_have）
+    semantic_score: Optional[float] = None      # 第二阶段细筛分数（title+abstract+keywords vs description）
     categories: list[str] = Field(default_factory=list)  # 自动分类标签（可多个），启用 --categorize 时填充
 
     @field_validator("doi", mode="before")

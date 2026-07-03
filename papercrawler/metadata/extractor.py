@@ -62,17 +62,35 @@ class MetadataExtractor:
     async def enrich_batch(self, papers: list[PaperMetadata]) -> list[PaperMetadata]:
         """批量补充元数据（先 OA 检查，后摘要补充）"""
         import asyncio
+        from papercrawler.search.base import SourceError
+        from httpx import HTTPError
+
         semaphore = asyncio.Semaphore(5)
+        failure_counts = {"http_error": 0, "parse_error": 0, "timeout": 0, "other": 0}
 
         async def _enrich_one(p: PaperMetadata) -> PaperMetadata:
             async with semaphore:
                 try:
                     return await self.enrich(p)
+                except SourceError as e:
+                    failure_counts[e.kind] = failure_counts.get(e.kind, 0) + 1
+                    logger.debug(f"[enrich] {e.kind}: {p.title[:60]} — {e}")
+                    return p
+                except HTTPError as e:
+                    failure_counts["http_error"] += 1
+                    logger.opt(exception=True).debug(f"[enrich] HTTP 错误: {p.title[:60]}")
+                    return p
                 except Exception as e:
-                    logger.debug(f"元数据补充失败: {p.title[:60]} — {e}")
+                    failure_counts["other"] += 1
+                    logger.opt(exception=True).warning(f"[enrich] 未预期异常: {p.title[:60]} — {e}")
                     return p
 
-        return list(await asyncio.gather(*[_enrich_one(p) for p in papers]))
+        results = list(await asyncio.gather(*[_enrich_one(p) for p in papers]))
+        if any(v > 0 for v in failure_counts.values()):
+            logger.info(
+                f"[enrich 失败统计] " + ", ".join(f"{k}={v}" for k, v in failure_counts.items() if v > 0)
+            )
+        return results
 
     async def _fetch_abstract(self, paper: PaperMetadata) -> PaperMetadata:
         """尝试通过 S2 或 CrossRef 补充摘要"""
@@ -87,15 +105,15 @@ class MetadataExtractor:
                 if "semantic_scholar" not in paper.sources:
                     paper.sources.append("semantic_scholar")
                 return paper
-        except Exception:
-            pass
+        except Exception as e:
+            logger.opt(exception=True).debug(f"[enrich-abstract] S2 失败 DOI={paper.doi}: {e}")
 
         # 再尝试 CrossRef
         try:
             results = await self._crossref._by_doi(paper.doi)
             if results and results[0].abstract:
                 paper.abstract = results[0].abstract
-        except Exception:
-            pass
+        except Exception as e:
+            logger.opt(exception=True).debug(f"[enrich-abstract] CrossRef 失败 DOI={paper.doi}: {e}")
 
         return paper

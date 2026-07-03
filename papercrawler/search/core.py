@@ -32,7 +32,7 @@ class CoreAdapter(BaseSearchAdapter):
         }
 
         headers = {"Authorization": f"Bearer {self.api_key}"}
-        data = await self._get(f"{_BASE}/search/works", params=params, headers=headers)
+        data = await self._get_json(f"{_BASE}/search/works", params=params, headers=headers)
         if not data:
             return []
 
@@ -70,6 +70,7 @@ class CoreAdapter(BaseSearchAdapter):
                 oa_url=pdf_url,
                 raw_ids={"core": str(item.get("id", ""))},
             )
-        except Exception as e:
-            logger.debug(f"[core] 解析失败: {e}")
+        except (KeyError, AttributeError, TypeError, ValueError) as e:
+            # 单篇解析失败:字段缺失 / 类型错
+            logger.opt(exception=True).debug(f"[core] 解析失败: {e}")
             return None

@@ -64,7 +64,7 @@ class ChemRxivAdapter(BaseSearchAdapter):
             params["skip"] = len(results)
             params["limit"] = min(total_needed - len(results), _MAX_PER_PAGE)
 
-            data = await self._get(f"{_BASE}/items", params=params, headers=_HEADERS)
+            data = await self._get_json(f"{_BASE}/items", params=params, headers=_HEADERS)
             if not data:
                 break
 
@@ -89,7 +89,7 @@ class ChemRxivAdapter(BaseSearchAdapter):
         """通过 DOI 精确检索单篇论文"""
         # DOI 含 / 需要 URL 编码后才能安全嵌入路径
         encoded_doi = quote(doi, safe="")
-        data = await self._get(f"{_BASE}/items/doi/{encoded_doi}", headers=_HEADERS)
+        data = await self._get_json(f"{_BASE}/items/doi/{encoded_doi}", headers=_HEADERS)
         if not data:
             return []
         paper = self._parse(data)
@@ -172,6 +172,7 @@ class ChemRxivAdapter(BaseSearchAdapter):
                 preprint_url=f"https://chemrxiv.org/engage/chemrxiv/article-details/{item_id}" if item_id else None,
                 raw_ids={"chemrxiv": item_id, "doi": doi},
             )
-        except Exception as e:
-            logger.debug(f"[chemrxiv] 单篇解析失败: {e}")
+        except (KeyError, AttributeError, TypeError, ValueError) as e:
+            # 单篇解析失败:字段缺失 / 类型错
+            logger.opt(exception=True).debug(f"[chemrxiv] 单篇解析失败: {e}")
             return None

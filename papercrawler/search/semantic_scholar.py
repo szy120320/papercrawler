@@ -46,7 +46,7 @@ class SemanticScholarAdapter(BaseSearchAdapter):
         if self.api_key:
             headers["x-api-key"] = self.api_key
 
-        data = await self._get(f"{_BASE}/paper/search", params=params, headers=headers)
+        data = await self._get_json(f"{_BASE}/paper/search", params=params, headers=headers)
         if not data:
             return []
 
@@ -63,7 +63,7 @@ class SemanticScholarAdapter(BaseSearchAdapter):
         headers = {}
         if self.api_key:
             headers["x-api-key"] = self.api_key
-        data = await self._get(
+        data = await self._get_json(
             f"{_BASE}/paper/DOI:{doi}",
             params={"fields": _FIELDS},
             headers=headers,
@@ -117,6 +117,7 @@ class SemanticScholarAdapter(BaseSearchAdapter):
                     "pubmed": ext_ids.get("PubMed"),
                 },
             )
-        except Exception as e:
-            logger.debug(f"[semantic_scholar] 解析失败: {e}")
+        except (KeyError, AttributeError, TypeError, ValueError) as e:
+            # 单篇解析失败:字段缺失 / 类型错
+            logger.opt(exception=True).debug(f"[semantic_scholar] 解析失败: {e}")
             return None
