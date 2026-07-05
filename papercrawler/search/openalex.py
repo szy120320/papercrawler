@@ -1,6 +1,6 @@
 """
-OpenAlex 检索适配器
-API 文档: https://docs.openalex.org
+OpenAlex 妫€绱㈤€傞厤鍣?
+API 鏂囨。: https://docs.openalex.org
 """
 
 from __future__ import annotations
@@ -19,7 +19,7 @@ _SELECT = (
 
 
 def _decode_abstract(inverted: dict | None) -> str | None:
-    """OpenAlex 的摘要以倒排索引形式存储，还原为文本"""
+    """OpenAlex 鐨勬憳瑕佷互鍊掓帓绱㈠紩褰㈠紡瀛樺偍锛岃繕鍘熶负鏂囨湰"""
     if not inverted:
         return None
     try:
@@ -29,7 +29,7 @@ def _decode_abstract(inverted: dict | None) -> str | None:
                 positions[pos] = word
         return " ".join(positions[i] for i in sorted(positions))
     except (KeyError, TypeError, ValueError):
-        # 倒排索引结构异常(非 dict / 列表等)
+        # 鍊掓帓绱㈠紩缁撴瀯寮傚父(闈?dict / 鍒楄〃绛?
         return None
 
 
@@ -37,7 +37,7 @@ class OpenAlexAdapter(BaseSearchAdapter):
     SOURCE_ID = "openalex"
 
     async def search(self, query: SearchQuery) -> list[PaperMetadata]:
-        per_page = min(query.max_results, 200)
+        per_page = min(query.page_size, 200)   # OpenAlex API 上限 200
 
         base_params: dict = {
             "select": _SELECT,
@@ -53,8 +53,8 @@ class OpenAlexAdapter(BaseSearchAdapter):
         elif query.author:
             base_params["filter"] = f"author.search:{query.author}"
         else:
-            # 关键词检索：使用顶层 search 参数（OpenAlex 推荐方式，搜索标题+摘要+全文）
-            # 注意：search= 参数可与 filter= 参数并存，但不能在 filter 内使用 default.search:
+            # 鍏抽敭璇嶆绱細浣跨敤椤跺眰 search 鍙傛暟锛圤penAlex 鎺ㄨ崘鏂瑰紡锛屾悳绱㈡爣棰?鎽樿+鍏ㄦ枃锛?
+            # 娉ㄦ剰锛歴earch= 鍙傛暟鍙笌 filter= 鍙傛暟骞跺瓨锛屼絾涓嶈兘鍦?filter 鍐呬娇鐢?default.search:
             base_params["search"] = query.build_text_query()
 
         if query.year_from or query.year_to:
@@ -66,10 +66,10 @@ class OpenAlexAdapter(BaseSearchAdapter):
                 year_filter = f"to_publication_date:{query.year_to}-12-31"
 
             if "filter" in base_params:
-                # 已有 filter，直接追加年份条件（用逗号分隔表示 AND）
+                # 宸叉湁 filter锛岀洿鎺ヨ拷鍔犲勾浠芥潯浠讹紙鐢ㄩ€楀彿鍒嗛殧琛ㄧず AND锛?
                 base_params["filter"] = f"{base_params['filter']},{year_filter}"
             else:
-                # 纯关键词 search 模式：year 单独加入 filter，两者可以共存
+                # 绾叧閿瘝 search 妯″紡锛歽ear 鍗曠嫭鍔犲叆 filter锛屼袱鑰呭彲浠ュ叡瀛?
                 base_params["filter"] = year_filter
 
         if query.sort == "citations":
@@ -77,19 +77,19 @@ class OpenAlexAdapter(BaseSearchAdapter):
         elif query.sort == "date":
             base_params["sort"] = "publication_year:desc"
 
-        # OpenAlex 推荐提供 mailto
+        # OpenAlex 鎺ㄨ崘鎻愪緵 mailto
         base_params["mailto"] = "user@example.com"
 
         # ---------------------------------------------------------------
-        # 分页抓取:OpenAlex cursor-based pagination(2026-07 加)
-        #   第一次请求不带 cursor
-        #   响应 meta.next_cursor 是 opaque string;下次请求加 cursor=...
-        #   next_cursor 为 null/缺失时表示已到末尾
-        # 防卡:max_pages=100 上限(2026-07-05 ↑ from 50),默认 100 页 × 200/页 = 20000 条上限
+        # 鍒嗛〉鎶撳彇:OpenAlex cursor-based pagination(2026-07 鍔?
+        #   绗竴娆¤姹備笉甯?cursor
+        #   鍝嶅簲 meta.next_cursor 鏄?opaque string;涓嬫璇锋眰鍔?cursor=...
+        #   next_cursor 涓?null/缂哄け鏃惰〃绀哄凡鍒版湯灏?
+        # 闃插崱:max_pages=100 涓婇檺(2026-07-05 鈫?from 50),榛樿 100 椤?脳 200/椤?= 20000 鏉′笂闄?
         # ---------------------------------------------------------------
         results: list[PaperMetadata] = []
-        seen: set[str] = set()  # 跨页 DOI 去重
-        cursor: str | None = "*"   # 首次特殊值:不带 cursor;之后用 next_cursor
+        seen: set[str] = set()  # 璺ㄩ〉 DOI 鍘婚噸
+        cursor: str | None = "*"   # 棣栨鐗规畩鍊?涓嶅甫 cursor;涔嬪悗鐢?next_cursor
         max_pages = 100
 
         for _page in range(max_pages):
@@ -110,7 +110,7 @@ class OpenAlexAdapter(BaseSearchAdapter):
                 paper = self._parse(item)
                 if not paper:
                     continue
-                # 跨页去重
+                # 璺ㄩ〉鍘婚噸
                 key = (paper.doi or "").strip().lower() or (paper.title or "")
                 if key and key in seen:
                     continue
@@ -123,11 +123,9 @@ class OpenAlexAdapter(BaseSearchAdapter):
             cursor = meta.get("next_cursor")
             if not cursor:
                 break
-            if len(results) >= query.max_results:
-                break
 
         logger.debug(f"[openalex] 找到 {len(results)} 篇论文")
-        return self._tag_source(results[: query.max_results])
+        return self._tag_source(results)
 
     def _parse(self, item: dict) -> PaperMetadata | None:
         try:
@@ -180,6 +178,6 @@ class OpenAlexAdapter(BaseSearchAdapter):
                 raw_ids={"openalex": item.get("id")},
             )
         except (KeyError, AttributeError, TypeError, ValueError) as e:
-            # 单篇解析失败:字段缺失 / 类型错
-            logger.opt(exception=True).debug(f"[openalex] 解析失败: {e}")
+            # 鍗曠瘒瑙ｆ瀽澶辫触:瀛楁缂哄け / 绫诲瀷閿?
+            logger.opt(exception=True).debug(f"[openalex] 瑙ｆ瀽澶辫触: {e}")
             return None

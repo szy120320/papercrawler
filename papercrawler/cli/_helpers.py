@@ -107,26 +107,25 @@ def _make_run_csv_filename(
     query: Optional[str] = None,
 ) -> Path:
     """
-    生成单次 run 的 CSV 文件名: <must_have关键词>_<时间>_<数量>.csv
+    生成单次 run 的 CSV 文件名: <日期>_<must_have关键词>_<数量>.csv
 
-    命名规则(2026-07-05):
-      - 第一段:must_have 的第一个关键词做 slug(多个用 _ 连)
-      - 第二段:当前时间戳(YYYYMMDD_HHMMSS)
+    命名规则(2026-07-05 第二版):
+      - 第一段:当前日期(YYYYMMDD,纯数字便于排序)
+      - 第二段:must_have 的第一个关键词做 slug
       - 第三段:本次入库的论文数(粗筛+细筛后)
       - 文件以字母开头(无下划线前缀)
       - 落在 output_dir 下
 
-    例: solid_state_electrolyte_20260705_173000_62.csv
+    例: 20260705_solid_state_electrolyte_62.csv
 
     fallback:
       - 如果 must_have 为空,取 query 第一个词
       - 都没有,fallback 到 "search"
     """
-    timestamp = datetime.now().strftime("%Y%m%d")   # 2026-07-05: 只保留年月日,去掉时分秒
+    timestamp = datetime.now().strftime("%Y%m%d")
 
     # 1. 取关键词部分
     if must_have_keywords:
-        # 取第一个 must_have 的 slug
         first = _slugify_keyword(must_have_keywords[0])
         if not first:
             first = "search"
@@ -135,8 +134,8 @@ def _make_run_csv_filename(
     else:
         first = "search"
 
-    # 2. 拼文件名
-    filename = f"{first}_{timestamp}_{papers_count}.csv"
+    # 2. 拼文件名(2026-07-05: 日期在前,便于按时间排序查看)
+    filename = f"{timestamp}_{first}_{papers_count}.csv"
     return Path(output_dir) / filename
 
 

@@ -1,6 +1,5 @@
 """
-PubMed (NCBI E-utilities) 检索适配器
-API 文档: https://www.ncbi.nlm.nih.gov/books/NBK25500/
+PubMed (NCBI E-utilities) 妫€绱㈤€傞厤鍣?API 鏂囨。: https://www.ncbi.nlm.nih.gov/books/NBK25500/
 """
 
 from __future__ import annotations
@@ -21,17 +20,19 @@ class PubMedAdapter(BaseSearchAdapter):
 
     async def search(self, query: SearchQuery) -> list[PaperMetadata]:
         # ---------------------------------------------------------------
-        # 分页抓取:PubMed 用 retstart= 翻页(2026-07 加)
-        #   1) esearch 一次拿完整 PMID 列表(用 query.max_results 决定上限)
-        #   2) efetch 按 PMID 切片批量取摘要,retstart + retmax 翻页
-        # 防卡:max_pages=20 上限
-        # 注意:esearch 本身仍需传 retmax,但通常 ≥ 实际命中数即可拿到所有 PMID
+        # 鍒嗛〉鎶撳彇:PubMed 鐢?retstart= 缈婚〉(2026-07 鍔?
+        #   1) esearch 涓€娆℃嬁瀹屾暣 PMID 鍒楄〃(鐢?query.page_size 鍐冲畾涓婇檺)
+        #   2) efetch 鎸?PMID 鍒囩墖鎵归噺鍙栨憳瑕?retstart + retmax 缈婚〉
+        # 闃插崱:max_pages=20 涓婇檺
+        # 娉ㄦ剰:esearch 鏈韩浠嶉渶浼?retmax,浣嗛€氬父 鈮?瀹為檯鍛戒腑鏁板嵆鍙嬁鍒版墍鏈?PMID
         # ---------------------------------------------------------------
         term = self._build_term(query)
         esearch_params: dict = {
             "db": "pubmed",
             "term": term,
-            "retmax": str(query.max_results),  # 拿全 PMID,不再受 100 限顶
+            # 2026-07-05 v1.3.0: retmax 直接用 query.page_size(每年 PMID 总量)
+            # 如果 query.page_size=0 用一个大的默认
+            "retmax": str(max(query.page_size, 10000)),
             "retmode": "json",
         }
         if self.api_key:
@@ -51,8 +52,8 @@ class PubMedAdapter(BaseSearchAdapter):
         if not pmids:
             return []
 
-        # 2. efetch 按 PMID 分批拉摘要,retstart + retmax 翻页
-        fetch_step = 100  # 单批 PMID 上限
+        # 2. efetch 鎸?PMID 鍒嗘壒鎷夋憳瑕?retstart + retmax 缈婚〉
+        fetch_step = 100  # 鍗曟壒 PMID 涓婇檺
         results: list[PaperMetadata] = []
         seen: set[str] = set()
         retstart = 0
@@ -75,7 +76,7 @@ class PubMedAdapter(BaseSearchAdapter):
             try:
                 xml_text = await self._get_text(_EFETCH, params=fetch_params)
             except SourceError as e:
-                logger.debug(f"[pubmed] efetch 失败: {e}")
+                logger.debug(f"[pubmed] efetch 澶辫触: {e}")
                 return self._tag_source(results)
 
             if not xml_text:
@@ -84,7 +85,7 @@ class PubMedAdapter(BaseSearchAdapter):
             try:
                 page_results = self._parse_xml(xml_text)
             except ET.ParseError as e:
-                logger.warning(f"[pubmed] XML 解析错误: {e}")
+                logger.warning(f"[pubmed] XML 瑙ｆ瀽閿欒: {e}")
                 break
 
             for paper in page_results:
@@ -97,11 +98,9 @@ class PubMedAdapter(BaseSearchAdapter):
             retstart += len(batch)
             if len(batch) < fetch_step:
                 break
-            if len(results) >= query.max_results:
-                break
 
         logger.debug(f"[pubmed] 找到 {len(results)} 篇论文")
-        return self._tag_source(results[: query.max_results])
+        return self._tag_source(results)
 
     def _build_term(self, query: SearchQuery) -> str:
         parts = []
@@ -136,12 +135,11 @@ class PubMedAdapter(BaseSearchAdapter):
             title_el = art.find("ArticleTitle")
             title = "".join(title_el.itertext()).strip() if title_el is not None else "Unknown"
 
-            # 摘要
+            # 鎽樿
             abstract_parts = art.findall(".//AbstractText")
             abstract = " ".join("".join(p.itertext()) for p in abstract_parts).strip() or None
 
-            # 作者
-            authors: list[Author] = []
+            # 浣滆€?            authors: list[Author] = []
             for a in art.findall(".//Author"):
                 last = a.findtext("LastName", "")
                 fore = a.findtext("ForeName", "") or a.findtext("Initials", "")
@@ -153,12 +151,12 @@ class PubMedAdapter(BaseSearchAdapter):
                     orcid = orcid_el.text if orcid_el is not None else None
                     authors.append(Author(name=name, affiliation=affil, orcid=orcid))
 
-            # 年份
+            # 骞翠唤
             pub_date = art.find(".//PubDate")
             year_text = pub_date.findtext("Year") if pub_date is not None else None
             year = int(year_text) if year_text and year_text.isdigit() else None
 
-            # 期刊
+            # 鏈熷垔
             journal_el = art.find("Journal")
             journal = journal_el.findtext("Title") if journal_el is not None else None
 
@@ -172,8 +170,7 @@ class PubMedAdapter(BaseSearchAdapter):
                     doi = id_el.text
                     break
 
-            # 关键词
-            kws = [kw.text for kw in article.findall(".//Keyword") if kw.text]
+            # 鍏抽敭璇?            kws = [kw.text for kw in article.findall(".//Keyword") if kw.text]
 
             return PaperMetadata(
                 title=title,
@@ -187,6 +184,6 @@ class PubMedAdapter(BaseSearchAdapter):
                 raw_ids={"pubmed": pmid},
             )
         except (KeyError, AttributeError, TypeError, ValueError) as e:
-            # 单篇解析失败:字段缺失或类型错
-            logger.opt(exception=True).debug(f"[pubmed] 单篇解析失败: {e}")
+            # 鍗曠瘒瑙ｆ瀽澶辫触:瀛楁缂哄け鎴栫被鍨嬮敊
+            logger.opt(exception=True).debug(f"[pubmed] 鍗曠瘒瑙ｆ瀽澶辫触: {e}")
             return None

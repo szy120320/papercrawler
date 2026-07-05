@@ -24,7 +24,7 @@ from papercrawler.config import AppConfig, get_config
 from papercrawler.models import PaperMetadata, SearchQuery
 from papercrawler.search.arxiv import ArXivAdapter
 from papercrawler.search.base import BaseSearchAdapter, SourceError
-from papercrawler.search.chemrxiv import ChemRxivAdapter
+from papercrawler.search.chemrxiv_via_crossref import ChemRxivViaCrossrefAdapter
 from papercrawler.search.core import CoreAdapter
 from papercrawler.search.crossref import CrossRefAdapter
 from papercrawler.search.openalex import OpenAlexAdapter
@@ -71,15 +71,17 @@ def _build_adapters(config: AppConfig) -> dict[str, BaseSearchAdapter]:
             timeout=dl.read_timeout,
             request_delay=dl.request_delay,
         ),
+        "chemrxiv_via_crossref": ChemRxivViaCrossrefAdapter(
+            timeout=dl.read_timeout,
+            request_delay=dl.request_delay,
+        ),
         "core": CoreAdapter(
             api_key=keys.core,
             timeout=dl.read_timeout,
             request_delay=dl.request_delay,
         ),
-        "chemrxiv": ChemRxivAdapter(
-            timeout=dl.read_timeout,
-            request_delay=dl.request_delay,
-        ),
+        # 2026-07-05 改用 chemrxiv_via_crossref(通过 Crossref 检索,
+        # 绕开 ChemRxiv 官方 API 的 Cloudflare 拦截)
     }
 
     # 为各数据源设置域名级专属延迟,避免触发速率限制
@@ -132,6 +134,11 @@ class SearchManager:
         """
         并发执行所有激活的数据源检索,同时返回每个数据源的统计。
 
+        2026-07-05 v1.3.0 行为变更:
+          - 年份范围(year_from..year_to)**拆成逐年调用**,
+            避免一次查询触发数据源返回数量上限被截顶
+          - 不再按 max_results 截顶(语义改为 page_size,只在 adapter 内部使用)
+
         Returns:
             (papers, source_stats)
             - papers: 去重、过滤后的结果列表
@@ -146,35 +153,49 @@ class SearchManager:
 
         logger.info(f"开始检索,使用数据源: {[a.SOURCE_ID for a in adapters]}")
 
-        tasks = [adapter.search(query) for adapter in adapters]
-        results_per_source = await asyncio.gather(*tasks, return_exceptions=True)
+        # 2026-07-05: 逐年查询。
+        # 旧逻辑:一次传 year_from..year_to 给各 adapter,触发 API 截顶
+        # 新逻辑:manager 在外层拆成单年,每个年份一轮并发调用各 adapter
+        year_queries = self._split_year_range(query)
+
+        if len(year_queries) > 1:
+            logger.info(
+                f"年份范围 {query.year_from}-{query.year_to} 拆成 {len(year_queries)} 个单年查询"
+            )
 
         all_papers: list[PaperMetadata] = []
-        source_stats: dict[str, SourceStats] = {}
+        # 用累加:同一源跨年累计
+        source_stats: dict[str, SourceStats] = {
+            a.SOURCE_ID: SourceStats() for a in adapters
+        }
 
-        for adapter, result in zip(adapters, results_per_source):
-            sid = adapter.SOURCE_ID
-            stats = SourceStats()
+        for yq in year_queries:
+            if len(year_queries) > 1:
+                logger.info(f"  检索 {yq.year_from} 年 ...")
+            tasks = [adapter.search(yq) for adapter in adapters]
+            results_per_source = await asyncio.gather(*tasks, return_exceptions=True)
 
-            if isinstance(result, SourceError):
-                # 来自 adapter 内部抛出的 SourceError(JSON / XML 解析失败等)
-                stats.failure_kind = result.kind
-                stats.failure_message = str(result)
-                logger.warning(f"[{sid}] {result.kind}: {result}")
-            elif isinstance(result, Exception):
-                # 任何未预期的异常,带 traceback
-                stats.failure_kind = "other"
-                stats.failure_message = f"{type(result).__name__}: {result}"
-                logger.opt(exception=True).warning(f"[{sid}] 检索异常: {result}")
-            elif isinstance(result, list):
-                stats.ok_count = len(result)
-                all_papers.extend(result)
-            else:
-                # 不应该到这里,防御性兜底
-                stats.failure_kind = "other"
-                stats.failure_message = f"unexpected return type: {type(result).__name__}"
+            for adapter, result in zip(adapters, results_per_source):
+                sid = adapter.SOURCE_ID
+                stats = source_stats[sid]
 
-            source_stats[sid] = stats
+                if isinstance(result, SourceError):
+                    if stats.failure_kind is None:
+                        stats.failure_kind = result.kind
+                        stats.failure_message = str(result)
+                    logger.warning(f"[{sid}] {result.kind}: {result}")
+                elif isinstance(result, Exception):
+                    if stats.failure_kind is None:
+                        stats.failure_kind = "other"
+                        stats.failure_message = f"{type(result).__name__}: {result}"
+                    logger.opt(exception=True).warning(f"[{sid}] 检索异常: {result}")
+                elif isinstance(result, list):
+                    stats.ok_count += len(result)   # 累加,不是覆盖
+                    all_papers.extend(result)
+                else:
+                    if stats.failure_kind is None:
+                        stats.failure_kind = "other"
+                        stats.failure_message = f"unexpected return type: {type(result).__name__}"
 
         # 统计失败摘要日志
         failures = {sid: s for sid, s in source_stats.items() if s.failure_kind}
@@ -203,11 +224,46 @@ class SearchManager:
                 )
             ]
 
-        # 应用结果数量限制
-        deduped = deduped[: query.max_results]
+        # 2026-07-05: 删除 max_results 截顶
+        # 旧:deduped = deduped[: query.max_results]
+        # 新:不截顶,翻页终止由各 adapter 的 cursor=null / total 耗尽 决定
 
         logger.info(f"去重后共 {len(deduped)} 篇论文")
         return deduped, source_stats
+
+    def _split_year_range(self, query: SearchQuery) -> list[SearchQuery]:
+        """
+        把年份范围拆成多个单年 SearchQuery(2026-07-05 v1.3.0 新增)。
+
+        拆分规则:
+          - 无 year_from / year_to → 单个原 query(不限年份)
+          - 有 year_from 且 year_to 缺失 → 从 year_from 到当前年
+          - 有 year_to 且 year_from 缺失 → 从 1900 到 year_to
+          - 都有 → 从 year_from 到 year_to 的所有单年
+          - 只有一个(==)→ 单个原 query
+        """
+        if query.year_from is None and query.year_to is None:
+            return [query]
+        if query.year_from is not None and query.year_to is None:
+            year_to = query.year_from  # 只有一年,直接返回
+            return [query.model_copy(update={"year_from": year_to, "year_to": year_to})]
+        if query.year_from is None and query.year_to is not None:
+            year_from = query.year_to  # 只有一年
+            return [query.model_copy(update={"year_from": year_from, "year_to": year_from})]
+
+        # 两个都有
+        frm, to = query.year_from, query.year_to
+        if frm == to:
+            return [query]
+        if frm > to:
+            frm, to = to, frm
+
+        from copy import copy
+        result = []
+        for y in range(frm, to + 1):
+            new_q = query.model_copy(update={"year_from": y, "year_to": y})
+            result.append(new_q)
+        return result
 
 
 # ============================================================================

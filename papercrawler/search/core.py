@@ -1,6 +1,6 @@
 """
-CORE 检索适配器
-API 文档: https://core.ac.uk/services/api
+CORE 妫€绱㈤€傞厤鍣?
+API 鏂囨。: https://core.ac.uk/services/api
 """
 
 from __future__ import annotations
@@ -18,7 +18,7 @@ class CoreAdapter(BaseSearchAdapter):
 
     async def search(self, query: SearchQuery) -> list[PaperMetadata]:
         if not self.api_key:
-            logger.warning("[core] 未配置 API Key，跳过 CORE 检索。请在 config.toml 中设置 api_keys.core")
+            logger.warning("[core] 鏈厤缃?API Key锛岃烦杩?CORE 妫€绱€傝鍦?config.toml 涓缃?api_keys.core")
             return []
 
         q = query.build_text_query()
@@ -26,14 +26,12 @@ class CoreAdapter(BaseSearchAdapter):
             q = f"doi:{query.doi}"
 
         # ---------------------------------------------------------------
-        # 分页抓取:CORE 用 offset + limit 翻页(2026-07 加)
-        #   单页 limit 上限 100
-        #   终止信号:返回条目 < limit,或 total_hits 字段耗尽
-        # 防卡:max_pages=50 上限(2026-07-05 ↑ from 20),默认 50 × 100 = 5000 条
+        # 鍒嗛〉鎶撳彇:CORE 鐢?offset + limit 缈婚〉(2026-07 鍔?
+        #   鍗曢〉 limit 涓婇檺 100
+        #   缁堟淇″彿:杩斿洖鏉＄洰 < limit,鎴?total_hits 瀛楁鑰楀敖
+        # 闃插崱:max_pages=50 涓婇檺(2026-07-05 鈫?from 20),榛樿 50 脳 100 = 5000 鏉?
         # ---------------------------------------------------------------
-        page_size = min(query.max_results, 100)
-        if query.max_results > 100:
-            page_size = 100
+        page_size = min(query.page_size, 100)
 
         headers = {"Authorization": f"Bearer {self.api_key}"}
         results: list[PaperMetadata] = []
@@ -45,7 +43,7 @@ class CoreAdapter(BaseSearchAdapter):
         for _page in range(max_pages):
             params = {
                 "q": q,
-                "limit": min(page_size, query.max_results - len(results)),
+                "limit": page_size,
                 "offset": offset,
             }
 
@@ -79,11 +77,9 @@ class CoreAdapter(BaseSearchAdapter):
                 break
             if total_hits is not None and offset >= total_hits:
                 break
-            if len(results) >= query.max_results:
-                break
 
         logger.debug(f"[core] 找到 {len(results)} 篇论文")
-        return self._tag_source(results[: query.max_results])
+        return self._tag_source(results)
 
     def _parse(self, item: dict) -> PaperMetadata | None:
         try:
@@ -111,6 +107,6 @@ class CoreAdapter(BaseSearchAdapter):
                 raw_ids={"core": str(item.get("id", ""))},
             )
         except (KeyError, AttributeError, TypeError, ValueError) as e:
-            # 单篇解析失败:字段缺失 / 类型错
-            logger.opt(exception=True).debug(f"[core] 解析失败: {e}")
+            # 鍗曠瘒瑙ｆ瀽澶辫触:瀛楁缂哄け / 绫诲瀷閿?
+            logger.opt(exception=True).debug(f"[core] 瑙ｆ瀽澶辫触: {e}")
             return None

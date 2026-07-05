@@ -1,6 +1,5 @@
 """
-arXiv 检索适配器
-API 文档: https://info.arxiv.org/help/api/index.html
+arXiv 妫€绱㈤€傞厤鍣?API 鏂囨。: https://info.arxiv.org/help/api/index.html
 """
 
 from __future__ import annotations
@@ -28,14 +27,12 @@ class ArXivAdapter(BaseSearchAdapter):
         sort_by = self._sort_by(query.sort)
 
         # ---------------------------------------------------------------
-        # 分页抓取:ArXiv 使用 start= 偏移翻页(2026-07 加)
-        #   单页 max_results 上限 2000(2026-07-05 ↑ from 500),实测 1000 稳定
-        #   终止信号:返回条目 < 请求数,或 opensearch:totalResults 耗尽
-        # 防卡:max_pages=20 上限(2026-07-05 ↑ from 10),默认 20 × 1000 = 20000 条
-        # ---------------------------------------------------------------
-        page_size = min(query.max_results, 1000)
-        if query.max_results > 1000:
-            page_size = 1000
+        # 鍒嗛〉鎶撳彇:ArXiv 浣跨敤 start= 鍋忕Щ缈婚〉(2026-07 鍔?
+        #   鍗曢〉 page_size 涓婇檺 2000(2026-07-05 鈫?from 500),瀹炴祴 1000 绋冲畾
+        #   缁堟淇″彿:杩斿洖鏉＄洰 < 璇锋眰鏁?鎴?opensearch:totalResults 鑰楀敖
+        # 闃插崱:max_pages=20 涓婇檺(2026-07-05 鈫?from 10),榛樿 20 脳 1000 = 20000 鏉?        # ---------------------------------------------------------------
+        page_size = min(query.page_size, 1000)   # 2026-07-05: ArXiv API 上限 1000(避开 2000 易超时)
+        # 2026-07-05: 不再用 query.page_size 截顶,翻页到 max_pages 上限或 API 终止信号
 
         results: list[PaperMetadata] = []
         seen: set[str] = set()
@@ -46,7 +43,7 @@ class ArXivAdapter(BaseSearchAdapter):
             params = {
                 "search_query": search_query,
                 "start": start,
-                "max_results": min(page_size, query.max_results - len(results)),
+                "page_size": page_size,
                 "sortBy": sort_by,
                 "sortOrder": "descending",
             }
@@ -69,7 +66,6 @@ class ArXivAdapter(BaseSearchAdapter):
             if not page_results:
                 break
 
-            added = 0
             for paper in page_results:
                 # ArXiv id 跨页去重
                 key = paper.url or (paper.title or "")
@@ -77,17 +73,14 @@ class ArXivAdapter(BaseSearchAdapter):
                     continue
                 seen.add(key)
                 results.append(paper)
-                added += 1
 
             start += len(page_results)
             # ArXiv 终止信号:返回条目 < 请求条目 → 末尾
-            if len(page_results) < params["max_results"]:
-                break
-            if len(results) >= query.max_results:
+            if len(page_results) < params["page_size"]:
                 break
 
         logger.debug(f"[arxiv] 找到 {len(results)} 篇论文")
-        return self._tag_source(results[: query.max_results])
+        return self._tag_source(results)
 
     def _build_query(self, query: SearchQuery) -> str:
         if query.doi:
@@ -153,24 +146,24 @@ class ArXivAdapter(BaseSearchAdapter):
             if arxiv_id and not pdf_url:
                 pdf_url = f"https://arxiv.org/pdf/{arxiv_id}.pdf"
 
-            # 发表时间
+            # 鍙戣〃鏃堕棿
             published_el = entry.find("atom:published", _NS)
             year = None
             if published_el is not None and published_el.text:
                 m = re.match(r"(\d{4})", published_el.text)
                 year = int(m.group(1)) if m else None
 
-            # 年份过滤
+            # 骞翠唤杩囨护
             if year and query.year_from and year < query.year_from:
                 return None
             if year and query.year_to and year > query.year_to:
                 return None
 
-            # DOI(部分 arXiv 论文有)
+            # DOI(閮ㄥ垎 arXiv 璁烘枃鏈?
             doi_el = entry.find("arxiv:doi", _NS)
             doi = doi_el.text.strip() if doi_el is not None and doi_el.text else None
 
-            # 分类 = 关键词
+            # 鍒嗙被 = 鍏抽敭璇?
             categories = [
                 c.get("term", "")
                 for c in entry.findall("atom:category", _NS)
@@ -192,6 +185,6 @@ class ArXivAdapter(BaseSearchAdapter):
                 raw_ids={"arxiv": arxiv_id},
             )
         except (KeyError, AttributeError, TypeError, ValueError) as e:
-            # 单篇解析失败:字段缺失或类型错
-            logger.opt(exception=True).debug(f"[arxiv] 单篇解析失败: {e}")
+            # 鍗曠瘒瑙ｆ瀽澶辫触:瀛楁缂哄け鎴栫被鍨嬮敊
+            logger.opt(exception=True).debug(f"[arxiv] 鍗曠瘒瑙ｆ瀽澶辫触: {e}")
             return None

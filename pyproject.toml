@@ -30,6 +30,9 @@ dependencies = [
 
 [project.optional-dependencies]
 scihub = ["scidownl>=1.0"]
+# 2026-07-05 新增:Google Scholar 引用查询兜底(集成自 paperscraper 的 scholarly 功能)
+# scholarly 库是非官方爬虫,经常 503/429,不一定稳。属于"装不装都能跑"。
+scholar = ["scholarly>=1.0"]
 dev = [
     "pytest>=8.0",
     "pytest-asyncio>=0.23",

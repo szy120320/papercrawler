@@ -14,7 +14,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class GeneralConfig(BaseSettings):
     model_config = SettingsConfigDict(extra="ignore")
     output_dir: str = "./papers"
-    max_results: int = 20
+    max_results: int = 20               # 2026-07-05 弃用,见 [cli.defaults].page_size
     default_sort: str = "relevance"
 
 
@@ -81,8 +81,39 @@ class SciHubConfig(BaseSettings):
 
 
 # ---------------------------------------------------------------------------
-# [interest] — 用户兴趣 / 领域感知配置
+# [cli] — CLI 默认值配置(2026-07-05 新增)
 # ---------------------------------------------------------------------------
+
+class CliDefaultsConfig(BaseSettings):
+    """
+    CLI 命令的默认值。日常使用 `papercrawler search` 不传任何参数,
+    直接读这一节配置运行。命令行 flag 可覆盖。
+
+    设计动机:
+      - 学术检索场景:用户最常搜同一组关键词 + 同一时间段
+      - 每次敲一堆 -q / --year-from / --year-to 太啰嗦
+      - 把"日常配置"放到 toml,命令行只起"覆盖 + 触发"的作用
+    """
+    model_config = SettingsConfigDict(extra="ignore")
+
+    # ============== search 命令默认值 ==============
+    query: str = ""                 # 默认 -q 关键词(空 = 必须命令行传)
+    year_from: Optional[int] = None  # 默认 --year-from
+    year_to: Optional[int] = None    # 默认 --year-to
+    sort: str = "relevance"        # 默认排序("relevance" | "date" | "citations")
+    oa_only: bool = False           # 默认 --oa-only
+
+    # ============== 分页配置(2026-07-05 新增)==============
+    # 单次 API 请求的页大小(各 adapter 在自己 API 上限内 clamp)。
+    # - CrossRef / S2 / CORE / chemrxiv_via_crossref: max 100
+    # - OpenAlex: max 200
+    # - ArXiv: max 1000(建议),官方上限 2000
+    # - 翻页直到 API 返回空 / 触发终止信号,不设总上限
+    page_size: int = 100
+
+    # ============== 自动行为 ==============
+    auto_download: bool = False     # 默认是否 --download
+    output_dir: str = ""            # 默认 --output-dir(空 = 用 [general].output_dir + run name)
 
 class InterestConfig(BaseSettings):
     """
@@ -141,6 +172,7 @@ class AppConfig(BaseSettings):
     filters: FiltersConfig = FiltersConfig()
     scihub: SciHubConfig = SciHubConfig()
     interest: InterestConfig = InterestConfig()
+    cli: CliDefaultsConfig = CliDefaultsConfig()   # 2026-07-05 新增
 
 
 def _find_config_file() -> Optional[Path]:
@@ -200,6 +232,7 @@ def load_config(config_path: Optional[str] = None) -> AppConfig:
         filters=FiltersConfig(**data.get("filters", {})),
         scihub=SciHubConfig(**data.get("scihub", {})),
         interest=InterestConfig(**data.get("interest", {})),
+        cli=CliDefaultsConfig(**data.get("cli", {})),   # 2026-07-05 新增
     )
 
 

@@ -152,7 +152,11 @@ class SearchQuery(BaseModel):
     author: Optional[str] = None       # 作者名
     title: Optional[str] = None        # 论文题目
     doi: Optional[str] = None          # DOI
-    max_results: int = 20
+    # 2026-07-05 v1.3.0 语义变更:
+    # 旧:`max_results` = 总结果数上限(截顶)
+    # 新:`page_size` = 单次 API 请求的页大小,翻页直到 API 终止信号
+    # 各 adapter 会在自己 API 上限内自动 clamp(100/200/1000)
+    page_size: int = 100
     year_from: Optional[int] = None
     year_to: Optional[int] = None
     sources: list[str] = Field(default_factory=list)   # 空列表=全部

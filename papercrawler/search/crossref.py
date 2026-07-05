@@ -1,6 +1,6 @@
 """
-CrossRef 检索适配器
-API 文档: https://api.crossref.org/swagger-ui/index.html
+CrossRef 妫€绱㈤€傞厤鍣?
+API 鏂囨。: https://api.crossref.org/swagger-ui/index.html
 """
 
 from __future__ import annotations
@@ -27,10 +27,9 @@ class CrossRefAdapter(BaseSearchAdapter):
         #   单页 rows 上限 100
         #   终止信号:返回条目 < rows,或 total-results 字段耗尽
         # 防卡:max_pages=50 上限(2026-07-05 ↑ from 20),默认 50 × 100 = 5000 条
+        # 2026-07-05 v1.3.0: 不再用 query.page_size 截顶
         # ---------------------------------------------------------------
-        page_size = min(query.max_results, 100)
-        if query.max_results > 100:
-            page_size = 100
+        page_size = min(query.page_size, 100)
 
         base_params: dict = {
             "rows": page_size,
@@ -66,7 +65,7 @@ class CrossRefAdapter(BaseSearchAdapter):
         for _page in range(max_pages):
             params = dict(base_params)
             params["offset"] = offset
-            params["rows"] = min(page_size, query.max_results - len(results))
+            params["rows"] = page_size
 
             data = await self._get_json(f"{_BASE}/works", params=params)
             if not data:
@@ -83,7 +82,6 @@ class CrossRefAdapter(BaseSearchAdapter):
             if not items:
                 break
 
-            added = 0
             for item in items:
                 paper = self._parse(item)
                 if not paper:
@@ -93,19 +91,16 @@ class CrossRefAdapter(BaseSearchAdapter):
                     continue
                 seen.add(key)
                 results.append(paper)
-                added += 1
 
             offset += len(items)
-            # CrossRef 终止信号:返回条目 < rows 或 已达总数
+            # Crossref 终止信号:返回条目 < rows 或 已达总数
             if len(items) < params["rows"]:
                 break
             if total_reported is not None and offset >= total_reported:
                 break
-            if len(results) >= query.max_results:
-                break
 
         logger.debug(f"[crossref] 找到 {len(results)} 篇论文")
-        return self._tag_source(results[: query.max_results])
+        return self._tag_source(results)
 
     async def _by_doi(self, doi: str) -> list[PaperMetadata]:
         data = await self._get_json(
@@ -161,6 +156,6 @@ class CrossRefAdapter(BaseSearchAdapter):
                 raw_ids={"crossref": doi},
             )
         except (KeyError, AttributeError, TypeError, ValueError) as e:
-            # 单篇解析失败:字段缺失 / 类型错
-            logger.opt(exception=True).debug(f"[crossref] 解析失败: {e}")
+            # 鍗曠瘒瑙ｆ瀽澶辫触:瀛楁缂哄け / 绫诲瀷閿?
+            logger.opt(exception=True).debug(f"[crossref] 瑙ｆ瀽澶辫触: {e}")
             return None

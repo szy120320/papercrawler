@@ -46,13 +46,18 @@ class MetadataExtractor:
 
     async def enrich(self, paper: PaperMetadata) -> PaperMetadata:
         """
-        对单篇论文补充元数据：
-        1. 若无摘要且有 DOI，从 CrossRef/S2 获取
-        2. 检查 OA 状态
+        对单篇论文补充元数据:
+        1. 若无摘要且有 DOI,从 CrossRef/S2 获取
+        2. 若 S2/Crossref 没填 citations 且有 DOI,scholarly 兜底(2026-07-05 集成)
+        3. 检查 OA 状态
         """
         # 补充摘要
         if not paper.abstract:
             paper = await self._fetch_abstract(paper)
+
+        # 补充引用数(若 S2/CrossRef 没填)— scholarly 兜底
+        if paper.citations_count is None and paper.doi:
+            paper = await self._fetch_citations(paper)
 
         # 检查 OA 状态
         paper = await self._checker.check(paper)
@@ -115,5 +120,43 @@ class MetadataExtractor:
                 paper.abstract = results[0].abstract
         except Exception as e:
             logger.opt(exception=True).debug(f"[enrich-abstract] CrossRef 失败 DOI={paper.doi}: {e}")
+
+        return paper
+
+    async def _fetch_citations(self, paper: PaperMetadata) -> PaperMetadata:
+        """通过 Google Scholar 兜底查引用数(scholarly 是软依赖,没装就跳过)
+
+        设计:
+          - scholarly 库非官方爬虫,经常 503/429,做兜底而非主路径
+          - S2 adapter 在搜索阶段已经填了 citations_count(如果有)
+          - 这里只在 S2 也没填时尝试
+          - 单次调用设了 30s 软超时(避免卡死)
+          - 失败一律 None,不阻塞主流程
+        """
+        if not paper.doi:
+            return paper
+
+        from papercrawler.utils import scholar
+
+        if not scholar.is_available():
+            return paper
+
+        # scholarly 是同步阻塞调用,丢到线程池跑
+        import asyncio
+        try:
+            loop = asyncio.get_event_loop()
+            n = await asyncio.wait_for(
+                loop.run_in_executor(None, scholar.get_citation_count, paper.doi, 30.0),
+                timeout=35.0,   # 略大于 scholar 内部 timeout
+            )
+            if n is not None:
+                paper.citations_count = n
+                if "scholar" not in paper.sources:
+                    paper.sources.append("scholar")
+                logger.debug(f"[enrich-citations] scholar: {paper.doi} -> {n} citations")
+        except asyncio.TimeoutError:
+            logger.debug(f"[enrich-citations] scholar: {paper.doi} 超时(>35s),跳过")
+        except Exception as e:
+            logger.opt(exception=True).debug(f"[enrich-citations] scholar 失败 DOI={paper.doi}: {e}")
 
         return paper

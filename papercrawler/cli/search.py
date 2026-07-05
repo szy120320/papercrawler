@@ -2,6 +2,12 @@
 search 命令
 
 papercrawler search [OPTIONS]
+
+v1.3.0 行为变更(2026-07-05):
+  - 删除 `-n / --max-results` 选项(原意为"总结果数上限",实际是学术检索的反模式)
+  - 改用 [cli.defaults].page_size 控制单页大小,翻页直到 API 终止信号
+  - 所有参数默认值从 [cli.defaults] 读,命令行 flag 可覆盖
+  - 不传任何参数 = 完全用 toml 默认值
 """
 
 from __future__ import annotations
@@ -19,30 +25,30 @@ from papercrawler.cli._helpers import (
 
 
 def cmd_search(
-    query:            Optional[str]  = typer.Option(None, "-q", "--query",          help="关键词检索"),
-    author:           Optional[str]  = typer.Option(None, "-a", "--author",         help="作者名检索"),
-    title:            Optional[str]  = typer.Option(None, "-t", "--title",          help="题目检索"),
-    doi:              Optional[str]  = typer.Option(None, "-d", "--doi",            help="DOI 直接检索"),
-    max_results:      int             = typer.Option(20,   "-n", "--max-results",    help="最大结果数"),
-    year_from:        Optional[int]  = typer.Option(None,  "--year-from",           help="发表年份下限"),
-    year_to:          Optional[int]  = typer.Option(None,  "--year-to",             help="发表年份上限"),
-    source:           Optional[str]  = typer.Option(None,  "--source",              help="指定数据源（逗号分隔）"),
-    sort:             str             = typer.Option("relevance", "--sort",          help="relevance|date|citations"),
-    oa_only:          bool            = typer.Option(False, "--oa-only",             help="仅返回 OA 论文"),
-    min_author_score: float           = typer.Option(0.0,   "--min-author-score",    help="最低作者匹配分数（0.0~1.0，0.0=不过滤）"),
-    # 领域感知 ✨ (三态:None=自动按配置,True=强制开,False=强制关)
-    interest:         Optional[bool]  = typer.Option(None, "--interest/--no-interest", help="启用领域相关性打分 (None=按 [interest] 配置自动决定)"),
-    interest_threshold: float         = typer.Option(0.6,   "--interest-threshold", help="第一阶段粗筛最低分数(title-based, 默认 0.6, <此值过滤掉)。单 must_have 命中 = 0.6,所以单关键词场景默认 0.6 即可通过。"),
-    semantic_min_matches: int        = typer.Option(3,    "--semantic-min-matches", help="第二阶段细筛最少命中关键词数(title+abstract+keywords 中命中 ≥ 此值才保留, 默认 3)"),
-    csv_path:         Optional[str]  = typer.Option(None,  "--csv",                 help="导出符合条件的结果到 CSV 文件路径 (留空=按 [interest] 配置自动决定)"),
-    no_csv:           bool            = typer.Option(False, "--no-csv",              help="明确禁用 CSV 导出"),
+    # 2026-07-05 v1.3.0: 删除 -n/--max-results,语义改为 [cli.defaults].page_size
+    query:            Optional[str]  = typer.Option(None, "-q", "--query",       help="关键词检索(留空用 [cli.defaults].query)"),
+    author:           Optional[str]  = typer.Option(None, "-a", "--author",      help="作者名检索"),
+    title:            Optional[str]  = typer.Option(None, "-t", "--title",       help="题目检索"),
+    doi:              Optional[str]  = typer.Option(None, "-d", "--doi",         help="DOI 直接检索"),
+    year_from:        Optional[int]  = typer.Option(None,  "--year-from",        help="发表年份下限(留空用 [cli.defaults].year_from)"),
+    year_to:          Optional[int]  = typer.Option(None,  "--year-to",          help="发表年份上限(留空用 [cli.defaults].year_to)"),
+    source:           Optional[str]  = typer.Option(None,  "--source",           help="指定数据源(逗号分隔)"),
+    sort:             Optional[str]  = typer.Option(None,  "--sort",             help="relevance|date|citations(留空用 [cli.defaults].sort)"),
+    oa_only:          Optional[bool] = typer.Option(None,  "--oa-only/--no-oa-only", help="仅返回 OA 论文(留空用 [cli.defaults].oa_only)"),
+    min_author_score: float           = typer.Option(0.0,   "--min-author-score", help="最低作者匹配分数(0.0~1.0)"),
+    # 领域感知
+    interest:         Optional[bool]  = typer.Option(None, "--interest/--no-interest", help="启用领域相关性打分"),
+    interest_threshold: float         = typer.Option(0.6,   "--interest-threshold",     help="粗筛分数阈值(默认 0.6)"),
+    semantic_min_matches: int        = typer.Option(3,    "--semantic-min-matches",    help="细筛命中关键词数(默认 3)"),
+    csv_path:         Optional[str]  = typer.Option(None,  "--csv",                 help="CSV 路径(留空=自动命名)"),
+    no_csv:           bool            = typer.Option(False, "--no-csv",              help="禁用 CSV 导出"),
     # 运行管理
-    name:             Optional[str]  = typer.Option(None,  "--name",                help="本次运行的名称(用作 results/ 子目录名,留空=时间戳)"),
-    output_dir:       Optional[str]  = typer.Option(None,  "--output-dir",           help="输出目录(留空=results/<name 或时间戳>/)"),
+    name:             Optional[str]  = typer.Option(None,  "--name",                help="本次运行名"),
+    output_dir:       Optional[str]  = typer.Option(None,  "--output-dir",           help="输出目录(留空用 [cli.defaults].output_dir)"),
     # 下载
-    download:         bool            = typer.Option(False, "--download",            help="检索后自动下载"),
+    download:         Optional[bool] = typer.Option(None,  "--download/--no-download", help="检索后自动下载(留空用 [cli.defaults].auto_download)"),
     force:            bool            = typer.Option(False, "--force",               help="强制重新下载(覆盖本 run DB)"),
-    force_global:     bool            = typer.Option(False, "--force-global",        help="强制重新下载(覆盖全局 DB,即使其他 run 已下载)"),
+    force_global:     bool            = typer.Option(False, "--force-global",        help="强制重新下载(覆盖全局 DB)"),
     dry_run:          bool            = typer.Option(False, "--dry-run",             help="模拟运行(不实际下载)"),
     config_path:      Optional[str]  = typer.Option(None,  "--config",              help="配置文件路径"),
     verbose:          bool            = typer.Option(False, "--verbose",             help="详细日志"),
@@ -50,22 +56,40 @@ def cmd_search(
 ):
     """检索论文。可通过关键词、作者名、题目或 DOI 检索。
 
-    领域感知默认行为(选项 A):只要 config/papercrawler.toml 的 [interest] 节
-    配置了关键词,就会自动启用 --interest / --csv。
-    用 --no-interest / --no-csv 可显式关闭。
+    v1.3.0 行为:
+      - 检索参数(关键词 / 年份 / sort / oa_only / page_size)可全部在
+        config.toml 的 [cli.defaults] 节设置,本命令不传任何 flag 直接用默认值
+      - 单页大小通过 [cli.defaults].page_size 控制,翻页到 API 终止信号为止
+      - 年份范围(year_from..year_to)会被 manager 自动拆成逐年查询,
+        避免单次查询触发数据源返回数量上限
 
-    每次运行默认在 ./results/<name 或时间戳>/ 下创建独立子目录,papers /
-    metadata.json / CSV / 索引都放在那里。
-
-    跨 run 去重:默认会查 ~/.papercrawler/_download_log.db(全局 DB),
-    已下载的论文会自动跳过。用 --force-global 强制重下。
+    跨 run 去重:默认会查 ~/.papercrawler/_download_log.db,已下载的论文自动跳过。
     """
     from papercrawler.models import SearchQuery
 
     cfg = _setup(config_path, verbose)
 
+    # 2026-07-05 v1.3.0: 从 toml [cli.defaults] 填充所有可选参数
+    cli_def = cfg.cli
+
+    if query is None:
+        query = cli_def.query or None
+    if year_from is None:
+        year_from = cli_def.year_from
+    if year_to is None:
+        year_to = cli_def.year_to
+    if sort is None:
+        sort = cli_def.sort
+    if oa_only is None:
+        oa_only = cli_def.oa_only
+    if download is None:
+        download = cli_def.auto_download
+    if output_dir is None and cli_def.output_dir:
+        output_dir = cli_def.output_dir
+
+    # 至少要有 query / author / title / doi 其一
     if not any([query, author, title, doi]):
-        console.print("[red]错误：至少提供 --query、--author、--title 或 --doi 之一[/red]")
+        console.print("[red]错误：至少提供 --query、--author、--title、--doi 之一,或设置 [cli.defaults].query[/red]")
         raise typer.Exit(1)
 
     # --min-author-score 命令行参数覆盖配置文件中的阈值
@@ -85,29 +109,32 @@ def cmd_search(
     has_keywords = bool(cfg.interest.must_have or cfg.interest.should_have or cfg.interest.exclude)
     has_interest_config = has_keywords
 
-    # 领域打分:三态 -> 最终布尔
     if interest is None:
         interest = has_keywords
 
     # CSV:三态 -> 路径
-    # 2026-07-05: 自动生成的 CSV 名改用 "<must_have 关键词>_<时间>_<数量>.csv" 格式
-    # 因为数量要等粗筛+细筛后才知道,所以这里不立即生成文件名,留到下面补。
     csv_auto_generate = False
     if no_csv:
         csv_path = None
     elif csv_path is None and interest:
         csv_auto_generate = True
-        csv_path = None  # 延迟到知道 len(papers) 时再生成
+        csv_path = None
 
     # 显示本轮配置
     if has_interest_config:
         flags = []
         if interest: flags.append("interest")
         if csv_auto_generate:
-            flags.append("csv→<must_have>_<时间>_<数量>.csv(自动)")
+            flags.append("csv→<日期>_<关键词>_<数量>.csv(自动)")
         elif csv_path:
             flags.append(f"csv→{Path(csv_path).name}")
         console.print(f"[dim]领域感知: 启用 {', '.join(flags) or '无'}[/dim]")
+
+    # 显示 CLI 默认值来源(便于用户知道参数从哪来)
+    console.print(
+        f"[dim]参数: query={query!r} year_from={year_from} year_to={year_to} "
+        f"sort={sort} oa_only={oa_only} page_size={cli_def.page_size} download={download}[/dim]"
+    )
 
     # ============= 执行检索 =============
     sources = [s.strip() for s in source.split(",")] if source else []
@@ -116,7 +143,7 @@ def cmd_search(
         author=author,
         title=title,
         doi=doi,
-        max_results=max_results,
+        page_size=cli_def.page_size,   # 2026-07-05 v1.3.0: 从 toml 读
         year_from=year_from,
         year_to=year_to,
         sources=sources,
@@ -133,7 +160,6 @@ def cmd_search(
         papers, source_counts = await manager.search_with_stats(q)
 
         # 第一阶段:粗筛(只基于 title,快,不做 enrich)
-        # 等到第二阶段细筛之前才 enrich,节省 API 调用
         if papers and interest:
             df = DomainFilter(cfg.interest)
             df.annotate(papers)
@@ -145,7 +171,6 @@ def cmd_search(
             )
 
         # 第二步:enrich — 只对粗筛通过的论文补 abstract + OA 状态
-        # 这样能省掉对明显不相关论文的 S2/CrossRef API 调用
         if papers:
             extractor = MetadataExtractor(config=cfg)
             console.print(f"[cyan]正在 enrich 补 abstract + OA 状态(共 {len(papers)} 篇)...[/cyan]")
@@ -170,8 +195,6 @@ def cmd_search(
         )
 
     # CSV 导出(在阈值过滤之后)
-    # 2026-07-05: 如果 csv_path 是自动生成模式(刚才 csv_auto_generate=True),
-    # 在这里根据 must_have 关键词 + 当前时间 + papers 数量生成最终文件名。
     if csv_auto_generate:
         from papercrawler.cli._helpers import _make_run_csv_filename
         csv_path = str(_make_run_csv_filename(
@@ -184,12 +207,10 @@ def cmd_search(
 
     if csv_path:
         _run_csv_export(papers, csv_path)
-        # 同步生成合并 CSV(scan results/ 全部 metadata.json)
-        # 2026-07-05: 总 CSV 改名 _all_filtered.csv → total_papers.csv
         combined_path = Path("results") / "total_papers.csv"
         _run_combined_csv_export(results_root="results", csv_path=combined_path)
 
-    # 展示结果(传入 author 用于显示匹配度列,以及是否显示 interest 列)
+    # 展示结果
     _display_results(
         papers,
         fmt,
@@ -202,13 +223,11 @@ def cmd_search(
             papers, str(output_path), cfg,
             force=force, dry_run=dry_run, force_global=force_global,
         )
-        # 下载完成后用实际状态更新 CSV 的 downloaded 列
         if csv_path and not dry_run:
             downloaded_lookup = {
                 t.paper.unique_id: t.status.value == "success"
                 for t in tasks
             }
             _run_csv_export(papers, csv_path, downloaded_lookup=downloaded_lookup)
-            # 同时更新合并 CSV(2026-07-05 改名 total_papers.csv)
             combined_path = Path("results") / "total_papers.csv"
             _run_combined_csv_export(results_root="results", csv_path=combined_path)

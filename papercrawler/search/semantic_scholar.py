@@ -1,6 +1,6 @@
 """
-Semantic Scholar 检索适配器
-API 文档: https://api.semanticscholar.org/api-docs/
+Semantic Scholar 妫€绱㈤€傞厤鍣?
+API 鏂囨。: https://api.semanticscholar.org/api-docs/
 """
 
 from __future__ import annotations
@@ -26,15 +26,12 @@ class SemanticScholarAdapter(BaseSearchAdapter):
             return await self._by_doi(query.doi)
 
         # ---------------------------------------------------------------
-        # 分页抓取:Semantic Scholar 用 offset= 翻页 + token (2026-07 加)
+        # 分页抓取:Semantic Scholar 用 offset= 翻页 + token
         #   单页 limit 上限 100
         #   终止信号:返回条目 < limit,或 next 字段为 null/空
-        # 防卡:max_pages=40 上限(2026-07-05 ↑ from 20),默认 40 × 100 = 4000 条
-        #       (无 API key 仍限 5 页 — S2 严格 rate-limit)
+        # 2026-07-05 v1.3.0: 不再用 query.page_size 截顶
         # ---------------------------------------------------------------
-        page_size = min(query.max_results, 100)
-        if query.max_results > 100:
-            page_size = 100
+        page_size = min(query.page_size, 100)
 
         base_params: dict = {
             "query": query.build_text_query(),
@@ -61,14 +58,14 @@ class SemanticScholarAdapter(BaseSearchAdapter):
         seen: set[str] = set()
         offset = 0
         max_pages = 40
-        # 无 API key 时 S2 限速更严,翻页次数减半
+        # 鏃?API key 鏃?S2 闄愰€熸洿涓?缈婚〉娆℃暟鍑忓崐
         if not self.api_key:
             max_pages = 5
 
         for _page in range(max_pages):
             params = dict(base_params)
             params["offset"] = offset
-            params["limit"] = min(page_size, query.max_results - len(results))
+            params["limit"] = page_size
 
             data = await self._get_json(
                 f"{_BASE}/paper/search", params=params, headers=headers
@@ -80,7 +77,6 @@ class SemanticScholarAdapter(BaseSearchAdapter):
             if not items:
                 break
 
-            added = 0
             for item in items:
                 paper = self._parse(item)
                 if not paper:
@@ -92,7 +88,6 @@ class SemanticScholarAdapter(BaseSearchAdapter):
                     continue
                 seen.add(ext)
                 results.append(paper)
-                added += 1
 
             # S2 终止信号:返回条目 < limit,或 next 字段缺失
             if len(items) < params["limit"]:
@@ -100,11 +95,9 @@ class SemanticScholarAdapter(BaseSearchAdapter):
             if not data.get("next"):
                 break
             offset += params["limit"]
-            if len(results) >= query.max_results:
-                break
 
         logger.debug(f"[semantic_scholar] 找到 {len(results)} 篇论文")
-        return self._tag_source(results[: query.max_results])
+        return self._tag_source(results)
 
     async def _by_doi(self, doi: str) -> list[PaperMetadata]:
         headers = {}
@@ -165,6 +158,6 @@ class SemanticScholarAdapter(BaseSearchAdapter):
                 },
             )
         except (KeyError, AttributeError, TypeError, ValueError) as e:
-            # 单篇解析失败:字段缺失 / 类型错
-            logger.opt(exception=True).debug(f"[semantic_scholar] 解析失败: {e}")
+            # 鍗曠瘒瑙ｆ瀽澶辫触:瀛楁缂哄け / 绫诲瀷閿?
+            logger.opt(exception=True).debug(f"[semantic_scholar] 瑙ｆ瀽澶辫触: {e}")
             return None

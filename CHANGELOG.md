@@ -5,7 +5,7 @@
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/),
 本项目遵循 [语义化版本](https://semver.org/lang/zh-CN/) 规范。
 
-## [Unreleased]
+## [1.2.0] - 2026-07-05
 
 ### 新增 (Added)
 - **CSV 自动命名导出**:本次 run 的 CSV 自动以 `<must_have 关键词>_<YYYYMMDD>_<入库数量>.csv` 命名(例:`solid_state_electrolyte_20260705_62.csv`),不再用 `_interest_filtered.csv` 下划线前缀
@@ -45,6 +45,67 @@
 ### 安全 (Security)
 - **清理测试结果**:删除 `results/` 下 21 个 run 子目录、`test_output_20_papers_*`、`merge_yearly_results.py` 临时脚本,保证 git 历史中不混入个人测试数据
 - **测试文件 Categorizer 清理**:`tests/test_20_papers.py` / `tests/test_full_flow.py` / `tests/test_paper_dl.py` 移除 Categorizer 调用,测试可继续运行
+
+---
+
+## [Unreleased]
+
+### 新增 (Added)
+
+### 变更 (Changed)
+
+### 修复 (Fixed)
+
+---
+
+## [1.3.0] - 2026-07-05
+
+> **核心主题:领域感知 + 断点续下 + 逐年翻页**
+
+### 新增 (Added)
+
+- **`download --from-csv <csv>` 命令**:从 `search` 输出的 CSV 批量下载/续下;典型工作流:检索 → 人工确认 CSV → 批量下载,可分多日完成
+- **`CSVReader` 类**(`papercrawler/export/csv_writer.py`):把 `search` 导出的 CSV 重新加载为 `PaperMetadata` 列表;支持 `--skip-already` 过滤 `downloaded=true` 行
+- **`--skip-already` CLI 选项**(配合 `--from-csv`):跳过 CSV 中 `downloaded=true` 的行(常规推荐依赖全局 DB 自动跳过,此选项用于 CSV 标记与 DB 不一致时的兜底)
+- **`SearchManager._split_year_range()`**:年份范围跨度 > 1 年时自动拆为单年多次查询并汇总,避免单个数据源返回上限被截顶;单年查询不拆分(避免无谓的 API 开销)
+- **`papercrawler.toml` 的 `[cli.defaults]` 节**:CLI 默认参数(`query` / `year_from` / `year_to` / `page_size` / `sort`)移到配置文件,命令行只跑功能;`papercrawler search` 不传任何参数即使用 toml 默认值
+- **`download_status` 字段持久化**:`SearchQuery.max_results` → `SearchQuery.page_size`(单页大小),语义从"总结果上限"改为"单页请求大小";各 adapter 在自己 API 上限内自动 clamp
+- **`download_run` 数据库迁移**:已有 DB 缺 `download_run` 列时启动自动 ALTER TABLE(幂等,见 v1.1.0)
+
+### 变更 (Changed)
+
+- **删除 `-n / --max-results` CLI 选项**:`SearchQuery.max_results` 字段重命名为 `page_size`,语义变更;配置文件同步
+- **6 个 adapter 改名 `max_results → page_size`**:`arxiv` / `crossref` / `openalex` / `core` / `semantic_scholar` / `pubmed` / `chemrxiv_via_crossref`
+- **删除 6 个 adapter 的 `[: query.page_size]` 截顶**:改为翻页直到 API 终止信号(`next_cursor=null` 或 `total` 耗尽)
+- **7 个 adapter 清理 UTF-8 BOM**:之前 `Set-Content -Encoding UTF8` 写入时残留的 BOM 被 Python 批处理 `b[3:]` 修复
+- **CSV 自动命名格式变更**:`<must_have 关键词>_<YYYYMMDD>_<入库数量>.csv` → `<YYYYMMDD>_<关键词slug>_<数量>.csv`(日期在前便于排序,文件名以字母开头无下划线前缀)
+- **CSV 列调整**:保留 12 列(`downloaded` 在 v1.2 已加)
+- **6 个数据源页面大小自动 clamp**:`CrossRef/S2/CORE/chemrxiv_via_crossref` max 100;`OpenAlex` max 200;`ArXiv` max 1000
+
+### 修复 (Fixed)
+
+- **`chemrxiv_via_crossref.py` line 28 合并行 bug**:`_PAGE_SIZE = 100  # ... # _MAX_PAGES = 50` 两行被吞成一行导致 `NameError: name '_MAX_PAGES' is not defined`;修复为正确的两行
+- **`arxiv.py` line 166-167 合并行 bug**:`# 分类 = 关键词` 注释后换行被吞,导致 `categories = [` 缺少缩进,触发 `SyntaxError: expected 'except' or 'finally' block`;修复为正确的两行(用正则 `\s*#[^
+]*?\s+(categories\s*=\s*\[)` 拆分)
+- **`compileall -q papercrawler/` 通过**:本次修复后所有 .py 文件无语法错误
+
+### 重构统计
+
+- **新增**:
+  - `papercrawler/export/csv_writer.py` 新增 `CSVReader` / `_row_to_paper` / `CSVReadError`(约 110 行)
+- **修改**:
+  - `papercrawler/cli/download.py`(`cmd_download` 加 `--from-csv` / `--skip-already`,参数互斥检查)
+  - `papercrawler/models.py`(`SearchQuery.max_results` → `page_size`)
+  - `papercrawler/search/manager.py`(`_split_year_range` 拆单年)
+  - `papercrawler/config.py`(`CliDefaultsConfig` 类)
+  - `config/papercrawler.toml`(新增 `[cli.defaults]` 节)
+  - 7 个 search adapter:`max_results → page_size`,删 `[: query.page_size]` 截顶
+- **测试新增**:
+  - `tests/test_from_csv.py`(4 个测试,全部通过):
+    - `test_csv_reader_basic` — CSVReader 解析标准 CSV(search 输出格式)
+    - `test_csv_reader_skip_already` — `--skip-already` 过滤 `downloaded=true` 行
+    - `test_csv_reader_errors` — 错误 CSV 处理(文件不存在 / 缺列)
+    - `test_cli_from_csv_with_resume` — 集成测试:首次下载 1 篇 arXiv 论文 → 第二次同样命令全部 skipped → 第三次 `--force-global` 强制重下
 
 ---
 
