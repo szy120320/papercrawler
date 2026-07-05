@@ -79,7 +79,8 @@ class PaperMetadata(BaseModel):
     interest_score: Optional[float] = None     # 最终领域相关性分数（0.0~1.0）= 0.6*coarse + 0.4*semantic
     coarse_score: Optional[float] = None        # 第一阶段粗筛分数（仅 title + must_have/should_have）
     semantic_score: Optional[float] = None      # 第二阶段细筛分数（title+abstract+keywords vs description）
-    categories: list[str] = Field(default_factory=list)  # 自动分类标签（可多个），启用 --categorize 时填充
+    is_reversed: bool = False                   # 是否命中反向关键词(命中则直接剔除,不进入下游)
+    reversed_keywords: list[str] = Field(default_factory=list)  # 命中的反向关键词(用于审计)
 
     @field_validator("doi", mode="before")
     @classmethod

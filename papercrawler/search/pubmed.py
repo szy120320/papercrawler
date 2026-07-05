@@ -20,24 +20,30 @@ class PubMedAdapter(BaseSearchAdapter):
     SOURCE_ID = "pubmed"
 
     async def search(self, query: SearchQuery) -> list[PaperMetadata]:
-        # 1. esearch 获取 PMID 列表
+        # ---------------------------------------------------------------
+        # 分页抓取:PubMed 用 retstart= 翻页(2026-07 加)
+        #   1) esearch 一次拿完整 PMID 列表(用 query.max_results 决定上限)
+        #   2) efetch 按 PMID 切片批量取摘要,retstart + retmax 翻页
+        # 防卡:max_pages=20 上限
+        # 注意:esearch 本身仍需传 retmax,但通常 ≥ 实际命中数即可拿到所有 PMID
+        # ---------------------------------------------------------------
         term = self._build_term(query)
-        params: dict = {
+        esearch_params: dict = {
             "db": "pubmed",
             "term": term,
-            "retmax": min(query.max_results, 100),
+            "retmax": str(query.max_results),  # 拿全 PMID,不再受 100 限顶
             "retmode": "json",
         }
         if self.api_key:
-            params["api_key"] = self.api_key
+            esearch_params["api_key"] = self.api_key
         if query.year_from or query.year_to:
             frm = query.year_from or 1800
             to = query.year_to or 2100
-            params["datetype"] = "pdat"
-            params["mindate"] = str(frm)
-            params["maxdate"] = str(to)
+            esearch_params["datetype"] = "pdat"
+            esearch_params["mindate"] = str(frm)
+            esearch_params["maxdate"] = str(to)
 
-        data = await self._get_json(_ESEARCH, params=params)
+        data = await self._get_json(_ESEARCH, params=esearch_params)
         if not data:
             return []
 
@@ -45,33 +51,57 @@ class PubMedAdapter(BaseSearchAdapter):
         if not pmids:
             return []
 
-        # 2. efetch 批量获取元数据 XML(走 _get_text,共享限速 + 重试)
-        fetch_params: dict = {
-            "db": "pubmed",
-            "id": ",".join(pmids),
-            "retmode": "xml",
-            "rettype": "abstract",
-        }
-        if self.api_key:
-            fetch_params["api_key"] = self.api_key
+        # 2. efetch 按 PMID 分批拉摘要,retstart + retmax 翻页
+        fetch_step = 100  # 单批 PMID 上限
+        results: list[PaperMetadata] = []
+        seen: set[str] = set()
+        retstart = 0
+        max_pages = 20
 
-        try:
-            xml_text = await self._get_text(_EFETCH, params=fetch_params)
-        except SourceError as e:
-            logger.debug(f"[pubmed] efetch 失败: {e}")
-            return []
+        for _page in range(max_pages):
+            batch = pmids[retstart : retstart + fetch_step]
+            if not batch:
+                break
 
-        if not xml_text:
-            return []
+            fetch_params: dict = {
+                "db": "pubmed",
+                "id": ",".join(batch),
+                "retmode": "xml",
+                "rettype": "abstract",
+            }
+            if self.api_key:
+                fetch_params["api_key"] = self.api_key
 
-        try:
-            results = self._parse_xml(xml_text)
-        except ET.ParseError as e:
-            logger.warning(f"[pubmed] XML 解析错误: {e}")
-            return []
+            try:
+                xml_text = await self._get_text(_EFETCH, params=fetch_params)
+            except SourceError as e:
+                logger.debug(f"[pubmed] efetch 失败: {e}")
+                return self._tag_source(results)
+
+            if not xml_text:
+                break
+
+            try:
+                page_results = self._parse_xml(xml_text)
+            except ET.ParseError as e:
+                logger.warning(f"[pubmed] XML 解析错误: {e}")
+                break
+
+            for paper in page_results:
+                key = ((paper.raw_ids or {}).get("pubmed") or "") or (paper.title or "")
+                if key and key in seen:
+                    continue
+                seen.add(key)
+                results.append(paper)
+
+            retstart += len(batch)
+            if len(batch) < fetch_step:
+                break
+            if len(results) >= query.max_results:
+                break
 
         logger.debug(f"[pubmed] 找到 {len(results)} 篇论文")
-        return self._tag_source(results)
+        return self._tag_source(results[: query.max_results])
 
     def _build_term(self, query: SearchQuery) -> str:
         parts = []

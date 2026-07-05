@@ -7,7 +7,6 @@ csv_writer.py — 论文列表 CSV 导出
     year             发表年份
     journal          期刊/来源
     authors          作者列表(; 分隔)
-    categories       分类标签(; 分隔,可能为空)
     coarse_score     第一阶段粗筛分数(title + must_have/should_have/exclude)
     semantic_score   第二阶段细筛:命中关键词数(整数,title+abstract+keywords 中
                      semantic_keywords 命中个数;阈值默认 ≥ 3 才保留)
@@ -20,6 +19,7 @@ csv_writer.py — 论文列表 CSV 导出
     paper_dir        已下载时的论文目录名(相对 output_dir)
 
 注意:
+    - 2026-07-05 移除 categories 列(分类功能已删除)
     - 不再导出 interest_score(两阶段独立判断,无合并分数)
     - semantic_score 现在是整数(命中关键词数),不是 0~1 的浮点
 
@@ -46,7 +46,6 @@ COLUMNS: list[str] = [
     "year",
     "journal",
     "authors",
-    "categories",
     "coarse_score",
     "semantic_score",
     "citations",
@@ -69,7 +68,6 @@ def _paper_to_row(
         "year":           paper.year if paper.year is not None else "",
         "journal":        paper.journal or "",
         "authors":        "; ".join(a.name for a in paper.authors),
-        "categories":     "; ".join(paper.categories) if paper.categories else "",
         "coarse_score":   paper.coarse_score if paper.coarse_score is not None else "",
         "semantic_score": paper.semantic_score if paper.semantic_score is not None else "",
         "author_score":   paper.author_match_score if paper.author_match_score is not None else "",

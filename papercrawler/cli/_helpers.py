@@ -1,7 +1,7 @@
 """
 CLI 共享工具函数
 
-被 search / download / batch / recategorize / convert / history / config 共用:
+被 search / download / batch / convert / history / config 共用:
   - console: 单例 rich Console
   - logger:  loguru 全局 logger
   - _setup: 加载配置 + 初始化 logger
@@ -85,6 +85,61 @@ def _default_run_name(query: Optional[str], author: Optional[str], doi: Optional
     return timestamp
 
 
+def _slugify_keyword(keyword: str) -> str:
+    """
+    把关键词变成文件名安全的 slug:
+      "solid state electrolyte" → "solid_state_electrolyte"
+      "MLIP, MACE" → "mlip_mace"
+    """
+    if not keyword:
+        return ""
+    # 只保留字母 / 数字,其他变下划线
+    slug = re.sub(r"[^\w]+", "_", keyword, flags=re.UNICODE).strip("_").lower()
+    # 合并多个连续下划线
+    slug = re.sub(r"_+", "_", slug)
+    return slug
+
+
+def _make_run_csv_filename(
+    must_have_keywords: list[str],
+    papers_count: int,
+    output_dir: str | Path,
+    query: Optional[str] = None,
+) -> Path:
+    """
+    生成单次 run 的 CSV 文件名: <must_have关键词>_<时间>_<数量>.csv
+
+    命名规则(2026-07-05):
+      - 第一段:must_have 的第一个关键词做 slug(多个用 _ 连)
+      - 第二段:当前时间戳(YYYYMMDD_HHMMSS)
+      - 第三段:本次入库的论文数(粗筛+细筛后)
+      - 文件以字母开头(无下划线前缀)
+      - 落在 output_dir 下
+
+    例: solid_state_electrolyte_20260705_173000_62.csv
+
+    fallback:
+      - 如果 must_have 为空,取 query 第一个词
+      - 都没有,fallback 到 "search"
+    """
+    timestamp = datetime.now().strftime("%Y%m%d")   # 2026-07-05: 只保留年月日,去掉时分秒
+
+    # 1. 取关键词部分
+    if must_have_keywords:
+        # 取第一个 must_have 的 slug
+        first = _slugify_keyword(must_have_keywords[0])
+        if not first:
+            first = "search"
+    elif query:
+        first = _slugify_keyword(query.split()[0]) if query.split() else "search"
+    else:
+        first = "search"
+
+    # 2. 拼文件名
+    filename = f"{first}_{timestamp}_{papers_count}.csv"
+    return Path(output_dir) / filename
+
+
 # ---------------------------------------------------------------------------
 # 显示辅助
 # ---------------------------------------------------------------------------
@@ -138,7 +193,6 @@ def _display_results(
     fmt: str,
     query_author: Optional[str] = None,
     show_interest: bool = False,
-    show_categories: bool = False,
 ) -> None:
     """在终端显示论文检索结果表格 / JSON / Markdown"""
     if fmt == "json":
@@ -162,8 +216,7 @@ def _display_results(
         # 两阶段打分:只显示粗筛和细筛两个独立分数(不合并)
         table.add_column("粗筛",  width=7, justify="center")
         table.add_column("细筛",  width=7, justify="center")
-    if show_categories:
-        table.add_column("分类",   max_width=20)
+        table.add_column("反向词", max_width=14)
     table.add_column("DOI",    max_width=22)
 
     oa_color = {
@@ -201,9 +254,13 @@ def _display_results(
         if show_interest:
             row.append(_colorize_score(p.coarse_score))
             row.append(_colorize_score(p.semantic_score))
-        if show_categories:
-            cats = "; ".join(p.categories) if p.categories else "[dim]—[/dim]"
-            row.append(cats[:20])
+            if p.is_reversed and p.reversed_keywords:
+                rev = "; ".join(p.reversed_keywords)[:14]
+                row.append(f"[red]{rev}[/red]")
+            elif p.is_reversed:
+                row.append("[red]是[/red]")
+            else:
+                row.append("[dim]—[/dim]")
 
         row.append((p.doi or "—")[:22])
         table.add_row(*row)
@@ -221,6 +278,9 @@ def _display_results(
         notes.append(
             "[dim]领域分: 同上规则,基于 title+abstract 与 [interest] 关键词匹配[/dim]"
         )
+        notes.append(
+            "[dim]反向词: [red]命中即被剔除[/red][/dim]"
+        )
     if notes:
         console.print("  ".join(notes))
 
@@ -235,7 +295,6 @@ def _run_interest_pipeline(
     interest: bool,
     interest_threshold: float,
     semantic_min_matches: int,
-    categorize: bool,
 ) -> None:
     """
     两阶段打分流程(阶段1 粗筛已在 search 后立刻执行)。
@@ -250,18 +309,17 @@ def _run_interest_pipeline(
 
     阈值过滤是 in-place 修改 papers 列表(顺序不变,剔除低分论文)。
     """
-    from papercrawler.classify import Categorizer, DomainFilter, SemanticFilter
+    from papercrawler.classify import DomainFilter, SemanticFilter
 
     if (
         not cfg.interest.must_have
         and not cfg.interest.should_have
         and not cfg.interest.exclude
-        and not cfg.interest.categories
         and not cfg.interest.semantic_keywords
     ):
         console.print(
-            "[yellow]⚠️  --interest/--categorize 已启用,但 [interest] 配置为空。"
-            "请在 papercrawler.toml 中配置关键词与分类,或直接不传这两个参数。[/yellow]"
+            "[yellow]⚠️  --interest 已启用,但 [interest] 配置为空。"
+            "请在 papercrawler.toml 中配置关键词,或直接不传 --interest。[/yellow]"
         )
         return
 
@@ -287,15 +345,6 @@ def _run_interest_pipeline(
         # 按精筛命中数降序
         papers.sort(key=lambda p: p.semantic_score or 0, reverse=True)
 
-    if categorize:
-        cat = Categorizer(cfg.interest)
-        cat.annotate(papers)
-        n_categorized = sum(1 for p in papers if p.categories)
-        console.print(
-            f"[cyan]分类完成: {n_categorized}/{len(papers)} 篇被分类,"
-            f"分类数={len(cfg.interest.categories)}[/cyan]"
-        )
-
 
 # ---------------------------------------------------------------------------
 # CSV 导出
@@ -319,10 +368,11 @@ def _run_combined_csv_export(results_root: str = "results", csv_path: Optional[s
     扫描 results/ 下所有 metadata.json,合并去重,导出到一个总 CSV。
 
     行为:
-      - 递归扫描 results_root/(跳过 _all_filtered.csv 自身)
+      - 递归扫描 results_root/(跳过 csv_path 自身)
       - 用 PaperMetadata.unique_id 去重(DOI 优先,否则 title+author+year 哈希)
       - 按 interest_score 降序,然后 year 降序,然后 title 字典序
-      - 写到 csv_path(默认 results/_all_filtered.csv)
+      - 写到 csv_path(默认 results/total_papers.csv,2026-07-05 改名,
+        原 _all_filtered.csv 已被取代)
 
     Returns:
         写入的行数
@@ -332,7 +382,7 @@ def _run_combined_csv_export(results_root: str = "results", csv_path: Optional[s
     from papercrawler.export.csv_writer import CSVWriter
 
     if csv_path is None:
-        csv_path = str(Path(results_root) / "_all_filtered.csv")
+        csv_path = str(Path(results_root) / "total_papers.csv")
     csv_path = Path(csv_path)
     csv_path.parent.mkdir(parents=True, exist_ok=True)
 

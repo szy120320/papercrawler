@@ -22,43 +22,90 @@ class CrossRefAdapter(BaseSearchAdapter):
         if query.doi:
             return await self._by_doi(query.doi)
 
-        params: dict = {
-            "rows": min(query.max_results, 100),
+        # ---------------------------------------------------------------
+        # 分页抓取:CrossRef 用 offset= 翻页(2026-07 加)
+        #   单页 rows 上限 100
+        #   终止信号:返回条目 < rows,或 total-results 字段耗尽
+        # 防卡:max_pages=50 上限(2026-07-05 ↑ from 20),默认 50 × 100 = 5000 条
+        # ---------------------------------------------------------------
+        page_size = min(query.max_results, 100)
+        if query.max_results > 100:
+            page_size = 100
+
+        base_params: dict = {
+            "rows": page_size,
             "select": "title,author,published,abstract,DOI,URL,container-title,volume,issue,page,is-referenced-by-count,subject",
             "mailto": "user@example.com",
         }
 
         if query.title:
-            params["query.title"] = query.title
+            base_params["query.title"] = query.title
         if query.author:
-            params["query.author"] = query.author
+            base_params["query.author"] = query.author
         if query.query:
-            params["query"] = query.query
+            base_params["query"] = query.query
 
         if query.year_from or query.year_to:
             frm = query.year_from or 1900
             to = query.year_to or 2100
-            params["filter"] = f"from-pub-date:{frm},until-pub-date:{to}"
+            base_params["filter"] = f"from-pub-date:{frm},until-pub-date:{to}"
 
         if query.sort == "citations":
-            params["sort"] = "is-referenced-by-count"
-            params["order"] = "desc"
+            base_params["sort"] = "is-referenced-by-count"
+            base_params["order"] = "desc"
         elif query.sort == "date":
-            params["sort"] = "published"
-            params["order"] = "desc"
+            base_params["sort"] = "published"
+            base_params["order"] = "desc"
 
-        data = await self._get_json(f"{_BASE}/works", params=params)
-        if not data:
-            return []
+        results: list[PaperMetadata] = []
+        seen: set[str] = set()
+        offset = 0
+        max_pages = 50
+        total_reported: int | None = None
 
-        results = []
-        for item in (data.get("message", {}) or {}).get("items", []):
-            paper = self._parse(item)
-            if paper:
+        for _page in range(max_pages):
+            params = dict(base_params)
+            params["offset"] = offset
+            params["rows"] = min(page_size, query.max_results - len(results))
+
+            data = await self._get_json(f"{_BASE}/works", params=params)
+            if not data:
+                break
+
+            msg = data.get("message") or {}
+            items = msg.get("items") or []
+            if total_reported is None:
+                try:
+                    total_reported = int(msg.get("total-results", 0))
+                except (TypeError, ValueError):
+                    total_reported = None
+
+            if not items:
+                break
+
+            added = 0
+            for item in items:
+                paper = self._parse(item)
+                if not paper:
+                    continue
+                key = (paper.doi or "").strip().lower() or (paper.title or "")
+                if key and key in seen:
+                    continue
+                seen.add(key)
                 results.append(paper)
+                added += 1
+
+            offset += len(items)
+            # CrossRef 终止信号:返回条目 < rows 或 已达总数
+            if len(items) < params["rows"]:
+                break
+            if total_reported is not None and offset >= total_reported:
+                break
+            if len(results) >= query.max_results:
+                break
 
         logger.debug(f"[crossref] 找到 {len(results)} 篇论文")
-        return self._tag_source(results)
+        return self._tag_source(results[: query.max_results])
 
     async def _by_doi(self, doi: str) -> list[PaperMetadata]:
         data = await self._get_json(

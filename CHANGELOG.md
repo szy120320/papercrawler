@@ -8,43 +8,47 @@
 ## [Unreleased]
 
 ### 新增 (Added)
-- **新命令 `papercrawler recategorize`**:对已下载论文补跑领域打分与分类,扫描 `results/` 下所有 `metadata.json`,支持 `--interest-threshold` 过滤 + 导出 CSV
-- **目录结构重构**:
-  - `config/` 目录统一管理所有 TOML 配置文件(原 `papercrawler.toml` 已移入)
-  - `results/` 目录统一管理所有运行输出(原 `papers/` 已迁入)
-  - 每次 `search` / `download` / `batch` 自动在 `results/<时间戳 或 --name>/` 下创建独立子目录
-- **CLI 选项 A 自动启用**:`[interest]` 配置存在时,自动启用:
-  - 领域相关性打分
-  - 自动多标签分类
-  - CSV 导出到 `results/<本次运行>/_interest_filtered.csv`
-  - 配合 `--interest-threshold` 可自动过滤
-- **三态 CLI 标志**:`--interest/--no-interest`、`--categorize/--no-categorize`、`--csv PATH` / `--no-csv`,允许自动 / 强制 / 关闭
-- **新 CLI 选项 `--name`**:自定义本次运行名称(用作 `results/` 子目录名)
-- **新 CLI 选项 `--no-csv`**:显式禁用 CSV 导出
-- 领域相关性判定模块 `papercrawler.classify.DomainFilter`(基于 title+abstract 关键词 + 模糊匹配)
-- 自动多标签分类模块 `papercrawler.classify.Categorizer`(一篇可同时属多类)
-- CSV 导出器 `papercrawler.export.CSVWriter`(UTF-8 BOM, Excel 友好)
-- 配置文件 `[interest]` 节(描述、must_have / should_have / exclude 关键词权重、自定义分类)
-- `PaperMetadata` 模型新增 `interest_score` 与 `categories` 字段
-- GitHub 仓库: https://github.com/szy120320/papercrawler(remote 使用 `ghfast.top` 镜像绕过 github.com 封锁)
+- **CSV 自动命名导出**:本次 run 的 CSV 自动以 `<must_have 关键词>_<YYYYMMDD>_<入库数量>.csv` 命名(例:`solid_state_electrolyte_20260705_62.csv`),不再用 `_interest_filtered.csv` 下划线前缀
+- **全局合并 CSV 改名**:`results/_all_filtered.csv` → `results/total_papers.csv`
+- **`reverse_keywords` 反向关键词机制**:命中即直接剔除(`is_reversed=True`,score=0),与 `exclude` 平级但语义更明确;严格 substring 匹配,不走 fuzzy(防误杀)
+- **`[interest].semantic_keywords` 细筛命中计数**:在 title + abstract + keywords 中数命中关键词数,≥ `semantic_min_matches`(默认 3)才保留
 
 ### 变更 (Changed)
-- **配置文件位置**:`./papercrawler.toml` → `./config/papercrawler.toml`(`config.py` 同时支持旧位置,向后兼容)
-- **下载 / 搜索默认输出**:`./papers` → `./results/<时间戳 或 --name>/`
-- `papercrawler config init` 改为在 `./config/` 下生成配置
-- 项目重命名:`paper-dl` → `PaperCrawler`
-- 包目录重命名:`paper_dl/` → `papercrawler/`
-- CLI 命令名:`paper-dl` → `papercrawler`
-- `README.md` 完全重写,加入目录结构说明 + 选项 A 自动启用说明
-- 远程仓库 URL:`https://ghfast.top/https://github.com/szy120320/papercrawler.git`(因 github.com 在本机网络下不可直连)
-- `.gitignore` 规则更新:`config/papercrawler.toml`、`results/` 全部进 ignore 名单
+- **数据源:7 → 6**:`PubMed` 关闭(SSE 命中率 < 5%,且不返回 abstract)
+- **删除自动分类功能**:`Categorizer` 模块、`recategorize` CLI 命令、`InterestCategory` 配置模型、`PaperMetadata.categories` 字段、CSV `categories` 列全部移除
+- **关键词配置瘦身**:`must_have` 从 4 词(`solid state electrolyte` / `machine learning force field` / `molecular dynamics` / `DFT`)收敛到 1 词(`solid state electrolyte`)
+- **`reverse_keywords` 单词化**:原 `polymer electrolyte` / `liquid electrolyte` / `aqueous electrolyte` / `gel electrolyte` 4 个复合词改为单字 `polymer` / `liquid` / `aqueous` / `gel`,更激进反向过滤
+- **`semantic_keywords` 精简**:删除 MLIP / 力场 / DFT 相关词(7 个),新增 `amorphous` / `sulfide` / `sulphide` / `halide` / `oxide` 物相/结构关键词
+- **CLI 默认 `interest_threshold`**:0.7 → 0.6(单 must_have 命中 = 0.6,刚好过线)
+- **6 个 adapter 翻页上限大幅提高**:
+  | Adapter | 旧 → 新 |
+  |---|---|
+  | CrossRef | rows 80→100, max_pages 20→50(1,600 → 5,000 条) |
+  | OpenAlex | max_pages 50→100(10,000 → 20,000 条) |
+  | ArXiv | max_results 500→1000, max_pages 10→20(5,000 → 20,000 条) |
+  | Semantic Scholar | max_pages 20→40(2,000 → 4,000 条,无 key 仍限 5 页) |
+  | CORE | max_pages 20→50(2,000 → 5,000 条) |
+  | ChemRxiv | 无变化 |
+- **CSV 列调整**:删除 `categories` 列(13 → 12 列)
 
 ### 修复 (Fixed)
-- 修复了"必须每次手动加 `--interest --categorize --csv xxx.csv` 才会导出"的设计反人类问题(选项 A)
+- **`must_have` / `should_have` / `exclude` 不存在时**:`[interest]` 流水线不会自动开启(原逻辑依赖 categories 字段)
+- **`reverse_keywords` 多 token fuzzy 误杀**:严格 substring 匹配避免 `"aqueous electrolyte"` 误杀所有 SSE 论文
+
+### 重构统计
+- **删除文件**:
+  - `papercrawler/classify/categorizer.py`(98 行)
+  - `papercrawler/cli/recategorize.py`(167 行)
+- **修改文件**:9 个搜索 adapter + 9 个生产代码文件 + 3 个测试文件 + 1 个 config
+- **净减**:约 350 行代码
 
 ### 安全 (Security)
-- 清理了首次提交中误包含的本地临时脚本(`_setup_github.py` / `_test_github.py` / `_test_proxy.py`)
-- 现有 21 篇论文从 `./papers/` 迁移到 `./results/migrated_<时间戳>/papers/`,原始数据不丢失
+- **清理测试结果**:删除 `results/` 下 21 个 run 子目录、`test_output_20_papers_*`、`merge_yearly_results.py` 临时脚本,保证 git 历史中不混入个人测试数据
+- **测试文件 Categorizer 清理**:`tests/test_20_papers.py` / `tests/test_full_flow.py` / `tests/test_paper_dl.py` 移除 Categorizer 调用,测试可继续运行
+
+---
+
+## [1.1.0] - 2026-07-04
 
 ---
 

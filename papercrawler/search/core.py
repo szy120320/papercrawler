@@ -25,25 +25,65 @@ class CoreAdapter(BaseSearchAdapter):
         if query.doi:
             q = f"doi:{query.doi}"
 
-        params = {
-            "q": q,
-            "limit": min(query.max_results, 100),
-            "offset": 0,
-        }
+        # ---------------------------------------------------------------
+        # 分页抓取:CORE 用 offset + limit 翻页(2026-07 加)
+        #   单页 limit 上限 100
+        #   终止信号:返回条目 < limit,或 total_hits 字段耗尽
+        # 防卡:max_pages=50 上限(2026-07-05 ↑ from 20),默认 50 × 100 = 5000 条
+        # ---------------------------------------------------------------
+        page_size = min(query.max_results, 100)
+        if query.max_results > 100:
+            page_size = 100
 
         headers = {"Authorization": f"Bearer {self.api_key}"}
-        data = await self._get_json(f"{_BASE}/search/works", params=params, headers=headers)
-        if not data:
-            return []
+        results: list[PaperMetadata] = []
+        seen: set[str] = set()
+        offset = 0
+        max_pages = 50
+        total_hits: int | None = None
 
-        results = []
-        for item in data.get("results", []):
-            paper = self._parse(item)
-            if paper:
+        for _page in range(max_pages):
+            params = {
+                "q": q,
+                "limit": min(page_size, query.max_results - len(results)),
+                "offset": offset,
+            }
+
+            data = await self._get_json(
+                f"{_BASE}/search/works", params=params, headers=headers
+            )
+            if not data:
+                break
+
+            items = data.get("results", []) or []
+            if total_hits is None:
+                try:
+                    total_hits = int(data.get("totalHits", 0))
+                except (TypeError, ValueError):
+                    total_hits = None
+
+            if not items:
+                break
+
+            for paper in (self._parse(it) for it in items):
+                if not paper:
+                    continue
+                key = (paper.doi or "").lower() or (paper.url or paper.title or "")
+                if key and key in seen:
+                    continue
+                seen.add(key)
                 results.append(paper)
 
+            offset += len(items)
+            if len(items) < params["limit"]:
+                break
+            if total_hits is not None and offset >= total_hits:
+                break
+            if len(results) >= query.max_results:
+                break
+
         logger.debug(f"[core] 找到 {len(results)} 篇论文")
-        return self._tag_source(results)
+        return self._tag_source(results[: query.max_results])
 
     def _parse(self, item: dict) -> PaperMetadata | None:
         try:

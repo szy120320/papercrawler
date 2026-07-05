@@ -602,9 +602,95 @@ class TestCliPackageLayout:
         from papercrawler.cli import app
         assert hasattr(app, "registered_commands")
         names = {c.name for c in app.registered_commands}
-        assert {"search", "download", "batch", "recategorize", "convert"} <= names
+        # 2026-07-05 移除 recategorize 命令(分类功能下线)
+        assert {"search", "download", "batch", "convert"} <= names
 
     def test_cli_sub_typers(self):
         from papercrawler.cli import app
         sub_names = {g.name for g in app.registered_groups}
         assert {"history", "config"} <= sub_names
+
+
+# ===========================================================================
+# reverse_keywords 反向关键词测试
+# ===========================================================================
+
+class TestReverseKeywords:
+    """反向关键词 — 命中即硬剔除(粗筛+细筛两阶段都检查)"""
+
+    def test_model_has_reverse_fields(self):
+        p = make_paper(title="Test")
+        assert hasattr(p, "is_reversed")
+        assert hasattr(p, "reversed_keywords")
+        assert p.is_reversed is False
+        assert p.reversed_keywords == []
+
+    def test_domain_filter_reversed_zero_score(self):
+        from papercrawler.classify.domain_filter import DomainFilter
+        from papercrawler.config import InterestConfig
+
+        interest = InterestConfig(
+            must_have=["solid electrolyte"],
+            reverse_keywords=["polymer"],
+        )
+        p = make_paper(title="Polymer solid electrolyte study")
+        df = DomainFilter(interest)
+        score = df.score(p)
+        assert score == 0.0
+        assert p.is_reversed is True
+        assert "polymer" in p.reversed_keywords
+
+    def test_domain_filter_no_reverse_normal_score(self):
+        from papercrawler.classify.domain_filter import DomainFilter
+        from papercrawler.config import InterestConfig
+
+        interest = InterestConfig(
+            must_have=["solid electrolyte"],
+            reverse_keywords=["polymer"],
+        )
+        p = make_paper(title="Solid electrolyte study")
+        df = DomainFilter(interest)
+        score = df.score(p)
+        assert score == 0.6
+        assert p.is_reversed is False
+        assert p.reversed_keywords == []
+
+    def test_semantic_filter_reversed_zero_hits(self):
+        from papercrawler.classify.semantic_filter import SemanticFilter
+        from papercrawler.config import InterestConfig
+
+        interest = InterestConfig(
+            semantic_keywords=["lithium", "battery", "MD"],
+            reverse_keywords=["zinc-ion battery"],
+        )
+        p = make_paper(
+            title="Lithium battery",
+            abstract="This work studies zinc-ion battery materials.",
+        )
+        sf = SemanticFilter(interest)
+        hits = sf.score(p)
+        assert hits == 0
+        assert p.is_reversed is True
+        assert "zinc-ion battery" in p.reversed_keywords
+
+    def test_semantic_filter_combines_reversed_keywords(self):
+        from papercrawler.classify.semantic_filter import SemanticFilter
+        from papercrawler.config import InterestConfig
+
+        interest = InterestConfig(
+            semantic_keywords=["lithium", "battery"],
+            reverse_keywords=["polymer", "liquid electrolyte"],
+        )
+        p = make_paper(
+            title="Polymer lithium battery",  # 粗筛命中 polymer
+            abstract="Using liquid electrolyte.",  # 细筛命中 liquid electrolyte
+        )
+        # 模拟粗筛已标记一个反向词
+        p.is_reversed = True
+        p.reversed_keywords = ["polymer"]
+
+        sf = SemanticFilter(interest)
+        sf.score(p)
+
+        assert p.is_reversed is True
+        assert set(p.reversed_keywords) == {"polymer", "liquid electrolyte"}

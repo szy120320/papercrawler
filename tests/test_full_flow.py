@@ -11,7 +11,7 @@
   2) DomainFilter(粗打分) — 按 [interest].must_have/should_have/exclude 在 title 上打分
   3) MetadataExtractor — 补充 abstract + 检查 OA 状态
   4) SemanticFilter(细打分) — 用 description 拆解的关键词 + 短语 在 title+abstract+keywords 上精筛
-  5) Categorizer — 按 [interest].categories 打多标签
+  5) Categorizer — 按 [interest].categories 打多标签(2026-07-05 移除)
   6) CSVWriter — 导出 _interest_filtered.csv(含 coarse_score / semantic_score / final_score)
   7) PaperDownloader — 并发下载 PDF + MarkItDown 转 Markdown
   8) PaperStorage.write_index — 生成 _index.md / _index.json
@@ -36,7 +36,7 @@ except ImportError:
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from papercrawler.classify import Categorizer, DomainFilter
+from papercrawler.classify import DomainFilter
 from papercrawler.config import load_config, set_config
 from papercrawler.download.downloader import PaperDownloader
 from papercrawler.export.csv_writer import CSVWriter
@@ -66,7 +66,6 @@ async def main() -> None:
     print(f"  配置文件:    {TEST_CONFIG_PATH}")
     print(f"  启用数据源:  {cfg.sources.enabled}")
     print(f"  must_have:   {cfg.interest.must_have}")
-    print(f"  分类数:      {len(cfg.interest.categories)}")
     print(f"  输出目录:    {OUTPUT_DIR}")
 
     # ── 2. 多源检索 ────────────────────────────────────────────────
@@ -154,23 +153,8 @@ async def main() -> None:
     print(f"  过滤后: {after_filter} 篇(剔除 {before_filter - after_filter} 篇)")
     print(f"  保留条件: coarse_score ≥ {COARSE_THRESHOLD} AND 命中关键词 ≥ {SEMANTIC_MIN_MATCHES}")
 
-    # ── 6. 自动分类 ────────────────────────────────────────────────
-    banner("STEP 4: 自动多标签分类(Categorizer)")
-    cat = Categorizer(cfg.interest)
-    cat.annotate(papers)
-
-    n_categorized = sum(1 for p in papers if p.categories)
-    print(f"  命中分类: {n_categorized}/{len(papers)} 篇")
-    cat_stats: dict[str, int] = {}
-    for p in papers:
-        for c in p.categories:
-            cat_stats[c] = cat_stats.get(c, 0) + 1
-    print("  分类命中统计:")
-    for c, n in sorted(cat_stats.items(), key=lambda x: -x[1]):
-        print(f"    - {c:<20} {n} 篇")
-
     # ── 6. CSV 导出 ────────────────────────────────────────────────
-    banner("STEP 5: CSV 导出")
+    banner("STEP 4: CSV 导出(分类功能已下线)")
     csv_path = OUTPUT_DIR / "_interest_filtered.csv"
     writer = CSVWriter()
     n_csv = writer.write(papers, csv_path)
@@ -239,7 +223,7 @@ async def main() -> None:
     banner("流程总结")
     print(f"  总耗时:    检索 {t_search:.1f}s + 增强 {t_enrich:.1f}s + 下载 {t_dl:.1f}s")
     print(f"  检索结果:  {len(papers)} 篇(原始={sum(max(s.ok_count, 0) for s in source_counts.values())},去重后)")
-    print(f"  领域打分:  {n_categorized}/{len(papers)} 篇命中分类")
+    print(f"  领域打分:  基于粗筛/细筛双门限(分类功能已下线)")
     print(f"  CSV 导出:  {csv_path}")
     print(f"  下载:      成功 {succ} | 跳过 {skip} | 失败 {fail}")
     print(f"  输出目录:  {OUTPUT_DIR}")

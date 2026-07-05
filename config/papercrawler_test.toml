@@ -30,6 +30,16 @@ description = "测试:锂离子电池 + 分子动力学力场"
 must_have = ["solid electrolyte", "force field", "molecular dynamics"]
 should_have = ["Li-ion", "lithium", "ReaxFF", "DFT"]
 exclude = ["review"]
+
+# 反向关键词 — 命中即硬剔除(粗筛+细筛两阶段都检查)
+reverse_keywords = [
+    "reactive force field",
+    "polymer",
+    "liquid electrolyte",
+    "zinc-ion battery",
+    "zinc ion battery",
+]
+
 fuzzy_threshold = 0.85
 
 # 第二阶段(细筛)— 纯关键词命中计数

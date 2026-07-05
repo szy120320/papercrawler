@@ -25,39 +25,86 @@ class SemanticScholarAdapter(BaseSearchAdapter):
         if query.doi:
             return await self._by_doi(query.doi)
 
-        params: dict = {
+        # ---------------------------------------------------------------
+        # 分页抓取:Semantic Scholar 用 offset= 翻页 + token (2026-07 加)
+        #   单页 limit 上限 100
+        #   终止信号:返回条目 < limit,或 next 字段为 null/空
+        # 防卡:max_pages=40 上限(2026-07-05 ↑ from 20),默认 40 × 100 = 4000 条
+        #       (无 API key 仍限 5 页 — S2 严格 rate-limit)
+        # ---------------------------------------------------------------
+        page_size = min(query.max_results, 100)
+        if query.max_results > 100:
+            page_size = 100
+
+        base_params: dict = {
             "query": query.build_text_query(),
-            "limit": min(query.max_results, 100),
+            "limit": page_size,
             "fields": _FIELDS,
         }
         if query.year_from and query.year_to:
-            params["year"] = f"{query.year_from}-{query.year_to}"
+            base_params["year"] = f"{query.year_from}-{query.year_to}"
         elif query.year_from:
-            params["year"] = f"{query.year_from}-"
+            base_params["year"] = f"{query.year_from}-"
         elif query.year_to:
-            params["year"] = f"-{query.year_to}"
+            base_params["year"] = f"-{query.year_to}"
 
         if query.sort == "citations":
-            params["sort"] = "citationCount:desc"
+            base_params["sort"] = "citationCount:desc"
         elif query.sort == "date":
-            params["sort"] = "publicationDate:desc"
+            base_params["sort"] = "publicationDate:desc"
 
         headers = {}
         if self.api_key:
             headers["x-api-key"] = self.api_key
 
-        data = await self._get_json(f"{_BASE}/paper/search", params=params, headers=headers)
-        if not data:
-            return []
+        results: list[PaperMetadata] = []
+        seen: set[str] = set()
+        offset = 0
+        max_pages = 40
+        # 无 API key 时 S2 限速更严,翻页次数减半
+        if not self.api_key:
+            max_pages = 5
 
-        results = []
-        for item in data.get("data", []):
-            paper = self._parse(item)
-            if paper:
+        for _page in range(max_pages):
+            params = dict(base_params)
+            params["offset"] = offset
+            params["limit"] = min(page_size, query.max_results - len(results))
+
+            data = await self._get_json(
+                f"{_BASE}/paper/search", params=params, headers=headers
+            )
+            if not data:
+                break
+
+            items = data.get("data", [])
+            if not items:
+                break
+
+            added = 0
+            for item in items:
+                paper = self._parse(item)
+                if not paper:
+                    continue
+                ext = (paper.raw_ids or {}).get("semantic_scholar") or ""
+                if not ext:
+                    ext = (paper.doi or "").lower() or (paper.title or "")
+                if ext and ext in seen:
+                    continue
+                seen.add(ext)
                 results.append(paper)
+                added += 1
+
+            # S2 终止信号:返回条目 < limit,或 next 字段缺失
+            if len(items) < params["limit"]:
+                break
+            if not data.get("next"):
+                break
+            offset += params["limit"]
+            if len(results) >= query.max_results:
+                break
 
         logger.debug(f"[semantic_scholar] 找到 {len(results)} 篇论文")
-        return self._tag_source(results)
+        return self._tag_source(results[: query.max_results])
 
     async def _by_doi(self, doi: str) -> list[PaperMetadata]:
         headers = {}

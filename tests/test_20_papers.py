@@ -7,15 +7,17 @@
   2) DomainFilter(粗筛,基于 title) — 粗筛分数 ≥ 0.7 才进 enrich
   3) MetadataExtractor — enrich(补 abstract + OA 状态)
   4) SemanticFilter(细筛,纯关键词命中计数) — 命中 ≥ 3 才保留
-  5) Categorizer — 按 [interest.categories] 打多标签
-  6) CSVWriter — 导出 _interest_filtered.csv(含 coarse_score / semantic_score)
-  7) PaperDownloader — 三阶段下载(OA → Sci-Hub fallback → metadata_only)
-  8) PaperStorage.write_index — 生成 _index.md / _index.json
-  9) 失败计数汇总 — 按 kind 分类(http_error / parse_error / timeout / other)
+  5) CSVWriter — 导出 _interest_filtered.csv(含 coarse_score / semantic_score)
+  6) PaperDownloader — 三阶段下载(OA → Sci-Hub fallback → metadata_only)
+  7) PaperStorage.write_index — 生成 _index.md / _index.json
+  8) 失败计数汇总 — 按 kind 分类(http_error / parse_error / timeout / other)
+
+2026-07-05:删除 Categorizer 步骤(分类功能下线)。
 """
 from __future__ import annotations
 
 import asyncio
+import io
 import json
 import sys
 import time
@@ -23,12 +25,17 @@ from collections import Counter
 from datetime import datetime
 from pathlib import Path
 
+# Windows GBK 终端兼容:强制 stdout/stderr 使用 UTF-8,避免 ✓/✗/═ 等字符抛 UnicodeEncodeError
+if sys.platform == "win32" and hasattr(sys.stdout, "buffer"):
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
+
 # 让本脚本能 import papercrawler 包
 # 注:必须用 .parent.parent(项目根),不是 .parent(tests 目录)
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from papercrawler.classify import Categorizer, DomainFilter, SemanticFilter
+from papercrawler.classify import DomainFilter, SemanticFilter
 from papercrawler.config import load_config, set_config
 from papercrawler.download.downloader import PaperDownloader
 from papercrawler.download.storage import PaperStorage
@@ -159,24 +166,8 @@ async def main() -> None:
         print("\n  ⚠️  双门限后无保留论文,流程中止")
         return
 
-    # ── 6. 自动分类 ────────────────────────────────────────────────
-    banner("STEP 4: 自动多标签分类(Categorizer)")
-    cat = Categorizer(cfg.interest)
-    cat.annotate(papers)
-
-    n_categorized = sum(1 for p in papers if p.categories)
-    print(f"  命中分类: {n_categorized}/{len(papers)} 篇")
-    cat_stats: dict[str, int] = {}
-    for p in papers:
-        for c in p.categories:
-            cat_stats[c] = cat_stats.get(c, 0) + 1
-    print(f"  分类命中统计:")
-    for c, n in sorted(cat_stats.items(), key=lambda x: -x[1]):
-        bar = "█" * n
-        print(f"    {c:<16} {n:>2}  {bar}")
-
-    # ── 7. CSV 导出 ────────────────────────────────────────────────
-    banner("STEP 5: CSV 导出")
+    # ── 6. CSV 导出 ────────────────────────────────────────────────
+    banner("STEP 4: CSV 导出")
     csv_path = OUTPUT_DIR / "_interest_filtered.csv"
     writer = CSVWriter()
     n_csv = writer.write(papers, csv_path)
@@ -258,7 +249,7 @@ async def main() -> None:
     banner("流程总结")
     print(f"  总耗时:    检索 {fmt_dur(t_search)} + 增强 {fmt_dur(t_enrich)} + 下载 {fmt_dur(t_dl)}")
     print(f"  检索结果:  {len(papers)} 篇(双门限后,原始={sum(max(s.ok_count, 0) for s in source_stats.values())},去重前)")
-    print(f"  领域打分:  {n_categorized}/{len(papers)} 篇命中分类")
+    print(f"  领域打分:  命中数基于粗筛/细筛双门限(分类功能已下线)")
     print(f"  CSV:       {csv_path} ({n_csv} 行)")
     print(f"  下载:      ✓ {succ}  → {skip}  ✗ {fail}")
     print(f"  成功率:    {succ / (succ + fail) * 100:.0f}% (失败 {fail} 篇)")

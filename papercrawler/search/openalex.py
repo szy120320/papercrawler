@@ -37,23 +37,25 @@ class OpenAlexAdapter(BaseSearchAdapter):
     SOURCE_ID = "openalex"
 
     async def search(self, query: SearchQuery) -> list[PaperMetadata]:
-        params: dict = {
+        per_page = min(query.max_results, 200)
+
+        base_params: dict = {
             "select": _SELECT,
-            "per-page": min(query.max_results, 200),
+            "per-page": per_page,
         }
 
         if query.doi:
-            params["filter"] = f"doi:{query.doi}"
+            base_params["filter"] = f"doi:{query.doi}"
         elif query.title:
-            params["filter"] = f"title.search:{query.title}"
+            base_params["filter"] = f"title.search:{query.title}"
             if query.author:
-                params["filter"] += f",author.search:{query.author}"
+                base_params["filter"] += f",author.search:{query.author}"
         elif query.author:
-            params["filter"] = f"author.search:{query.author}"
+            base_params["filter"] = f"author.search:{query.author}"
         else:
             # 关键词检索：使用顶层 search 参数（OpenAlex 推荐方式，搜索标题+摘要+全文）
             # 注意：search= 参数可与 filter= 参数并存，但不能在 filter 内使用 default.search:
-            params["search"] = query.build_text_query()
+            base_params["search"] = query.build_text_query()
 
         if query.year_from or query.year_to:
             if query.year_from and query.year_to:
@@ -63,33 +65,69 @@ class OpenAlexAdapter(BaseSearchAdapter):
             else:
                 year_filter = f"to_publication_date:{query.year_to}-12-31"
 
-            if "filter" in params:
+            if "filter" in base_params:
                 # 已有 filter，直接追加年份条件（用逗号分隔表示 AND）
-                params["filter"] = f"{params['filter']},{year_filter}"
+                base_params["filter"] = f"{base_params['filter']},{year_filter}"
             else:
                 # 纯关键词 search 模式：year 单独加入 filter，两者可以共存
-                params["filter"] = year_filter
+                base_params["filter"] = year_filter
 
         if query.sort == "citations":
-            params["sort"] = "cited_by_count:desc"
+            base_params["sort"] = "cited_by_count:desc"
         elif query.sort == "date":
-            params["sort"] = "publication_year:desc"
+            base_params["sort"] = "publication_year:desc"
 
         # OpenAlex 推荐提供 mailto
-        params["mailto"] = "user@example.com"
+        base_params["mailto"] = "user@example.com"
 
-        data = await self._get_json(f"{_BASE}/works", params=params)
-        if not data:
-            return []
+        # ---------------------------------------------------------------
+        # 分页抓取:OpenAlex cursor-based pagination(2026-07 加)
+        #   第一次请求不带 cursor
+        #   响应 meta.next_cursor 是 opaque string;下次请求加 cursor=...
+        #   next_cursor 为 null/缺失时表示已到末尾
+        # 防卡:max_pages=100 上限(2026-07-05 ↑ from 50),默认 100 页 × 200/页 = 20000 条上限
+        # ---------------------------------------------------------------
+        results: list[PaperMetadata] = []
+        seen: set[str] = set()  # 跨页 DOI 去重
+        cursor: str | None = "*"   # 首次特殊值:不带 cursor;之后用 next_cursor
+        max_pages = 100
 
-        results = []
-        for item in data.get("results", []):
-            paper = self._parse(item)
-            if paper:
+        for _page in range(max_pages):
+            params = dict(base_params)
+            if cursor and cursor != "*":
+                params["cursor"] = cursor
+
+            data = await self._get_json(f"{_BASE}/works", params=params)
+            if not data:
+                break
+
+            page_items = data.get("results", [])
+            if not page_items:
+                break
+
+            added = 0
+            for item in page_items:
+                paper = self._parse(item)
+                if not paper:
+                    continue
+                # 跨页去重
+                key = (paper.doi or "").strip().lower() or (paper.title or "")
+                if key and key in seen:
+                    continue
+                seen.add(key)
                 results.append(paper)
+                added += 1
+
+            # OpenAlex 终止信号:next_cursor 消失 / 等于 "*"
+            meta = data.get("meta") or {}
+            cursor = meta.get("next_cursor")
+            if not cursor:
+                break
+            if len(results) >= query.max_results:
+                break
 
         logger.debug(f"[openalex] 找到 {len(results)} 篇论文")
-        return self._tag_source(results)
+        return self._tag_source(results[: query.max_results])
 
     def _parse(self, item: dict) -> PaperMetadata | None:
         try:

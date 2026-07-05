@@ -25,31 +25,69 @@ class ArXivAdapter(BaseSearchAdapter):
 
     async def search(self, query: SearchQuery) -> list[PaperMetadata]:
         search_query = self._build_query(query)
-        params = {
-            "search_query": search_query,
-            "max_results": min(query.max_results, 200),
-            "sortBy": self._sort_by(query.sort),
-            "sortOrder": "descending",
-        }
+        sort_by = self._sort_by(query.sort)
 
-        try:
-            xml_text = await self._get_text(_BASE, params=params)
-        except SourceError as e:
-            # _get_text 已 log,这里只标记失败
-            logger.debug(f"[arxiv] 检索失败: {e}")
-            return []
+        # ---------------------------------------------------------------
+        # 分页抓取:ArXiv 使用 start= 偏移翻页(2026-07 加)
+        #   单页 max_results 上限 2000(2026-07-05 ↑ from 500),实测 1000 稳定
+        #   终止信号:返回条目 < 请求数,或 opensearch:totalResults 耗尽
+        # 防卡:max_pages=20 上限(2026-07-05 ↑ from 10),默认 20 × 1000 = 20000 条
+        # ---------------------------------------------------------------
+        page_size = min(query.max_results, 1000)
+        if query.max_results > 1000:
+            page_size = 1000
 
-        if not xml_text:
-            return []
+        results: list[PaperMetadata] = []
+        seen: set[str] = set()
+        start = 0
+        max_pages = 20
 
-        try:
-            results = self._parse(xml_text, query)
-        except ET.ParseError as e:
-            logger.warning(f"[arxiv] XML 解析错误: {e}")
-            return []
+        for _page in range(max_pages):
+            params = {
+                "search_query": search_query,
+                "start": start,
+                "max_results": min(page_size, query.max_results - len(results)),
+                "sortBy": sort_by,
+                "sortOrder": "descending",
+            }
+
+            try:
+                xml_text = await self._get_text(_BASE, params=params)
+            except SourceError as e:
+                logger.debug(f"[arxiv] 检索失败: {e}")
+                return self._tag_source(results)
+
+            if not xml_text:
+                break
+
+            try:
+                page_results = self._parse(xml_text, query)
+            except ET.ParseError as e:
+                logger.warning(f"[arxiv] XML 解析错误: {e}")
+                break
+
+            if not page_results:
+                break
+
+            added = 0
+            for paper in page_results:
+                # ArXiv id 跨页去重
+                key = paper.url or (paper.title or "")
+                if key and key in seen:
+                    continue
+                seen.add(key)
+                results.append(paper)
+                added += 1
+
+            start += len(page_results)
+            # ArXiv 终止信号:返回条目 < 请求条目 → 末尾
+            if len(page_results) < params["max_results"]:
+                break
+            if len(results) >= query.max_results:
+                break
 
         logger.debug(f"[arxiv] 找到 {len(results)} 篇论文")
-        return self._tag_source(results)
+        return self._tag_source(results[: query.max_results])
 
     def _build_query(self, query: SearchQuery) -> str:
         if query.doi:

@@ -8,7 +8,6 @@ import sys
 from pathlib import Path
 from typing import Optional
 
-from pydantic import BaseModel, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -85,17 +84,9 @@ class SciHubConfig(BaseSettings):
 # [interest] — 用户兴趣 / 领域感知配置
 # ---------------------------------------------------------------------------
 
-class InterestCategory(BaseModel):
-    """单个用户自定义分类"""
-    name: str
-    keywords: list[str] = []
-    # 至少需要命中几个关键词才算入该类（默认 1）
-    min_hits: int = 1
-
-
 class InterestConfig(BaseSettings):
     """
-    用户研究兴趣描述 + 关键词权重 + 自定义分类。
+    用户研究兴趣描述 + 关键词权重。
 
     两阶段打分配置:
       - 阶段 1(粗筛): 基于 title,用 must_have/should_have/exclude 关键词权重打分
@@ -107,10 +98,13 @@ class InterestConfig(BaseSettings):
       - must_have           阶段 1 命中即得基础分 0.6(粗筛快速过滤)
       - should_have         阶段 1 每个命中 +0.1,封顶 0.3
       - exclude             阶段 1 命中即 -0.5(明确剔除)
+      - reverse_keywords    命中即粗筛直接剔除(与 exclude 平级,但语义上更明确)
       - semantic_keywords   阶段 2 用于计数的关键词列表
       - semantic_min_matches 阶段 2 保留阈值(命中关键词数 ≥ 此值才通过)
-      - categories          每类独立计算,一篇可同时属多类
       - fuzzy_threshold      模糊匹配阈值(difflib 字符相似度)
+
+    注意(2026-07-05):
+      - 删除 InterestCategory / categories 字段(分类功能下线)
 
     示例(关注"固体电解质相关分子动力学模拟"):
         description = "我想找固体电解质相关的分子动力学模拟研究"
@@ -126,10 +120,11 @@ class InterestConfig(BaseSettings):
     must_have: list[str] = []
     should_have: list[str] = []
     exclude: list[str] = []
+    # 反向关键词 — 命中即硬剔除,两道都检查;语义清晰,与 exclude 区分
+    reverse_keywords: list[str] = []
     # 第二阶段(细筛)字段
     semantic_keywords: list[str] = []       # 用于计数的关键词列表
     semantic_min_matches: int = 3          # 命中数 ≥ 此值才保留,默认 3
-    categories: list[InterestCategory] = []
     # 模糊匹配阈值(distance),0.0~1.0,1.0=完全相等,0.85 是较宽松
     fuzzy_threshold: float = 0.85
 
@@ -195,10 +190,7 @@ def load_config(config_path: Optional[str] = None) -> AppConfig:
     with open(path, mode) as f:
         data = loader.loads(f.read()) if mode == "r" else loader.load(f)
 
-    # 解析嵌套的 [interest.categories] 数组
-    interest_data = data.get("interest", {})
-    categories_data = interest_data.pop("categories", []) if interest_data else []
-
+    # 2026-07-05 移除 categories 解析(分类功能下线)
     return AppConfig(
         general=GeneralConfig(**data.get("general", {})),
         download=DownloadConfig(**data.get("download", {})),
@@ -207,10 +199,7 @@ def load_config(config_path: Optional[str] = None) -> AppConfig:
         markitdown=MarkItDownConfig(**data.get("markitdown", {})),
         filters=FiltersConfig(**data.get("filters", {})),
         scihub=SciHubConfig(**data.get("scihub", {})),
-        interest=InterestConfig(
-            **interest_data,
-            categories=[InterestCategory(**c) for c in categories_data],
-        ),
+        interest=InterestConfig(**data.get("interest", {})),
     )
 
 

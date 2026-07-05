@@ -56,6 +56,24 @@ def _tokenize(text: str) -> list[str]:
 # 关键词匹配
 # ---------------------------------------------------------------------------
 
+def _reverse_keyword_hit(
+    keyword: str,
+    text_lower: str,
+) -> bool:
+    """
+    反向关键词命中:仅做大小写不敏感的子串匹配,不用 fuzzy。
+
+    设计依据:
+      反向词是黑名单 — 误杀一篇相关论文的代价比放过一篇不相关论文高。
+    fuzzy 在多 token 关键词上会把 "aqueous electrolyte" 的 longest token
+    "electrolyte" 与 "solid-state electrolyte" 的 "electrolyte" 视为命中,
+    导致几乎所有电解质方向论文被误杀,这是 2026-07 实测发现的 bug。
+    所以 reverse 走严格 substring,完全跳过 fuzzy。
+    """
+    kw = keyword.lower().strip()
+    return bool(kw) and (kw in text_lower)
+
+
 def _exact_or_fuzzy_hit(
     keyword: str,
     text_lower: str,
@@ -124,8 +142,6 @@ _BASE_SCORE = 0.6       # 命中 must_have → 0.6
 _SHOULD_BONUS = 0.1     # 每个 should_have 命中 → +0.1
 _SHOULD_CAP = 0.3       # should_have 总加分封顶 0.3
 _EXCLUDE_PENALTY = 0.5  # 命中 exclude → -0.5
-_CAT_BONUS = 0.05       # 每命中一个 category 关键词 → +0.05
-_CAT_CAP = 0.20         # 分类总加分封顶 0.20
 _FLOOR = 0.0            # 分数下限
 _CEIL = 1.0             # 分数上限
 
@@ -153,6 +169,10 @@ def score_paper(
 
     Returns:
         相关性分数,0.0 表示不相关,1.0 表示强相关
+
+    副作用:
+        若命中 reverse_keywords,会同时把 paper.is_reversed=True 并记录
+        paper.reversed_keywords(命中的反向关键词列表,供审计)。
     """
     text = _extract_text(paper)
     if not text.strip():
@@ -161,6 +181,27 @@ def score_paper(
     text_lower = _normalize(text)
     text_tokens = _tokenize(text)
     threshold = interest.fuzzy_threshold
+
+    # 0. reverse_keywords:命中即直接 0 分(并标记 is_reversed)
+    #    在 must_have 检查之前,确保硬剔除优先级最高。
+    #    注意:反向词只走 substring 严格匹配(见 _reverse_keyword_hit docstring),
+    #    不用 interest.fuzzy_threshold — 否则会因 longest-token fuzzy 把
+    #    "aqueous electrolyte" / "zinc ion battery" 等几乎所有相关论文误杀。
+    if interest.reverse_keywords:
+        reversed_hits = [
+            kw for kw in interest.reverse_keywords
+            if _reverse_keyword_hit(kw, text_lower)
+        ]
+        if reversed_hits:
+            paper.is_reversed = True
+            paper.reversed_keywords = reversed_hits
+            return 0.0
+        # 命中后直接返回 — 不参与后面的粗筛打分
+        paper.is_reversed = False
+        paper.reversed_keywords = []
+    else:
+        paper.is_reversed = False
+        paper.reversed_keywords = []
 
     # 1. must_have:命中 → 基础分
     score = 0.0
@@ -175,13 +216,6 @@ def score_paper(
     # 3. exclude:命中 → 直接 -0.5(可降至 0 以下,但最终截到 0)
     if _count_hits(interest.exclude, text_lower, text_tokens, threshold) > 0:
         score -= _EXCLUDE_PENALTY
-
-    # 4. category 命中:每命中一个关键词 +0.05,封顶 0.20(在 categorizer 里也会算,这里做粗筛)
-    if interest.categories:
-        cat_hits = 0
-        for cat in interest.categories:
-            cat_hits += _count_hits(cat.keywords, text_lower, text_tokens, threshold)
-        score += min(cat_hits * _CAT_BONUS, _CAT_CAP)
 
     return round(max(_FLOOR, min(_CEIL, score)), 3)
 
