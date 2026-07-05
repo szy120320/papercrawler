@@ -337,7 +337,3 @@ papercrawler/search/
 本工具默认仅通过以下合法开放获取渠道下载全文:Unpaywall、PubMed Central、arXiv、OpenAlex、Semantic Scholar、CORE、ChemRxiv。下载内容仅供个人学术研究使用。Sci-Hub 功能需用户显式启用,并由用户自行承担相关法律责任。
 
 ---
-
-## 鸣谢
-
-PaperCrawler 在原 `paper-dl` 基础上,增加了领域感知(两阶段打分 + 反向关键词剔除)、逐年翻页检索、全局断点续下、CSV 重下 与 自动 CSV 命名导出能力。如需回退到无领域过滤的传统模式,只需不传 `--interest` 即可,行为与 `paper-dl` 完全一致。
