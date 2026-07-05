@@ -136,7 +136,8 @@ class ChemRxivViaCrossrefAdapter(BaseSearchAdapter):
             titles = item.get("title", [])
             title = titles[0] if titles else "Unknown Title"
 
-            # 浣滆€?            authors = []
+            # 浣滆€?
+            authors = []
             for a in item.get("author", []) or []:
                 given = (a.get("given") or "").strip()
                 family = (a.get("family") or "").strip()
